@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        
+        
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5979594089076608"
+     crossorigin="anonymous"></script>
+        
+        
+        <script src="plotly-latest.min.js"></script>
+<script src="plotlynf.js"></script>
+<link rel="stylesheet" type="text/css" href="plotlynf.css">
+         <script type="text/javascript" id="MathJax-script" async
+src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>またたび - 微分公式</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../../../index.html">
+                <span class="d-block d-lg-none">matatabi</span>
+                <span class="d-none d-lg-block">matatabi</span>
+            </a>
+            
+<script async src="https://cse.google.com/cse.js?cx=395c2c19fbfad4d67"></script>
+<div class="gcse-searchbox-only"></div>  
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">トップ</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">微分ってなんぞ？？</a></li>
+                    
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#beki">べき関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#muri">無理関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#frac">分数関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sisuu">指数関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#taisuu">対数関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sannkaku">三角関数</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#gyaku">逆三角関数</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#seisitu">微分の性質</a></li>
+                    
+                    
+                    
+                    </ul>
+            </div>
+            
+        </nav>
+        
+
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- About-->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h1 class="mb-0">
+                        微分公式
+                        <br><span class="text-primary">function</span>
+                    </h1>
+                    
+<style>
+    .youtube {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}</style>
+                    <p class="lead mb-4"><br>
+                後の積分、偏微分や体積の計算（三次元への拡張）など
+                <br>すごーく大事なので、覚えてしまいましょう。
+                <br>というか、いやがおうでも覚えてしまうと思います。
+            
+               <br><br><a href="https://docs.google.com/forms/d/e/1FAIpQLScRZwNCxmERkKZ-04j9TsWZRTQEXVoYwLw4PMOeofBH8pUbGw/viewform?usp=sf_link
+        ">お問い合わせフォームはこちらから</a>                               <br><br>
+                   
+    【自己紹介】
+  <br>現役高専生の福島と申します。
+
+<br>進行が独特の高専の授業範囲をまとめてくれる
+<br>そんなサイトが一つくらいあってもいいなと思ってこのサイトを作っています。
+                       
+<br><br>皆さんのクラスの一番勉強の苦手な子でも
+<br>「ほーん、なるほどね」
+<br>となるような記事を目指しています。
+    
+<br><br>しかしながら、つたない部分もあると思いますので
+<br>気軽に上の問い合わせフォームにてご指摘していただけたらなと
+
+                    </p>
+                    <div class="social-icons">
+<!--
+                        <a class="social-icon" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-github"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-twitter"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-facebook-f"></i></a>
+-->
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Experience-->
+            <section class="resume-section" id="experience">
+                <div class="resume-section-content">
+                    <h2 class="mb-3">
+                    微分ってなんぞ？？</h2>
+                      <p class="lead mb-4"></p>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">微分の根源</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);
+                        border:solid 3px #3dcc7d;
+                        border-radius:0 5px 5px;padding:20px;
+                    font-size: 150%;
+                            text-align: center;
+                        　">    関数\(f(x)\)の微分\(f'(x)\)は<br>
+                       
+                   <span class="under">\(f'(x)=\lim_{x\to a}\frac{f(x)-f(a)}{x-a}\)</span>
+                        
+                <div class="lead">            
+                    <p>以降のほとんどの公式はこの式から導出されます。
+                    <p>この式について以下の二つの概念を
+                    <br>理解していてほしいです。</div>
+<div class="lead">                            
+                            <details class="box30"><summary class="box-title">極限</summary>
+           <p>僕の認識は、
+               <br><spnn class="under">今までの数学の世界にはいてはいけないところがあって、その場所を扱えるようにする</spnn>
+    <br>って感じです。
+    
+                                <p>具体的には、<spann class="under">分数関数「\(\frac{1}{x}\)」</spann>に関して
+    <br>「\(\frac{1}{0}\)」とか「\(\frac{1}{\infty}\)」定義できないんですね。
+                        <p><spann class="under">グラフにおいて</spann>このような値は
+    <br>「点を取らない場所」（いてはいけない場所）
+    <br>になります。
+        
+        
+    <br><details><summary>グラフはこちら</summary><iframe src="https://www.desmos.com/calculator/fkyvtlhy8t?embed" width="500" height="500" style="border: 1px solid #ccc" frameborder=0 class="youtube"></iframe>
+    <p>詳しくは以下を見てね
+        <br><a href="../../1年_基礎数学/公式/公式_関数.html">関数について</a>
+      
+<p>
+</details>
+  <br>そんな変な数ですが、
+<br>グラフを見るとyの値は次第に何かに近づいて行っているかんじがしませんか？？
+        <p>次第に近づく値に<spann class="under">「近似した」</spann>ものとして、数を扱っていくのがこの極限値です。
+    </details>
+    <details class="box30"><summary class="box-title">傾き（xの増加量/yの増加量）</summary>
+        <p>中学校の頃に<br>「直線の傾き」として習っていると思います
+        <p>これに先ほどの極限の概念を利用すると、
+        <br>ただの傾きではなく
+            <spann class="under">接線の傾き</spann>
+        になります
+            
+            <p>理由は、
+            <br>２点間の傾きを表す、先ほどの直線の傾き。
+            <br>この、点を「極限」を使って、ググーッと近づけるんです。
+            <p>すると微分によって得られた値を、
+                <br><spann class="under">あたかも、とある１点が傾きを持っている</spann>
+            <br>かのようにとらえることができます。
+        <p>グラフにおいて、
+            <br>「その点の傾き」（接線の傾き）という概念は<spann class="under">とても重要</spann>なものなので、すっごく便利なんですね。（詳しくは極値のところまで）
+    </details>
+    
+                            </div>
+                        </div>
+                    </div>
+                   
+                    
+                   
+                       
+                         
+                                        
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+            <section class="resume-section" id="beki">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">各種の関数の微分公式</h2>
+          <div class="lead">
+              <p>本題に入る前に一言だけ。
+                <br>ほとんどの人に必要のない文章です。
+              <details><summary>一般式の記述について</summary>
+                    <p>公式そのものの式や、それの使い方を言語化することは、
+                <br>普遍性を得る代わりにわかりやすさを欠如させるきがするので、
+                <br>僕は例題をいくつか示すことにします。
+                  <p>普遍性のある説明は、教科書などを見れば十分だと思うので。
+                <p>でも、
+                <br>「いいやこれは必要だろう」
+                <br>という式などは是非コメントください
+                </details>
+                <p><br>これを見ている学生さんは
+            <br>クイズを解くように下の記事を読んでみるといいのではないかと
+        <br>答えを見ずにできるようになったら完璧ですね＾＾</div>
+                   <p><div class="d-flex flex-column flex-md-row justify-content-between mb-5" >
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((1)\)べき関数</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                       \(y=2x+1\)
+                    <br>\(y=x^2\)
+                    <br>\(y=(x-2)^2+1\)
+                    <br>\(y=x^3\)
+                    <br>\(y=x^\frac{1}{2}\)
+                    <br>\(y=x^{-2}\)
+                        
+                            
+        <p><details class="box30"><summary class="box-title">答え</summary>
+        <p class="lead">    
+         \(y=2\)
+        <br>\(y=2x\)
+                    <br>\(y=2x\)
+                    <br>\(y=3x^2\)
+            <br>\(y=\frac{1}{2}x^{-\frac{1}{2}}\)
+        <br>\(y=-2x^{-3}\)</p>
+                       </details>
+                
+                           
+                        </div>
+                        
+                    </div>
+                   <section id="muri">
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" >
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((2)\)無理関数</h3>
+                            <p class="lead"><br>※上の式の最後から２番目の例がそれです。
+                            <br>不思議かもしれませんが無理関数はべき関数なんですね
+          <br>\(\sqrt{x}=x^\frac{1}{2}\)とすることができます。
+                        <br><br>趣旨と少しずれますが、
+                        <br>\(y=x^2\)と\(y=x^{\frac{1}{2}}\)は逆関数の関係にあります。</p></div>
+                            
+                        
+                        
+                    </div>
+                    </section>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="frac">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((3)\)分数関数</h3>
+                           
+                    <p class="lead"><br>※上の式の最後から２番目の例がそれです。
+               <br>無理関数と同様に、分数関数もべき関数なんですね。
+                  <br>\(\frac{1}{x}=x^{-1}\)とすることができます。
+                            </p>
+           
+                        </div>
+                        
+                    </div>
+                   
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="sisuu">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((4)\)指数関数</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                       \(y=2^x\)
+                    <br>\(y=10^x\)
+                    <br>\(y=e^x\)
+                        
+                            
+    <p><details class="box30"><summary class="box-title">答え</summary>
+        <div class="lead">    
+            \(y=xlog2\)
+                    <br>\(y=xlog10\)
+                    <br>\(y=e^x\)
+                    
+            <p><details><summary>ちょっと背伸びできる人へ</summary></details>
+        <p>あくまでも、個人的な価値観ですが、
+        <br>微分の公式に限らず、数学の公式は、
+        <br>年度をまたいでいざ使おうとなった時には
+        <br>たいてい忘れています。
+        <p>そんな時に、
+        <br>習った当初から式の導出のロジックをつかんでおくといざというとき作れます。
+    <br>(今の僕がそうですが)
+        <p>今回の公式の流れを箇条書きします。
+        <br>見やすさのため詳しくは書来ませんがご了承を
+            <br><details><summary>指数関数の微分公式の導出</summary>
+        <p>1.指数関数を定義から微分しようとしてみるが
+            <br>どうやら底の値（\(2^x\)でいう\(2\)）によって全く変わってくる.
+        <p>2.どんな底にも対応する指数関数を作りたいのに、このままでは公式ができなくてこまる、
+        <p>3.しかし、「底の値によって微分の値が変わる」のだから都合よく「微分しても値を変わらなくする低」を\(e\)と設定する<p>4.\(y=e^x\)の微分の公式が得られたところで、
+        <br>「対数微分法」により一般の指数関数の公式も求める</details></div>               </details>
+        
+        
+</div>
+                        
+                    </div>
+                   
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="taisuu">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((5)\)対数関数</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                       \(y=\log{x}\)
+                                <br>\(y=\log_2{x}\)
+                    
+                    
+                        <p><details class="box30"><summary class="box-title">答え</summary>
+        <div class="lead">    
+            \(y=\frac{1}{x}\)
+                <br>\(y=\frac{1}{xlog2}\)
+            <p><details><summary>解説</summary>
+                
+                <p>2個目の答えがわからなかったひとも多いでしょう。これは、<spann class="under">「対数の性質」</spann>を使って式を分解してから公式に当てはめるんですね。
+<br>対数の性質は調べたらすぐ出てくるでしょうからあえて書きません。                    
+                <p>微分や積分において、
+                    <br><spann class="under">式を下処理してから公式を使う</spann>ということはよくあります。べき関数・対数関数・三角関数など割とテクニックが必要なものもありますが、焦らずともいずれ習うと思いますよ。
+                    
+                <br>
+                
+                <p>下は少し語りたくなったので書きます。
+                <br>わからない人は、「ほえ～」くらいで
+                <br>次に進みましょう
+                <details><summary>自然対数と常用対数について</summary>
+            <br>微分積分学における\(log\)は底が\(e\)の対数を表します
+            <br>底が10の常用対数として扱うことはないです
+        <p>数学の好きな人ならこぞって上げ足をとりに来そうな
+       logとlnの区別をしないのは僕も不思議です。
+            
+        <p>プログラミング言語のpythonのとある機能の中で自然対数を扱う際、
+           「numpy.log()」で自然対数を示します。「numpy.log10()」で常用対数なんですね。
+        <br>もしかしたら、逐一「ln」と区別することの方が世界ではマイノリティなのかなとか思ったりします。</details></details>            
+            <details><summary>ちょっと背伸びできる人へ</summary>
+        <p>こいつの公式の導出は、
+        <br>対数微分法とアプローチの仕方が似ています
+    <br>両辺の対数をとるかわりに、
+    <br>逆関数に変換してください。
+    <br>あとは対数微分法と同じです。                        
+                        </details>        </div>               </details>
+        
+    
+                                
+                    
+                            
+                        </div>
+                        
+                    </div>
+                   
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="sannkaku">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((6)\)三角関数</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                       \(y=\sin{x}\)
+                    <br>\(y=\cos{x}\)
+                    <br>\(y=\tan{x}\)
+                        
+                            
+                    <p><details class="box30"><summary class="box-title">答え</summary>
+        <p class="lead">    
+         \(y'=cos{x}\)
+                    <br>\(y'=-sin{x}\)
+                    <br>\(y'=\frac{1}{(cos{x})^2}\)
+            
+            <details class="lead"><summary>ちょっと背伸びできる人へ</summary>
+        <p>こいつらの公式の導出は、習得に時間がかかったのを覚えています。
+        <p>sinとcosは、和積の公式（名前初めて知った）とそのあとに、挟みうちの定理で、\(\frac{sin〇}{〇}\)を極限で１にする。という展開になります。
+        <p>自分で書いときながら言うのは何ですが、当時の自分がこれを見て理解できるとは思えないので、いつか理解しようくらいでいいのかなと。
+            
+        <p>tanは\(\frac{sin}{cos}\)なので上を求めたらすぐ求まります
+        <br>(あとから習う、積の公式が必要です)
+            
+            <p></details>
+                                              </details>
+            </div>
+                        
+                    </div>
+                   
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5" >
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0" id="gyaku">\((7)\)逆三角関数</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                        \(y=\sin^{-1}{x}\)
+                    <br>\(y=\cos^{-1}{x}\)
+                    <br>\(y=\tan^{-1}{x}\) 
+                            
+                    <p><details class="box30"><summary class="box-title">答え</summary>
+        <p class="lead">    
+         \(y'=\frac{1}{\sqrt{1-x^2}}\)
+                    <br>\(y'=-\frac{1}{\sqrt{1-x^2}}\)
+                    <br>\(y'=\frac{1}{1+x^2}\)
+            
+            <details class="lead"><summary>ちょっと背伸びできる人へ</summary>
+        <p>こいつらの公式の導出はやみつきになりました
+        <p>どれも共通しているのは、
+        <br>まず逆関数に変換（裏の裏は表）して、「x=~~」をつくって、両辺を微分します。
+        <br>「中微分」の関係（後からくる、合成関数で紹介します）で、「y’」がぶにゅっと出てくるんですよ。
+        <br>あとは、「y'=~~」に直せば答えです。
+    <p>ここで、それぞれの最初に定義した「x」が式に出てくるように
+    <br>三角関数を変換します。
+    <br>実は、それがどれも「\((sinx)^2+(cosx)^2=1\)」で説明がつくのです（tanで扱うときは。両辺を(cosx)^2すると都合よくなるんですよね）
+<p>昔、クラスメートが、<br>「なんでsinは＋でcosは-なんだよ」とか
+<br>「なんでtanだけルートつかないの」とか
+<br>言っているのをよく耳にしました
+    <br>導出のロジックがわかっている方なら、
+<br>「いやsinの微分は+でcosの微分は-やん？」とか
+<br>「いやtanの微分はcosの二乗が出るやん？」と
+<br>どや顔して、いやな顔をされるので、気をつけましょう。；
+            </details>
+                                              </details>           <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="seisitu">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((8)\)微分の細かいテクニック（性質）</h3>
+                           <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
+</div>
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
+                       積の微分・商の微分
+                    <br>合成関数の微分法（中微分と外微分）
+                    <br>定数の微分や関数の足し算の微分
+                        
+                            
+        <p class="lead">どれも調べればすぐでるので、あえて書きません
+        <br>名前からはピンとこないかもしれないですが、見たらわかると思います。
+                        </div>
+                        
+                    </div>           </div>
+                        
+                    </div>
+                   
+                     
+                    
+
+                </div>
+            </section>
+            <hr class="m-0" />
+-->
+            <hr class="m-0" />
+            <!-- Education-->
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
