@@ -41,7 +41,7 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">トップ</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">微分ってなんぞ？？</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">積分ってなんぞ？？</a></li>
                     
                     
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#beki">べき関数</a></li>
@@ -57,7 +57,7 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sannkaku">三角関数</a></li>
                     
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#gyaku">逆三角関数</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#seisitu">微分の性質</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#seisitu">積分の性質</a></li>
                     
                     
                     
@@ -132,13 +132,67 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                         border-radius:0 5px 5px;padding:20px;
                     font-size: 150%;
                             text-align: center;
-                        　">   式：微分の反対
+                        　">　式　：微分の反対
                        
         <br>グラフ：面積（※）
-    <p class="lead">※詳しく言うと従属変数の微小の変化量に関数を掛けてそれを範囲内まで繰り返す。
-    <br>面積だけでなく様々な場面で活躍しますが、とりあえずは面積でいいと思います。
-                                
-                  
+    <div class="lead">
+    <p>※面積だけではなく様々なものを求められます
+    <br>とりあえずは面積でいいかと
+                <p><br>\(\int f(x) dx \)はxの範囲（dxなのでxの範囲）を指定することでその範囲内の対応する面積を求められます
+<p>その対応する範囲が未確定なときの積分の式を
+    <br><spann class="under">不定積分</spann>
+<p>範囲を指定して実際に面積を求めたる式を
+    <br><spann class="under">定積分</spann>と呼びます。
+        </div>
+                
+    
+    <details class="box30"><summary class="box-title">不定積分</summary>
+        <div class="lead">
+         
+            <p style="text-align: center">\(\int f(x) dx \)=G(x)
+        <br>※G(x)の微分を\(f(x)\)とします。
+        <p>これはまさしく、「微分の反対」です。
+    <br>G(x)を微分するとf(x)になるので
+<br>\(f(x)\)を積分するとG(x)になります。
+
+            <details><summary>ちなみに</summary>
+<p>文字の選択は特に意味はありません。
+<br>\(f(x)\)でも\(F(x)\)でも本質は変わりません
+<p>\(f(x)\)はxによる関数のことです。
+<br>\(x\)に3を代入したいとき\(f(3)\)と書けて便利です
+
+                </details>
+      </div>     
+        
+      
+                       </details>
+           <details class="box30"><summary class="box-title">定積分</summary>
+         <div class="lead">    
+         
+            <p style="text-align: center">\(\int_{b}^{a} f(x) dx\)\(=[G(x)]_{b}^{a}\)\(=G(a)-G(b)\)
+<br>\(aはbより大きいとする\)
+        <p>対応する「範囲内の面積」を求めています
+    <br>G(a)で「aまでの」面積
+<br>G(b)で「bまでの」面積
+<br>を求めています。
+<p>大きい方引く小さい方で
+<br>「bからaまでの」面積になりますよね
+
+            <details><summary>ちなみに</summary>
+<p>積分には負の値が存在します。
+<br>x軸より下（f(x)が負）の範囲の積分の値は
+<br>負の値として計算されます。
+<br>面積は？と聞かれるとx軸より下（f(x)が負）も
+<br>正の値として足し合わせます。
+<p>「aはbより大きいとする」としましたが、
+<br>大きくないといけないわけではないです。
+<br>「3から0まで」のようなものも出てくることがあります。
+    
+    
+    </details>
+      </div>     
+                       </details>
+           
                         </div>
                     </div>
                    
@@ -153,8 +207,8 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
             <!-- Education-->
             <section class="resume-section" id="beki">
                 <div class="resume-section-content">
-                    <h2 class="mb-5">各種の関数の微分公式</h2>
-          <div class="lead">
+                    <h2 class="mb-5">各種の関数の積分公式</h2>
+          <div class="lead mb-5">
               <p>本題に入る前に一言だけ。
                 <br>ほとんどの人に必要のない文章です。
               <details><summary>一般式の記述について</summary>
@@ -175,7 +229,8 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                            <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
 </div>
                             <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
-                       \(y=2x+1\)
+                       \(y=2\)
+                    <br>\(y=2x+1\)
                     <br>\(y=x^2\)
                     <br>\(y=(x-2)^2+1\)
                     <br>\(y=x^3\)
@@ -184,14 +239,33 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                         
                             
         <p><details class="box30"><summary class="box-title">答え</summary>
-        <p class="lead">    
-         
-                    \(y=x^2+x+C\)
-                    <br>\(y=\frac{1}{3}x^3+C\)
-            <br>\(y=\frac{1}{3}(x-2)^3+x+C\)
-        <br>\(y=\frac{1}{4}x^{4}+C\)
-    <br>        \(y=\frac{2}{3}x^{\frac{3}{2}}+C\)
-        <br>\(y=-\frac{1}{3}x^{-3}+C\)</p>
+        <div class="lead">    
+         <p>\(\int y dx=2x\)
+                   <br> \(\int y dx=x^2+x+C\)
+                    <br>\(\int y dx=\frac{1}{3}x^3+C\)
+            <br>\(\int y dx=\frac{1}{3}(x-2)^3+x+C\)
+        <br>\(\int y dx=\frac{1}{4}x^{4}+C\)
+    <br>        \(\int y dx=\frac{2}{3}x^{\frac{3}{2}}+C\)
+        <br>\(\int y dx=-\frac{1}{3}x^{-3}+C\)
+            </p> 
+            
+    <details><summary>\(C\)について</summary>
+
+        <p>\(C\)のことを<spann class="under">積分定数</spann>と言います。
+    <p>読んで字のごとく
+        <br>「積分で出てくる定数」
+<br>なのですが、定数というのは
+<br>「２」とか「３」などの数のことすね。
+    
+    <p>なんでこんなものが必要かというと、
+        <br>「<spann class="under">微分</spann>の時に定数は必ず0になる」からです
+<p>定数ならなんでも0になってしまうものですから、
+<br>積分の段階では予測のしようがないです。
+<br>だから、文字で「\(C\)」と示します。
+            
+<p>でも例えば、
+<br>xが0のとき、\(f(0)\)が10など
+<br>条件が決まると求められます。</details></div>
                        </details>
                 
                            
@@ -238,26 +312,18 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                             
     <p><details class="box30"><summary class="box-title">答え</summary>
         <div class="lead">    
-            \(y=xlog2\)
-                    <br>\(y=xlog10\)
-                    <br>\(y=e^x\)
+            <p>\(\int y dx=\frac{2^x}{lox2}+C\)
+                    <br>\(\int y dx=\frac{10^x}{lox10}+C\)
+               
+                    <br>\(\int y dx=e^x+C\)
                     
-            <p><details><summary>ちょっと背伸びできる人へ</summary></details>
-        <p>あくまでも、個人的な価値観ですが、
-        <br>微分の公式に限らず、数学の公式は、
-        <br>年度をまたいでいざ使おうとなった時には
-        <br>たいてい忘れています。
-        <p>そんな時に、
-        <br>習った当初から式の導出のロジックをつかんでおくといざというとき作れます。
-    <br>(今の僕がそうですが)
-        <p>今回の公式の流れを箇条書きします。
-        <br>見やすさのため詳しくは書来ませんがご了承を
-            <br><details><summary>指数関数の微分公式の導出</summary>
-        <p>1.指数関数を定義から微分しようとしてみるが
-            <br>どうやら底の値（\(2^x\)でいう\(2\)）によって全く変わってくる.
-        <p>2.どんな底にも対応する指数関数を作りたいのに、このままでは公式ができなくてこまる、
-        <p>3.しかし、「底の値によって微分の値が変わる」のだから都合よく「微分しても値を変わらなくする低」を\(e\)と設定する<p>4.\(y=e^x\)の微分の公式が得られたところで、
-        <br>「対数微分法」により一般の指数関数の公式も求める</details></div>               </details>
+            <p><details><summary>解説</summary>
+            <p>上の二つは僕も今まで忘れてました。
+            <p>\(e^x\)は
+            <br>「微分しても積分しても変わらないやつ」
+        <br>と定義されたものなので、
+            <br>積分されても\(e^x\)です</details>
+        </div>               </details>
         
         
 </div>
@@ -270,42 +336,20 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                            <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
 </div>
                             <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
-                       \(y=\log{x}\)
-                                <br>\(y=\log_2{x}\)
+                       \(\int y dx=\log{x}\)
+                                <br>\(\int y dx=\log_2{x}\)
                     
                     
                         <p><details class="box30"><summary class="box-title">答え</summary>
         <div class="lead">    
-            \(y=\frac{1}{x}\)
-                <br>\(y=\frac{1}{xlog2}\)
+            <p>\(\int y  dx=xlogx-x+C\)
+                <br>\(\int y dx=\frac{xlogx-x}{log2}+C\)
             <p><details><summary>解説</summary>
                 
-                <p>2個目の答えがわからなかったひとも多いでしょう。これは、<spann class="under">「対数の性質」</spann>を使って式を分解してから公式に当てはめるんですね。
-<br>対数の性質は調べたらすぐ出てくるでしょうからあえて書きません。                    
-                <p>微分や積分において、
-                    <br><spann class="under">式を下処理してから公式を使う</spann>ということはよくあります。べき関数・対数関数・三角関数など割とテクニックが必要なものもありますが、焦らずともいずれ習うと思いますよ。
-                    
-                <br>
-                
-                <p>下は少し語りたくなったので書きます。
-                <br>わからない人は、「ほえ～」くらいで
-                <br>次に進みましょう
-                <details><summary>自然対数と常用対数について</summary>
-            <br>微分積分学における\(log\)は底が\(e\)の対数を表します
-            <br>底が10の常用対数として扱うことはないです
-        <p>数学の好きな人ならこぞって上げ足をとりに来そうな
-       logとlnの区別をしないのは僕も不思議です。
-            
-        <p>プログラミング言語のpythonのとある機能の中で自然対数を扱う際、
-           「numpy.log()」で自然対数を示します。「numpy.log10()」で常用対数なんですね。
-        <br>もしかしたら、逐一「ln」と区別することの方が世界ではマイノリティなのかなとか思ったりします。</details></details>            
-            <details><summary>ちょっと背伸びできる人へ</summary>
-        <p>こいつの公式の導出は、
-        <br>対数微分法とアプローチの仕方が似ています
-    <br>両辺の対数をとるかわりに、
-    <br>逆関数に変換してください。
-    <br>あとは対数微分法と同じです。                        
-                        </details>        </div>               </details>
+                <p>「部分積分」という手法で求められます。
+            <br>「置換積分」と一緒にいずれ絶対に習います
+            <br>ピンとこない人は焦らず先に進んでも問題ないと思いますよ</details>            
+                    </div>               </details>
         
     
                                 
@@ -328,19 +372,18 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                             
                     <p><details class="box30"><summary class="box-title">答え</summary>
         <p class="lead">    
-         \(y'=cos{x}\)
-                    <br>\(y'=-sin{x}\)
-                    <br>\(y'=\frac{1}{(cos{x})^2}\)
+        \(\int y  dx=-cos(x)+C\)
+        <br>\(\int y  dx=sin(x)+C\)
+    <br>\(\int y  dx=-log|cos(x)|+C\)
+                
+            <details class="lead"><summary>解説</summary>
+        <p>「微分の」反対なので、
+        <br>「微分の」公式を思いだして、符号に注意してください
             
-            <details class="lead"><summary>ちょっと背伸びできる人へ</summary>
-        <p>こいつらの公式の導出は、習得に時間がかかったのを覚えています。
-        <p>sinとcosは、和積の公式（名前初めて知った）とそのあとに、挟みうちの定理で、\(\frac{sin〇}{〇}\)を極限で１にする。という展開になります。
-        <p>自分で書いときながら言うのは何ですが、当時の自分がこれを見て理解できるとは思えないので、いつか理解しようくらいでいいのかなと。
+        <p>\(tan(x)\)の積分は置換積分を使います。
+        <br>ピンとこない人は焦らずとも大丈夫かと。
             
-        <p>tanは\(\frac{sin}{cos}\)なので上を求めたらすぐ求まります
-        <br>(あとから習う、積の公式が必要です)
-            
-            <p></details>
+        </details>
                                               </details>
             </div>
                         
@@ -351,47 +394,37 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
                             <h3 class="mb-0" id="gyaku">\((7)\)逆三角関数</h3>
                            <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
 </div>
-                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
-                        \(y=\sin^{-1}{x}\)
-                    <br>\(y=\cos^{-1}{x}\)
-                    <br>\(y=\tan^{-1}{x}\) 
+                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;"> 
+         \(y=\frac{1}{\sqrt{1-x^2}}\)
+                    <br>\(y=-\frac{1}{\sqrt{1-x^2}}\)
+                    <br>\(y=\frac{1}{1+x^2}\)
                             
                     <p><details class="box30"><summary class="box-title">答え</summary>
         <p class="lead">    
-         \(y'=\frac{1}{\sqrt{1-x^2}}\)
-                    <br>\(y'=-\frac{1}{\sqrt{1-x^2}}\)
-                    <br>\(y'=\frac{1}{1+x^2}\)
-            
+         
+                        \(\int y  dx=\sin^{-1}{x}\)
+                    <br>\(\int y  dx=\cos^{-1}{x}\)
+                    <br>\(\int y  dx=\tan^{-1}{x}\)   
             <details class="lead"><summary>ちょっと背伸びできる人へ</summary>
-        <p>こいつらの公式の導出はやみつきになりました
-        <p>どれも共通しているのは、
-        <br>まず逆関数に変換（裏の裏は表）して、「x=~~」をつくって、両辺を微分します。
-        <br>「中微分」の関係（後からくる、合成関数で紹介します）で、「y’」がぶにゅっと出てくるんですよ。
-        <br>あとは、「y'=~~」に直せば答えです。
-    <p>ここで、それぞれの最初に定義した「x」が式に出てくるように
-    <br>三角関数を変換します。
-    <br>実は、それがどれも「\((sinx)^2+(cosx)^2=1\)」で説明がつくのです（tanで扱うときは。両辺を(cosx)^2すると都合よくなるんですよね）
-<p>昔、クラスメートが、<br>「なんでsinは＋でcosは-なんだよ」とか
-<br>「なんでtanだけルートつかないの」とか
-<br>言っているのをよく耳にしました
-    <br>導出のロジックがわかっている方なら、
-<br>「いやsinの微分は+でcosの微分は-やん？」とか
-<br>「いやtanの微分はcosの二乗が出るやん？」と
-<br>どや顔して、いやな顔をされるので、気をつけましょう。；
-            </details>
+        <p>関数の中身が「\(4-x^2\)」だったり、
+        <br>1じゃないことがありますが
+        <br>分子分母に「\(\frac{1}{2}\)」「\(\frac{1}{4}\)」を掛けると都合よく計算できます。</details>
                                               </details>           <div class="d-flex flex-column flex-md-row justify-content-between mb-5" id="seisitu">
                         <div class="flex-grow-1">
-                            <h3 class="mb-0">\((8)\)微分の細かいテクニック（性質）</h3>
+                            <h3 class="mb-0">\((8)\)積分のテクニック（性質）</h3>
                            <div class="subheading mb-" style="margin:0em ;display:inline-block;position:relative;top:3px;padding:0 .5em;height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例
 </div>
-                            <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 100%;">
-                       積の微分・商の微分
-                    <br>合成関数の微分法（中微分と外微分）
-                    <br>定数の微分や関数の足し算の微分
-                        
-                            
+                            <p   style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;text-align: center;
+">
+                       置換積分
+                            <br>分部積分
+                           <br>部分分数分解 </p>
         <p class="lead">どれも調べればすぐでるので、あえて書きません
         <br>名前からはピンとこないかもしれないですが、見たらわかると思います。
+            
+        <br><br>というか、ピンとこないなら
+        <br>いずれ先生の口から教えていただけるかと
+            
                         </div>
                         
                     </div>           </div>
