@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5979594089076608"
+     crossorigin="anonymous"></script>
+        
+        <style>.under {
+  background: linear-gradient(transparent 50%, #ffff1a 50%);
+}
+        
+        .box30 {
+    margin: 2em 0;
+    background: #f1f1f1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22);
+}
+.box30 .box-title {
+    font-size: 1.2em;
+    background: #5fc2f5;
+    padding: 4px;
+    
+    color: #FFF;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+.box30 p {
+    padding: 15px 20px;
+    margin: 0;
+        }
+        
+        .box25{
+    position: relative;
+    background: #fff0cd;
+    box-shadow: 0px 0px 0px 5px #fff0cd;
+    border: dashed 2px white;
+    padding: 0.2em 0.5em;
+    color: #454545;
+}
+                
+                
+box25 {
+  color: #505050;/*文字色*/
+  padding: 0.5em;/*文字周りの余白*/
+  display: inline-block;/*おまじない*/
+  line-height: 1.3;/*行高*/
+  background: #dbebf8;/*背景色*/
+  vertical-align: middle;
+  border-radius: 25px 0px 0px 25px;/*左側の角を丸く*/
+}
+
+box25:before {
+  content: '●';
+  color: white;
+  margin-right: 8px;
+}</style>
+        
+
+        
+        
+        <script src="plotly-latest.min.js"></script>
+<script src="plotlynf.js"></script>
+<link rel="stylesheet" type="text/css" href="plotlynf.css">
+         <script type="text/javascript" id="MathJax-script" async
+src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>ややこしい微分方程式の序盤の公式などの例題をまとめた備忘録 - またたび備忘録</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../../../index.html">
+                <span class="d-block d-lg-none">matatabi</span>
+                <span class="d-none d-lg-block">matatabi</span>
+            </a>
+                     <script async src="https://cse.google.com/cse.js?cx=395c2c19fbfad4d67"></script>
+<div class="gcse-searchbox-only"></div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">トップ</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">微分方程式ってなんぞ？？</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#education">変数分離系</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#douji">同次形</a></li>
+
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sennkei1">１階線形微分方程式</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sennkei2">２階線形微分方程式</a></li>
+                    
+
+                </ul>
+            </div>
+            
+        </nav>
+        
+
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- About-->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h1 class="mb-0">
+                        微分方程式
+                        <br><span class="text-primary">Differential equation</span>
+                    </h1>
+                 <div class="lead mb-4">   
+                    <br><p>
+            
+            僕も数か月前まで教わっていたところです
+        <br>今度この範囲も含めてテストをするらしいので
+        <br>勉強しながら作成に励もうかと 
+                    
+                    
+                    <br><a href="https://docs.google.com/forms/d/e/1FAIpQLScRZwNCxmERkKZ-04j9TsWZRTQEXVoYwLw4PMOeofBH8pUbGw/viewform?usp=sf_link
+        ">お問い合わせフォームはこちらから</a></p>
+    <br><br>
+                   
+    【自己紹介】
+  <br>現役高専生の福島と申します。
+
+<br>進行が独特の高専の授業範囲をまとめてくれる
+<br>そんなサイトが一つくらいあってもいいなと思ってこのサイトを作っています。
+                       
+<br><br>皆さんのクラスの一番勉強の苦手な子でも
+<br>「ほーん、なるほどね」
+<br>となるような記事を目指しています。
+    
+<br><br>しかしながら、つたない部分もあると思いますので
+<br>気軽に上の問い合わせフォームにてご指摘していただけたらなと
+
+                     </div>
+                    
+                
+                       
+                    <div class="social-icons">
+<!--
+                        <a class="social-icon" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-github"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-twitter"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-facebook-f"></i></a>
+-->
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Experience-->
+            <section class="resume-section" id="experience">
+                <div class="resume-section-content">
+                    <h2 class="mb-3">
+                    微分方程式ってなん？？</h2>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((1)\)こんなやつ</h3>
+                <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(\frac{dy}{dx}=y+3\)
+                <br></p>
+                <p class="lead">ここから、「<spann class="under">\(y\)の値</spann>」を求めてい来ます。
+                    <br>もう少しいうと<spann class="under">「\(x\)で書かれた\(y\)の式」</spann>を求める
+            <br>これがゴールですね
+    <p class="lead">「え、今までと何が違うの？積分すりゃいいやん」
+<br>初めて見たときは僕もそう思ってました
+                        </div>
+                        
+                    </div>
+                   
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((2)\)いままでの積分との違い
+                        </h3>
+<div class="lead mb-4">
+<p>
+    <br><spann class="under">「微分したはずの\(y\)が右辺に入っている」</spann>
+<br>これが今までとの大きな違いです。
+    <p><h4>両辺積分してみる</h4>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">計算</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;
+    "
+    class="lead mb-4">\(\frac{dy}{dx}=y+3\)
+    <br>\(\int\frac{dy}{dx}dx=\int{(y+3)}dx\)
+<br>\(y=\int{y}dx+\int{3}dx\)
+        <br>\(y=\int{y}dx+3x\)
+</p>        
+     <p>ここでストップ！！
+    <br>左辺の「\(\frac{dy}{dx}\)」の積分と
+        <br>右辺の「3」の積分はいつも通りやれそうですね。
+         <br>問題は、「<spann class="under">\(y\)の積分</spann>」なんですよ
+    
+         <p>今からこいつの関数求めたいって時、
+             <br>つまり、「<spann class="under">\(x\)で書かれた式</spann>」が未知なのに
+        <br>「\(x\)で積分しろ」というのは無理難題なんですね
+             
+        <p>\(y\)の中身が
+            <br><spann class="under">\(cosx\)なら\(sinx\)</spann>が求まりますし
+            <br><spann class="under">\(e^x\)なら\(e^x\)</spann>が求まる
+        <br>可能性が無限大なんですよ。。
+            
+    <br>だから、微分方程式が必要なんですね
+            
+    <p><br>実は様々な微分方程式とその解法が存在します
+    <br>これからはそれを一つ一つ確認していきます
+    
+        
+                            </div>                    </div>
+                        
+                    </div>
+                                     
+                       
+                         
+                                        
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+            <section class="resume-section" id="education">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">変数分離形</h2>
+                        
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            
+<div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と解法</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    "
+    class="lead mb-4">\(\frac{dy}{dx}=y+3\)の一般解
+        <br><br>１.<spann class="under">左辺に\(y\)</spann>、<spann class="under">右辺に\(x\)</spann>をまとめる
+        <br>２.両辺を<spann class="under">積分する</spann>。
+      <br>３.定数に注意して<spann class="under">「\(y=\)」に直す</spann>
+    
+                
+    </p>                 
+                        
+                
+        <details class="box30"><summary class="box-title">「さっきは\(y\)の積分できなかったやん」の方</summary>
+          <div class="lead">  <p>さっきの積分と見比べてみてください
+            <br>「dx」と「dy」とで違いますよね
+                            
+            <p>\(y\)は\(x\)で積分できないけど
+                <br>\(y\)では積分できるのです。</div></details>
+        <details class="box30"><summary class="box-title">「\(\frac{dy}{dx}\)ってそんな操作していいの?」の方</summary>
+          <div class="lead">  <p>微分の定義から明らかな気がします
+        <br>\(\frac{dy}{dx}\)の本質は
+        「\(\frac{〇-●}{◇-◆}\)」 なので   
+        <br>簡単に操作できそうですよね
+           
+        <br><a href="../../2年_微分積分学1/公式/微分公式.html">微分の定義はこちら</a>
+            
+        <p>とか軽々しく言っていますが、
+        <br>実際のところ授業中に先生が
+        <br>何か小難しいことを言っていた気もします
+        <br>問題は解けそうなので保留にします。</div></details>
+                            
+                            
+        <details class="box30"><summary class="box-title">「最後の答えどうなるん」の方</summary>
+          <div class="lead"><br>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;
+    "
+    class="lead mb-4">\(\frac{dy}{dx}=y+3\)
+        <br>\(dy=(y+3)dx\)
+            <br>\(\frac{1}{y+3}dy=1dx\)
+    <br><br>\(\int{\frac{1}{y+3}}dy=\int dx\)
+    <br>\(log|y+3|=x+C\)
+    <br><br>\(|y+3|=e^{x+C}\)
+    <br>\(|y+3|=e^x・e^C\)
+    <br>\(y+3=±e^x・e^C\)
+<br>\(y+3=Ae^x\)(Aは積分定数)</p>    
+<p>
+                    いちおう解説しておくと
+                    <br>両辺に\(dx\)を掛ける
+                    <br>両辺を\(y+3\)で割る
+                    <br>両辺を積分する
+                    
+            <br>てな流れです。
+<p>最後のブロックですが、難しいですよね
+<br>一行目は「指数と対数の関係」からの変形です
+<br>二行目は「指数の性質」から変形されます
+<br>三行目は「絶対値を外した」ゆえの結果です
+<p>絶対値の中身は+でも-でも+になるので、
+<br>絶対値記号を外す（「中身＝」とする）時には±が出てきます
+<p>最後は、「±\(e^c\)」を一つの定数「A」としてまとめています
+<br>文字に深い意味はなくなんでもいいんですが、
+<br>慣例である程度決まっていたりします。
+<p>僕は、最近個人的に勉強している物理の参考書が「A」だったので「A」にしています。</div></details>
+        
+                            
+                </div>
+                    
+                   
+                                           </div>
+
+                    
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+        <section class="resume-section" id="douji">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">同次形</h2>
+                        
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            
+<div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と解法</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    "
+    class="lead mb-4">\(\frac{dy}{dx}=\frac{y}{x}+1\)の一般解
+        <br><br>１.<spann class="under">\(u=\frac{y}{x}\)</spann>とおいて<spann class="under">\(y=ux\)</spann>を確認する
+        <br>２.<spann class="under">\(y=ux\)から\(\frac{dy}{dx}\)を</spann>求める
+        <br>３.「2.」の\(\frac{dy}{dx}\)をはじめの\(\frac{dy}{dx}\)に<spann class="under">代入</spann>
+        <br>４.「3.」から\(u\)を求めて<spann class="under">\(\frac{y}{x}\)を代入</spann>する</p>                 
+                        
+                        <p class="lead">
+                
+        <details class="box30"><summary class="box-title">「さっきと何が違うんや？」のかた</summary>
+          <div class="lead">  <p>まず、初めの式の状態では変数分離できません
+        <p>違いとして挙げるなら
+        <br>右辺にxが入っていますよね
+        <br>それが影響しているのかなとしているのかな</div></details>
+                            
+                            
+        <details class="box30"><summary class="box-title">「最後の答えどうなるん」の方</summary>
+          <div class="lead"><br>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;
+    "
+    class="lead mb-4">
+        <spann class="under">\(u=\frac{y}{x}\)</spann>とおくと<spann class="under">\(y=ux\)</spann>と置けるので
+        <br>\(\frac{dy}{dx}=x\frac{du}{dx}+u\)となる
+<br>(合成関数の微分法)
+<br><br>初めの式とつなげて
+<br><spann class="under">\(\frac{y}{x}+1=x\frac{du}{dx}+u\)</spann>
+<br>(\(\frac{dy}{dx}\)なので等式で結べるんですね)
+        
+<br><br>\(u=\frac{y}{x}\)、\(y=ux\)であったので
+<br>\(\frac{y}{x}+1=x\frac{du}{dx}+u\)
+        <br><spann class="under">\(u+1=x\frac{du}{dx}+u\)</spann> 
+<br>\(1=x\frac{du}{dx}\)
+<br>あとは変数分離形の解法で解けます
+<br>\(1=x\frac{du}{dx}\)
+    <br>\(\frac{1}{x}=\frac{du}{dx}\)
+    <br>\(\frac{1}{x}dx=du\)
+    <br>\(\int\frac{1}{x}dx=\int du\)
+    <br>\(log|x|+C=u\)
+    <br><br>\(u=\frac{y}{x}\)だったので、
+    <br>\(log|x|+C=\frac{y}{x}\)
+    <br>\(x(log|x|+C)=y\)
+    <br><br>よって答えは、
+    <br>\(y=x(log|x|+C)\)(Cは定数)</p>    
+<p>細かくは書きませんが、
+<br>質問があれば気軽にお問い合わせください。
+</div></details>
+        
+                            
+                </div>
+                    
+                   
+                   
+                    
+                  </div>  
+                    
+                    
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            
+        <section class="resume-section" id="sennkei1">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">１階線形微分方程式</h2>
+                        
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            
+<div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と解法</div>
+    <div style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    "
+    class="lead mb-4"><p>\(\frac{dy}{dx}+y=e^x\)
+        
+<p>１.右辺＝0としたときの\(y\)を求める
+<br>２.「１.」で求めた\(y\)の定数を
+<br>関数\(u\)に置き換える
+<p>３.「２.」の式から\(\frac{dy}{dx}\)を求める
+<br>４.「１.２.」の\(y\),\(\frac{dy}{dx}\)を
+<br>はじめの式に代入する
+<p>５.「\(u\)」を求める。
+<br>６.「\(u\)」を2.の式で置き換える
+<p><br>書いてて気づいたけど
+<br>実際の計算を見たほうが早いですね
+<p>下で実際に解いてますので、そちらを
+             </div>                 
+                        
+                        <p class="lead">
+                
+        <details class="box30"><summary class="box-title">「さっきと何が違うんや？」の方</summary>
+          <div class="lead">  <p>まず、初めの式の状態では変数分離できません
+        <p>違いとして挙げるなら
+        <br>右辺にxが入っていますよね
+        <br>それが影響しているのかなとしているのかな</div></details>
+                            
+    <details class="box30"><summary class="box-title">ちなみに</summary>
+          <div class="lead">  <p>１階線形微分方程式の一般式は
+              <br><spann class="under">\(\frac{dy}{dx}+P(x)y=Q(x)\)</spann>
+            <br>となります。
+            <br><br>\(P(x)\)や\(Q(x)\)は
+              <br><spann class="under">\(x\)の関数なら何でも入っていいよ</spann>ってことです
+            <br>\(\frac{dy}{dx}\)には係数が書いていないので
+            <br>ここに\(x\)の関数が入っていたらこの公式は適用できないんですかね
+              
+              <br><br>右辺が0の時は特別に<spann class="under">「斉次」</spann>といい、
+              <br>0以外のときは<spann class="under">「非斉次」</spann>といいます。
+            <br>「非斉次」の１階線形微分方程式は
+              <br><spann class="under">斉次を考えてから非斉次へ拡張する</spann>ので
+            <br>こうやって区別しているのかと
+              
+            <br>
+            <br>斉次で求めた定数を関数に置き換える手法は
+              <br><spann class="under">定数変化方</spann>と呼びます。
+        </div></details>
+                                
+        <details class="box30"><summary class="box-title">「最後の答えどうなるん」の方</summary>
+          <div class="lead"><br>
+    <div style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;
+    "
+    class="lead mb-4">
+       \(\frac{dy}{dx}+y=e^x\)
+        
+        <br><br><spann class="under">\(\frac{dy}{dx}+y=0\)とする</spann>と
+    <br>\(\frac{dy}{dx}=-y\)
+        <details><summary>途中式</summary>
+    <br>\(\frac{1}{y}\frac{dy}{dx}=-1\)
+    <br>\(\frac{1}{y}dy=-dx\)
+    <br>\(-\int\frac{1}{y}dy=\int dx\)
+    <br>\(-log|y|=x+C\)</details>
+    \(y=Ae^x\)(Aは積分定数)
+        
+        <br><br>ここで<spann class="under">定数Aを関数\(u(x)\)とする</spann>
+<br>\(y=ue^x\)
+<br>\(\frac{dy}{dx}=ue^x+\frac{du}{dx}e^x\)
+<br>（合成関数の微分法）
+        <br><br><spann class="under">初めの式にこれを代入して\(u\)を求める</spann>
+        
+    <br>\(\frac{dy}{dx}+y=e^x\)
+        <br>\((ue^x+\frac{du}{dx}e^x)+ue^x=e^x\)
+    
+    <br>\((ue^x+\frac{du}{dx}e^x)+ue^x=e^x\)
+
+        <details><summary>途中式</summary>\(2ue^x+\frac{du}{dx}e^x=e^x\)    
+    <br>\(\frac{du}{dx}e^x=e^x-2ue^x\)
+    <br>\(\frac{du}{dx}e^x=(1-2u)e^x\)
+    <br>\(\frac{du}{dx}=(1-2u)\)
+    <br>\(\frac{1}{1-2u}\frac{du}{dx}=1\)
+        
+            
+            
+        <br><br><spann class="under">\(\int\frac{1}{1-2u}du=\int dx\)</spann>
+    <br>\(-\frac{1}{2}log|1-2u|=x+C\)
+    <br>\(log|1-2u|=-2x-2C\)
+    <br>\(|1-2u|=e^{-2x-2C}\)
+    <br><br>\(1-2u=±e^{-2x-2C}\)
+            <br>\(1-2u=±e^{-2x}e^{-2C}\)
+    <br><spnn class="under">\(1-2u=Be^{-2x}\)(Bは定数)
+        </spnn>
+    \(-2u=Be^{-2x}-1\)
+    <br>\(-2u=Be^{-2x}-1\)
+        
+        </details>
+    
+        
+        
+       \(u=-\frac{1}{2}(Be^{-2x}-1)\)
+    
+        <br><br><spann class="under">\(y=ue^x\)</spann>なので
+    <br>\(u=-\frac{1}{2}(Be^{-2x}-1)\)より
+    <br>\(y=-\frac{1}{2}(Be^{-2x}-1)e^x\)(Bは定数)
+    
+
+                     </div>    
+<p>細かくは書きませんが、
+<br>質問があれば気軽にお問い合わせください。
+</div></details>
+        
+                            
+                </div>
+                    
+                   
+                   </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            
+        <section class="resume-section" id="sennkei2">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">２階線形微分方程式</h2>
+                        
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                           <h3 class="mb-0">定数線形微分方程式</h3> 
+<div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と解法</div>
+    <div style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    "
+    class="lead mb-4"><p>\(\frac{d^{2}y}{dx^2}+3\frac{dy}{dx}+2y=t^2+1\)
+<br>\(\frac{d^2y}{dx^2}+2\frac{dy}{dx}+y=sin2x\)
+<br>\(\frac{d^2y}{dx^2}+\frac{dy}{dx}+y=e^x\)
+<br>\(\frac{d^2y}{dx^2}+7\frac{dy}{dx}+12y=e^3x\)
+<br>考えうるパターンを網羅しました
+        
+<p>結論
+<br><spann class="under">「答え」＝「一般解」＋「特殊解」
+    </spann>
+    
+    
+    <p><details><summary>一般解の求め方</summary>
+    <p>１.「右辺＝0」と考える
+    <br>２.特性方程式を作って解く
+        
+        
+        
+        <p><spann class="under">特性方程式</spann>
+    <br>\(\frac{d^{2}y}{dx^2}+3\frac{dy}{dx}+2y=0\)
+    なら\(λ^2+3λ+2=0\)
+<p>特性方程式の種類で
+<br>一般解の種類が決まる
+    <details><summary><spann class="under">異なる二つの実数解をもつとき</spann></summary>
+<p>例：\(λ^2+3λ+2=0\),\(λ^2+7λ+12=0\)
+<p>一般解：\(y=C_1e^{ax}+C_2e^{bx}\)
+<br>（a,bは特性方程式の解に対応）</details>
+    
+    <details><summary><spann class="under">重解を持つとき</spann></summary>
+<p>例：\(λ^2+2λ+1=0\)
+<p>一般解:\(y=C_1e^{ax}+C_2xe^{ax}\)
+<br>（aは特性方程式の解に対応）</details>
+    
+    
+    <details><summary><spann class="under">異なる2つの虚数解を持つとき</spann></summary>
+<p>例：\(λ^2+λ+1=0\)
+<p>一般解：\(y=e^{ax}(C_1sin(bx)+C_2cos(bx))\)
+    <br>（a,bは<spann class="under">a±bi</spann>に対応）</details></details>
+             
+                            
+                            
+    <br><details><summary>特殊解の求め方</summary>
+    <p>１.右辺から解を予想します
+    <br>２.予想した解の定数部分を求めます
+    （計算過程を見た方が早いかも）
+        
+    <p>解の予想のパターン
+        <details><summary><spann class="under">右辺がべき関数</spann></summary>
+    <p>例：\(t^2+1\),\(t^3+t^2+t\)
+        
+    <p>予想：
+    <br>\(t^2+1\)なら<br>\(y=At^2+Bt+C\)と予想する
+    <br>\(t^3+t^2+t\)なら<br>\(y=At^3+Bt^2+Ct+D\)    
+        </details>
+    <br>    
+    <details><summary><spann class="under">右辺が「\(〇e^◇x\)」(〇、◇は定数)</spann></summary>
+    <p>例：\(6e^{3x}\),\(e^{2x}\)
+        
+    <p>予想：右辺が\(e^{2x}\)の時
+        <details><summary>一般解の中に\(e^{2x}\)が<spann class="under">含まれない</spann></summary>
+特殊解：\(y=Ae^{2x}\)と予想</details>
+        <details><summary>一般解の中に\(e^{2x}\)が<spann class="under">含まれる</spann></summary>
+特殊解：\(y=Axe^{2x}\)と予想</details>
+            
+        </details>
+    <br>
+        
+        <details><summary><spann class="under">右辺が\(sin\)か\(cos\)</spann></summary>
+    <p>例：\(2sin{3t}\),\(cos^{2t}\)
+        
+    <p>予想：右辺が\(sin(2x)\)の時
+        <details><summary>一般解の中に\(sin(2x)\)が<spann class="under">含まれない</spann></summary>
+特殊解：
+<br>\(y=Asin(2x)+Bcos(2x)\)と予想</details>
+        <details><summary>一般解の中に\(sin(2x)\)が<spann class="under">含まれる</spann></summary>
+特殊解：
+<br>\(y=x(Asin(2x)+Bcos(2x))\)と予想</details>
+            
+        </details>
+    
+    
+    </details>                        
+                            </div>                 
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <p class="lead">
+                
+                            
+                            
+                            
+        <details class="box30"><summary class="box-title">「さっきと何が違うんや？」の方</summary>
+          <div class="lead">  <p>\(\frac{d^2y}{dx^2}\)が増えていますね</div></details>
+                            
+    <details class="box30"><summary class="box-title">ちなみに</summary>
+          <div class="lead">  
+<p>一般解とは積分によって出てくる
+
+<br>定数Cのような定数が含まれる式です。
+<br>2階線形微分方程式の定数の数は
+<br>必ず２つになるらしいですよ
+<p>特殊解は一般解の文字の定数が求まって
+<br>数字として表れている解のことです。
+        
+<p>今回でいうと、おそらくですが
+<br>二つある定数のどちらもが「0」になった解を
+<br>特殊解としてうまい事求めているのかなと</div></details>
+    
+                            
+<details class="box30"><summary class="box-title">「特性方程式って都合よすぎない？？」の方</summary>
+          <div class="lead">  
+<p>特性方程式の導出のロジックは意外と簡単です<br>というか、見つけた人すごすぎ
+<p>のちに出てくる<spann class="under">「オイラーの微分方程式」</spann>は
+<br>定数線形微分方程式でないにもかかわらず、
+<br>同じロジックで解を導くことができます。
+
+    <details><summary>導出</summary>
+    <p>\(\frac{d^{2}y}{dx^2}+3\frac{dy}{dx}+2y=0\)について
+<p><spann class="under">\(y=e^{ax}\)</spann>とすると
+<br>\(\frac{dy}{dx}=ae^{ax}\)
+<br>\(\frac{d^2y}{dx^2}=a^2e^{ax}\)
+    
+<p><spann class="under">初めの式に代入すると、</spann>
+<br>\((a^2e^{ax})+3(ae^{ax})+2(e^{ax})=0\)
+<br>\((a^2+3a+2)e^{ax}=0\)
+   
+    
+<p><spann class="under">\(e^ax\)は0になりえないので</spann> <br>\(a^2+3a+2=0\)となり\(a\)が求まる。
+
+<p>\(a\)が求まれば初めの方の\(y=e^{ax}\)が求まりますから
+    <br><spann class="under">解が求まる</spann>んですね
+
+<p>一般解とするには「線形独立」がどうのとか
+<br>小難しい議論を挟みますが
+    <br>結果的に<spann class="under">一般解が求まります</spann>。
+        <p>解のパターンのすべての式に「<spann class="under">\(e^x\)</spann>」が入っているのも納得ですね。
+        虚数解のとこは
+        かの有名な<spann class="under">オイラーの公式</spann>で導出されるのでしょうね。
+    </details>   
+    
+</div></details>
+                                
+                
+                            
+                            
+        <details class="box30"><summary class="box-title">「最後の答えどうなるん」の方</summary>
+          <div class="lead"><br>
+    <div style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 120%;
+    "
+    class="lead mb-4">
+    <p>\(\frac{d^{2}y}{dx^2}+3\frac{dy}{dx}+2y=t^2+1\)
+    <br>の一般解
+
+        <details><summary>斉次の一般解について</summary>
+<p><spann class="under">\(\frac{d^{2}y}{dx^2}+3\frac{dy}{dx}+2y=0\)とすると</spann>
+<br>特性方程式は「\(λ^2+3λ+2=0\)」となり
+<br>\(λ=-1,-2\)なので
+<p>一般解は\(y=C_1e^{-x}+C_2e^{-2x}\)
+            </details>
+    
+        <details><summary>特殊解について</summary>
+            <p><spann class="under">\(y=Ax^2+Bx+C\)</spann>
+            と予想すると
+<br>\(\frac{dy}{dx}=2At+B\)
+<br>\(\frac{d^2y}{dx^2}=2A\)
+
+<p><spann class="under">初めの式に代入すると</spann>
+<br>\(2A+3(2Ax+B)+\)
+<br>  \(2(Ax^2+Bx+C)=x^2+1\)
+
+<p><spann class="under">整理すると</spann>
+<br>\(2A+3(2Ax+B)+\)
+<br>    \(2(Ax^2+Bx+C)=x^2+1\)    
+<p>\(2Ax^2+x(6A+2B)+\)
+<br>  \(2A+3B+2C=x^2+1\)   
+    
+<p><spann class="under">恒等式</spann>より    
+<br>\(2A=1\)
+<br>\(6A+2B=0\)
+<br>\(2A+3B+2C=1\)
+    
+
+<p><spann class="under">連立方程式を解く</spann>と    
+<br>\(A=\frac{1}{2}\)
+<br>\(B=-\frac{3}{2}\)
+<br>\(C=\frac{7}{4}\)
+
+<p>よって<spann class="under">特殊解</spann>は
+\(x=\frac{1}{2}x^2+(-\frac{3}{2})x+\frac{7}{4}\)
+</details>
+<p>よって、
+答えは
+<br>\(y=C_1e^{-x}+C_2e^{-2x}+\)
+<br>\(\frac{1}{2}x^2+(-\frac{3}{2})x+\frac{7}{4}\)
+                     </div>    
+<p>ほかの問題はちょっと勘弁してください
+<br>質問があれば気軽にお問い合わせください。
+</div></details>
+        
+                            
+                </div>
+                    </div>
+                   
+                   
+                    
+                    
+                    
+                  <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                           <h3 class="mb-0">定数でない線形微分方程式</h3> 
+<div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と解法</div>
+    <div style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    " class="lead mb-4">
+    <p>\(x^2\frac{d^2y}{dx^2}+x\frac{dx}{dy}-9=0\)
+    <p>１.両辺に「\(\frac{1}{x^2}\)」を掛ける
+    <br>２.\(y=x^a\)と予想する
+    <br>３.うまいことやって\(a\)を求める
+    <br>４.すると\(y\)が求まる
+                            </div>
+                            
+    <details class="box30"><summary class="box-title">「さっきと何が違うんや？」の方</summary>
+          <div class="lead">  <p>\(\frac{dy}{dx}\)などの係数が定数ではなく関数になっていますね。
+        <p>しかも今回ははじめから斉次のようです。</div></details>
+      
+    <details class="box30"><summary class="box-title">「答えどうなるんや？」の方</summary>
+          <div class="lead"> 
+    <p>\(x^2\frac{d^2y}{dx^2}+x\frac{dx}{dy}-9=0\)
+        
+    <p><spann class="under">両辺に「\(\frac{1}{x^2}\)」を掛ける</spann>
+    <br>\(\frac{d^2y}{dx^2}+\frac{1}{x}\frac{dx}{dy}-\frac{9}{x^2}=0\)
+        
+        
+    <p>「<spann class="under">\(y=x^a\)</spann>」とすると
+    <br>\(\frac{dy}{dx}=ax^{a-1}\)
+    <br>\(\frac{d^2y}{dx^2}=a(a-1)x^{a-2}\)
+    
+    <p>「<spann class="under">代入</spann>」すると
+    <br>\(\frac{d^2y}{dx^2}+\frac{1}{x}\frac{dx}{dy}-\frac{9}{x^2}=0\)
+
+    <br>\({a(a-1)x^{a-2}}+\frac{1}{x}(ax^{a-1})+(-9)\frac{1}{x^2}x^a=0\)
+        
+    <p><spann class="under">整理</spann>すると
+    <br>\({a(a-1)x^{a-2}}+\frac{1}{x}(ax^{a-1})+(-9)\frac{1}{x^2}x^a=0\)    
+    <br>\({a(a-1)x^{a-2}}+(ax^{a-2})+(-9)x^{a-2}=0\)
+    <br>\((a(a-1)+a-9)x^{a-2}=0\)
+    <br>\((a^2-9)x^{a-2}=0\)
+    
+        <p>x^{a-2}は\(a\)によって「0」に<spann class="under">なりえない</spann>ので
+        <br>\((a^2-9)x^{a-2}=0\)
+        <br>\(a^2-9=0\)
+        <br>\(a^2=9\)
+        <br>\(a=±3\)
+        <br>よって\(y=t^3,t^{-3}\)
+            
+    <p>線形独立とかいう小難しい議論を挟んで
+    <br>一般解は\(y=C_1t^3+C_2t^{-3}\)
+        
+        </div>
+                            
+                            </details>
+                      
+                      </div>
+                    </div>   
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            
+            
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
