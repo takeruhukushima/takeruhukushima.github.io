@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5979594089076608"
+     crossorigin="anonymous"></script>
+        
+        <style>.under {
+  background: linear-gradient(transparent 50%, #ffff1a 50%);
+}
+        
+        .box30 {
+    margin: 2em 0;
+    background: #f1f1f1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22);
+}
+.box30 .box-title {
+    font-size: 1.2em;
+    background: #5fc2f5;
+    padding: 4px;
+    
+    color: #FFF;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+.box30 p {
+    padding: 15px 20px;
+    margin: 0;
+        }
+        
+        .box25{
+    position: relative;
+    background: #fff0cd;
+    box-shadow: 0px 0px 0px 5px #fff0cd;
+    border: dashed 2px white;
+    padding: 0.2em 0.5em;
+    color: #454545;
+}
+                
+                
+box25 {
+  color: #505050;/*文字色*/
+  padding: 0.5em;/*文字周りの余白*/
+  display: inline-block;/*おまじない*/
+  line-height: 1.3;/*行高*/
+  background: #dbebf8;/*背景色*/
+  vertical-align: middle;
+  border-radius: 25px 0px 0px 25px;/*左側の角を丸く*/
+}
+
+box25:before {
+  content: '●';
+  color: white;
+  margin-right: 8px;
+}</style>
+        
+
+        
+        
+        <script src="plotly-latest.min.js"></script>
+<script src="plotlynf.js"></script>
+<link rel="stylesheet" type="text/css" href="plotlynf.css">
+         <script type="text/javascript" id="MathJax-script" async
+src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>対数と指数の違い、計算の中での変形、グラフなどをまとめた備忘録 - またたび備忘録</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="../../../../index.html">
+                <span class="d-block d-lg-none">matatabi</span>
+                <span class="d-none d-lg-block">matatabi</span>
+            </a>
+                     <script async src="https://cse.google.com/cse.js?cx=395c2c19fbfad4d67"></script>
+<div class="gcse-searchbox-only"></div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">トップ</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">二つの意味と関係性</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#education">計算の中で</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#douji">同次形</a></li>
+
+                    
+
+                </ul>
+            </div>
+            
+        </nav>
+        
+
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- About-->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h1 class="mb-0">
+                        対数と指数
+                        <br><span class="text-primary">Logarithm and exponent</span>
+                    </h1>
+                 <div class="lead mb-4">   
+                    <br><p>
+            
+            基本だから授業中さらっと流されがち。
+        <br>でも、すっごく大事！
+        <br>というもののうちの一つかなと
+                    
+                    
+                    <br><a href="https://docs.google.com/forms/d/e/1FAIpQLScRZwNCxmERkKZ-04j9TsWZRTQEXVoYwLw4PMOeofBH8pUbGw/viewform?usp=sf_link
+        ">お問い合わせフォームはこちらから</a></p>
+    <br><br>
+                   
+    【自己紹介】
+  <br>現役高専生の福島と申します。
+
+<br>進行が独特の高専の授業範囲をまとめてくれる
+<br>そんなサイトが一つくらいあってもいいなと思ってこのサイトを作っています。
+                       
+<br><br>皆さんのクラスの一番勉強の苦手な子でも
+<br>「ほーん、なるほどね」
+<br>となるような記事を目指しています。
+    
+<br><br>しかしながら、つたない部分もあると思いますので
+<br>気軽に上の問い合わせフォームにてご指摘していただけたらなと
+
+                     </div>
+                    
+                
+                       
+                    <div class="social-icons">
+<!--
+                        <a class="social-icon" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-github"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-twitter"></i></a>
+                        <a class="social-icon" href="#!"><i class="fab fa-facebook-f"></i></a>
+-->
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Experience-->
+            <section class="resume-section" id="experience">
+                <div class="resume-section-content">
+                    <h2 class="mb-3">
+                    二つの意味と関係性</h2>
+                    <p class="lead">わかっている人は「何をいまさら」と思うかもしれませんが、この知識を理解せずに進級して苦しんでいたクラスメイトを数名見たことがあるので書こうかなと。
+    
+                    <div class="lead mb-5">
+    <br>                    
+                    
+                        <div class="flex-grow-1 mb-5">
+                            <h3 class="mb-0">\((1)\)指数</h3>
+                <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と意味</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(2^3=8\)
+        <br>２の３乗は８です
+                <br></p>
+                <p class="lead">
+                    
+                    これは言うまでもないかな
+                        </div>
+                        
+                    </div>
+                   
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((2)\)対数
+                        </h3>
+<div class="lead mb-4">
+<p>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と意味</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(log_{2}8=3\)
+        <br>８は２の３乗です
+                <br></p>        
+     <div class="lead">
+    <p>ここらへんで混乱してきますよね。
+    
+    
+    
+    
+    </div>
+        
+                            </div>                    </div>
+                        
+                    </div>
+                    
+                    
+                    
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((3)\)二つの関係性
+                        </h3>
+<div class="lead mb-4">
+<p>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">例と意味</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(2^{log_{2}8}=8\)
+<br>        \(2^3=8\)
+    
+        <br><br>２の（<spann class="under">\(log_{2}8\)</spann>）乗は8です
+        <br>２の<spann class="under">３</spann>乗は８です
+
+                <br></p>        
+     <div class="lead">
+         <p><spann class="under">対数は指数でいう肩の小さく書く数を表した数</spann>です
+             
+        <p><br>ちなみに、
+            <br>この例でいう\(2\)を<spann class="under">底（てい）</spann>
+        <br>この例でいう\(8\)を<spann class="under">真数</spann>
+    <br>と呼びます。    
+    
+    <p>しばしば、底は省略されたりします
+    <br>（自然対数・常用対数）
+    <br>底がで正のとき真数は負の値をとりません
+    <br>（真数条件）
+    
+    
+    </div>
+        
+                            </div>                    </div>
+                        
+                    </div>
+                                     
+                    
+                                     
+                       
+                         
+                                        
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+            <section class="resume-section" id="education">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">計算のなかで</h2>
+                    <p class="lead">指数や対数は「性質」とよばれる、
+                    <br>計算の中で急に形を変えることができます
+                       
+                    
+                    <div class="lead mb-5">
+    <br>                    
+                    
+                        <div class="flex-grow-1 mb-5">
+                            <h3 class="mb-0">\((1)\)指数</h3>
+                <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">式</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(2^3・2^4=2^{(3+4)}\)
+        <br>\((2^3)^4=2^{(3\times{4})}\)
+                <br></p>
+                <p class="lead">
+                    
+                    ※<spann class="under">底が同じ</spann>でないと成り立ちません
+                        
+                        <details class=box30><summary class="box-title">「なんで？」のかた</summary>
+                        <p>一つ目に関して
+                    <br>\(2^3=2\times2\times2\)
+                    <br>(\(2\)を\(3\)回掛けている)
+                    <p>\(2^3・2^4=\)
+                        
+             
+<br>\((2\times2\times2)\times(2\times2\times2\times2)\)
+                        <br>(\(2\)を\(3\)回かけた後\(4回\)かけている)
+                    <br>つまり、\(3+4\)の\(7\)回かけている
+                   
+                        
+                <p><br>二つ目に関して            
+    <br>\((2^3)^4=2^3\times2^3\times2^3\times2^3\)       
+                <br>\(2\)を\(3\)回かけたものが\(4\)回かかっている
+                <br>\(3コ\times{3コ}\times{3コ}\times{3コ}\)
+                <br>つまり、\(3\times4\)で\(12\)回かかっている
+                        </details>
+                    </div>
+                   
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((2)\)対数
+                        </h3>
+<div class="lead mb-4">
+<p>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">式</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">
+\(log_{2}(3\times5)=log_{2}3+{log_{2}5}\)
+<br>\(log_{2}(\frac{3}{5})=log_{2}3-{log_{2}5}\)
+<br><br>\(log_{2}3^5=5log_{2}3\)
+
+<br><br>\(log_{2}3^5=\frac{log_{a}5}{log_{a}3}\)
+<br>（※aは何でもいいはず）
+        
+        <br></p>        
+     <div class="lead">
+         <details class=box30><summary class="box-title">「なんで？」のかた</summary>
+        <p> 正直わかんないっす。
+        <br>教養のある方教えてください</details>
+    
+    
+    
+    
+    
+    </div>
+        
+                            </div>                    </div>
+                        
+                    </div>
+                    
+                    
+                    
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((3)\)二つの関係性
+                        </h3>
+<div class="lead mb-4">
+<p>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">式</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">\(y=log_{2}x\)
+<br>        \(x=2^y\)
+    
+                <br></p>        
+     <div class="lead">
+    <p>これめっちゃ便利です。二つの式は同じ意味です。
+    <p>「関数」という視点で見ると
+        <br>指数と対数は<spann class="under">逆関数</spann>の関係にあります
+    </div>
+        
+                            </div>                    </div>
+                        
+                        </div></div>
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+        <section class="resume-section" id="douji">
+                
+                <div class="resume-section-content">
+                    <h2 class="mb-5">グラフ</h2>
+                           <p class="lead">逆関数を持つ両者ですが
+                    <br>そのグラフにも大事な特徴があります
+                    <br>覚えておいて損はないかと
+                       
+                    
+                    <div class="lead mb-5">
+    <br>                    
+                    
+                        <div class="flex-grow-1 mb-5">
+                            <h3 class="mb-0">\((1)\)指数</h3>
+                <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">グラフ</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">
+    \(y=2^x\)について<br><iframe src="https://www.desmos.com/calculator/vvibc0u9yz?embed" width="80%" height="400" style="border: 1px solid #ccc" frameborder=0></iframe>
+                <p class="lead">
+                    
+                        
+                        <details class=box30><summary class="box-title">特徴</summary>
+                            <p><spann class="under">底がどんな数でも</spann>
+                    <br>\(x=0\)のとき\(y=1\)になります。
+                            
+                            <p> <spann class="under"> \(y\)が-になることはありません </spann><br>xが負の時にyは分数になります
+                        <br>（真数条件）
+                        
+                            <p>\(x\)を限りなく<spann class="under">右</spann>に近づけると
+             
+         <br>\(y\)は<spann class="under">∞</spann>に近づきます
+                
+        <p>\(x\)を限りなく<spann class="under">左</spann>に近づけると
+<br> \(y\)は<spann class="under">0</spann>に近づきます
+                         
+                        
+                        </details>
+                    </div>
+                   
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">\((2)\)対数
+                        </h3>
+<div class="lead mb-4">
+<p>
+  <div class="subheading mb-"  style="margin:0em ;
+                display:inline-block;
+            position:relative;
+        top:3px;
+    padding:0 .5em;
+        height:1.5em;line-height:1.5em;color:#ffffff;background:#3dcc7d;font-weight:bold;text-align:center;border-radius:5px 5px 0 0;">式</div>
+    <p style="background:rgba(255,255,255,0);border:solid 3px #3dcc7d;border-radius:0 5px 5px;padding:20px;font-size: 150%;
+    text-align:center"
+    class="lead mb-4">
+\(y=log_{2}x\)について
+        <br><iframe src="https://www.desmos.com/calculator/rssb6ecjrj?embed" width="80%" height="400" style="border: 1px solid #ccc" frameborder=0></iframe>        <br></p>        
+     <div class="lead">
+         <details class=box30><summary class="box-title">特徴</summary>
+        <p><spann class="under">底がどんな数でも</spann>
+                    <br>\(x=1\)のとき\(y=0\)になります。
+                            
+                            <p> <spann class="under"> \(x\)が-になることはありません </spann><br>yが負の時にxは分数になります
+                            <br>（真数条件）
+                        
+                        
+                            <p>\(x\)を限りなく<spann class="under">右</spann>に近づけると
+             
+         <br>\(y\)は<spann class="under">∞</spann>に近づきます
+                
+        <p>\(x\)を限りなく<spann class="under">左</spann>に近づけると
+<br> \(y\)は<spann class="under">0</spann>に近づきます
+                         
+                        </details>
+    
+    
+    
+    
+    
+    </div>
+        
+                            </div>                    </div>
+                        
+                    </div>
+                    
+                    
+                    
+                    </div>
+                    
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            
+        
+            
+            
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
