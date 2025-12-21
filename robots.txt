@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://takeruhukushima.github.io/sitemap.xml
+Sitemap: https://takeruhukushima.github.io/takeru-fukushima//sitemap.xml
