@@ -1,0 +1,43 @@
+---
+const { href, label, message, color = "blue", logo, logoColor = "white" } = Astro.props;
+
+// Shields.io URL construction
+const formattedLabel = label.replace(/ /g, '%20').replace(/-/g, '--');
+const formattedMessage = message ? message.replace(/ /g, '%20').replace(/-/g, '--') : "";
+
+let badgeUrl;
+// style=flat は標準的な角丸ですが、さらに丸く見せるためにCSSを調整します
+if (message) {
+  badgeUrl = `https://img.shields.io/badge/${formattedLabel}-${formattedMessage}-${color}?style=flat${logo ? `&logo=${logo}&logoColor=${logoColor}` : ""}`;
+} else {
+  badgeUrl = `https://img.shields.io/badge/${formattedLabel}-${color}?style=flat${logo ? `&logo=${logo}&logoColor=${logoColor}` : ""}`;
+}
+---
+
+<a href={href} target="_blank" class="badge-wrapper">
+  <img src={badgeUrl} alt={message ? `${label} ${message}` : label} />
+</a>
+
+<style>
+  .badge-wrapper {
+    display: inline-block;
+    margin-right: 6px;
+    margin-top: 4px;
+    vertical-align: middle;
+    transition: opacity 0.2s, transform 0.1s;
+    /* バッジの外枠をさらに丸く見せるためのハック */
+    border-radius: 50px; 
+    overflow: hidden;
+  }
+  
+  .badge-wrapper:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+  }
+
+  .badge-wrapper img {
+    display: block;
+    height: 20px;
+    /* Shields.ioのsvg自体の角丸を上書きするのは難しいため、wrapperで制御 */
+  }
+</style>

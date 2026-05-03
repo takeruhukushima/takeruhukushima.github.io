@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import Badge from '../../../components/Badge.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
+  
+  return tags.map(tag => {
+    const filteredPosts = posts.filter(post => post.data.tags?.includes(tag));
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<Layout title={`Tag: ${tag} | Hiroki Naganuma`}>
+  <div class="notion-blog">
+    <main class="blog-content">
+      <h2 class="contents-title">Tag: <Badge label={tag} color="blue" /></h2>
+      <ul class="notion-list">
+        {posts.map(post => {
+          const slug = post.id.replace(/\.mdx$/, '');
+          return (
+            <li>
+              <a href={`/blog/${slug}`}>{post.data.title}</a>
+              <div class="item-tags">
+                {post.data.tags?.map(t => (
+                  <Badge label={t} color="blue" href={`/blog/tags/${t}`} />
+                ))}
+                {post.data.paperUrl && (
+                  <Badge 
+                    href={post.data.paperUrl} 
+                    label={post.data.venue || "Paper"} 
+                    message={post.data.year?.toString()} 
+                    color="red" 
+                  />
+                )}
+                {post.data.codeUrl && (
+                  <Badge href={post.data.codeUrl} label="GitHub" message="code" color="black" logo="github" />
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .notion-blog {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: rgb(55, 53, 47);
+  }
+  .contents-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .notion-list { list-style-type: disc; padding-left: 26px; margin: 12px 0; }
+  .notion-list li { margin-bottom: 16px; }
+  .notion-list a {
+    color: rgb(35, 131, 226);
+    text-decoration: underline;
+    text-underline-offset: 0.1em;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .item-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+</style>

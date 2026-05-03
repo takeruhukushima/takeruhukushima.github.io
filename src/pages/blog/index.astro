@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+
+// Get categories at the first level under research and development
+function getCategoryPath(category, subDir) {
+  return `blog/${category}/${subDir}`;
+}
+
+// Hardcoded categories to match ref/blog_ref_3.png exactly
+const researchCategories = [
+  { id: 'research/paper-list', title: '今読まなきゃと思ってる Paper List / Reading List of Research Paper' },
+  { id: 'research/paper-survey', title: '論文読みメモ / Paper Survey' },
+  { id: 'research/research-notes', title: '研究メモ / Sandbox for Research' },
+  { id: 'research/technical-notes', title: '技術関連メモ / Sandbox for Technical Issue' }
+];
+
+const devCategories = [
+  { id: 'development/dev-notes', title: '開発メモ / Development Notes' }
+];
+---
+
+<Layout title="Contents | Hiroki Naganuma">
+  <div class="notion-blog">
+    <main class="blog-content">
+      <h2 class="contents-title">Contents</h2>
+
+      <section class="category">
+        <h3>研究</h3>
+        <ul class="notion-list">
+          {researchCategories.map(cat => (
+            <li><a href={`/blog/${cat.id}`}>{cat.title}</a></li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="category">
+        <h3>開発</h3>
+        <ul class="notion-list">
+          {devCategories.map(cat => (
+            <li><a href={`/blog/${cat.id}`}>{cat.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .notion-blog {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: rgb(55, 53, 47);
+  }
+
+  .contents-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+    color: rgb(55, 53, 47);
+  }
+
+  .category {
+    margin-top: 32px;
+  }
+
+  .category h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+    color: rgb(55, 53, 47);
+  }
+
+  .notion-list {
+    list-style-type: disc;
+    padding-left: 26px;
+    margin: 12px 0;
+  }
+
+  .notion-list li {
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .notion-list a {
+    color: rgb(35, 131, 226);
+    text-decoration: underline;
+    text-underline-offset: 0.1em;
+    text-decoration-color: rgba(35, 131, 226, 0.4);
+    transition: opacity 0.2s;
+  }
+
+  .notion-list a:hover {
+    opacity: 0.7;
+    text-decoration-color: rgb(35, 131, 226);
+  }
+</style>

@@ -1,0 +1,242 @@
+---
+const { title = "Takeru Fukushima" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="layout-wrapper">
+      
+      <!-- ▼ 左側の固定サイドバー -->
+      <aside class="sidebar">
+        <nav class="nav-menu">
+          <a href="/"><span class="lang-ja">ホーム</span><span class="lang-en">Home</span></a>
+          <a href="/#publications"><span class="lang-ja">論文</span><span class="lang-en">Publications</span></a>
+          <!-- <a href="/cv"><span class="lang-ja">経歴</span><span class="lang-en">CV</span></a> -->
+          <a href="/#contact"><span class="lang-ja">連絡先</span><span class="lang-en">Contact</span></a>
+          <a href="/blog"><span class="lang-ja">ブログ</span><span class="lang-en">Blog</span></a>
+        </nav>
+      </aside>
+
+      <!-- ▼ 右側のメインコンテンツ + フッター -->
+      <div class="main-container" id="contact">
+        <main class="content">
+          <slot />
+        </main>
+
+        <footer class="footer">
+          <div class="footer-content">
+            <p class="footer-title">Contact</p>
+            <p class="footer-email">
+              <span class="icon">✉</span> fukushima.takeru.u8 [at] s.mail.nagoya-u.ac.jp
+            </p>
+          </div>
+        </footer>
+      </div>
+
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  /* 全体の基本設定 */
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* 言語切り替えの制御 */
+  html[lang="ja"] .lang-en { display: none; }
+  html[lang="en"] .lang-ja { display: none; }
+
+  body {
+    margin: 0;
+    /* Hoefler Text や明朝体を使用し、アカデミックな雰囲気に */
+    font-family: "Hoefler Text", "Baskerville", "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    color: #1a1a1a;
+    line-height: 1.7;
+    background-color: #fff;
+  }
+
+  /* MDXコンテンツ用のグローバルスタイル */
+  .content h1 {
+    font-size: 28px;
+    margin-bottom: 40px;
+    font-weight: bold;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
+  }
+  
+  .content h2 {
+    font-size: 22px;
+    margin-top: 50px;
+    margin-bottom: 24px;
+    font-weight: bold;
+  }
+
+  .content p {
+    margin-bottom: 1.5em;
+    font-size: 15px;
+  }
+
+  .content a {
+    color: #3b82f6;
+    text-decoration: none;
+    border-bottom: 1px solid #dae7ff;
+  }
+
+  .content a:hover {
+    border-bottom-color: #3b82f6;
+  }
+
+  .content ol {
+    padding-left: 24px;
+    margin-top: 20px;
+  }
+
+  .content li {
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+</style>
+
+<style>
+  .layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* 左メニュー（薄いベージュ背景で固定） */
+  .sidebar {
+    width: 240px;
+    background-color: #f9f9f7;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .nav-menu a {
+    text-decoration: none;
+    color: #555;
+    transition: color 0.2s;
+    letter-spacing: 0.1em;
+    position: relative;
+    padding: 4px 0;
+  }
+
+  /* 中央から広がる下線のアニメーション */
+  .nav-menu a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #000;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-menu a:hover {
+    color: #000;
+  }
+
+  .nav-menu a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* 右側のコンテナ */
+  .main-container {
+    margin-left: 240px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #fff;
+  }
+
+  /* コンテンツエリア */
+  .content {
+    padding: 80px 100px 100px 80px;
+    flex: 1;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  /* フッター（ダーク背景） */
+  .footer {
+    background-color: #1a1c23;
+    color: #fff;
+    padding: 80px 80px;
+    width: 100%;
+  }
+
+  .footer-content {
+    max-width: 800px;
+  }
+
+  .footer-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-email {
+    font-size: 14px;
+    margin: 0;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer .icon {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .layout-wrapper {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      position: relative;
+      height: auto;
+      padding: 60px 20px;
+    }
+    .main-container {
+      margin-left: 0;
+      width: 100%;
+    }
+    .content {
+      padding: 60px 20px;
+    }
+    .footer {
+      padding: 60px 20px;
+    }
+  }
+</style>

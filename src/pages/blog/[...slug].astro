@@ -1,0 +1,123 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/Badge.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog');
+  
+  const postPaths = allPosts.map(entry => ({
+    params: { slug: entry.id.replace(/\.mdx$/, '') },
+    props: { type: 'post', entry },
+  }));
+
+  const categoryMap = new Map();
+  allPosts.forEach(post => {
+    const parts = post.id.split('/');
+    for (let i = 1; i < parts.length; i++) {
+      const catSlug = parts.slice(0, i).join('/');
+      if (!categoryMap.has(catSlug)) categoryMap.set(catSlug, []);
+      categoryMap.get(catSlug).push(post);
+    }
+  });
+
+  const categoryPaths = Array.from(categoryMap.entries()).map(([catSlug, posts]) => ({
+    params: { slug: catSlug },
+    props: { type: 'list', title: catSlug.split('/').pop(), posts },
+  }));
+
+  return [...postPaths, ...categoryPaths];
+}
+
+const { type, entry, title, posts } = Astro.props;
+
+const titleMap = {
+  'research': '研究',
+  'development': '開発',
+  'paper-list': '今読まなきゃと思ってる Paper List / Reading List of Research Paper',
+  'paper-survey': '論文読みメモ / Paper Survey',
+  'research-notes': '研究メモ / Sandbox for Research',
+  'technical-notes': '技術関連メモ / Sandbox for Technical Issue',
+  'dev-notes': '開発メモ / Development Notes'
+};
+
+const displayTitle = type === 'post' ? entry.data.title : (titleMap[title] || title);
+
+let ContentComponent = null;
+if (type === 'post' && entry) {
+  const { Content } = await render(entry);
+  ContentComponent = Content;
+}
+---
+
+<Layout title={`${displayTitle} | Hiroki Naganuma`}>
+  {type === 'post' ? (
+    <article class="blog-post">
+      <header class="post-header">
+        <h1>{entry.data.title}</h1>
+        <div class="post-tags">
+          {entry.data.tags?.map(tag => (
+            <Badge label={tag} color="blue" href={`/blog/tags/${tag}`} />
+          ))}
+          {entry.data.paperUrl && (
+            <Badge 
+              href={entry.data.paperUrl} 
+              label={entry.data.venue || "Paper"} 
+              message={entry.data.year?.toString()} 
+              color="red" 
+            />
+          )}
+          {entry.data.codeUrl && (
+            <Badge href={entry.data.codeUrl} label="GitHub" message="code" color="black" logo="github" />
+          )}
+        </div>
+      </header>
+      <div class="post-content">
+        {ContentComponent && <ContentComponent />}
+      </div>
+    </article>
+  ) : (
+    <div class="notion-blog">
+      <main class="blog-content">
+        <h2 class="contents-title">{displayTitle}</h2>
+        <ul class="notion-list">
+          {posts?.map(post => (
+            <li class="list-item">
+              <a href={`/blog/${post.id.replace(/\.mdx$/, '')}`}>{post.data.title}</a>
+              <div class="item-tags">
+                {post.data.tags?.map(tag => (
+                  <Badge label={tag} color="blue" href={`/blog/tags/${tag}`} />
+                ))}
+                {post.data.paperUrl && (
+                  <Badge 
+                    href={post.data.paperUrl} 
+                    label={post.data.venue || "Paper"} 
+                    message={post.data.year?.toString()} 
+                    color="red" 
+                  />
+                )}
+                {post.data.codeUrl && (
+                  <Badge href={post.data.codeUrl} label="GitHub" message="code" color="black" logo="github" />
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </main>
+    </div>
+  )}
+</Layout>
+
+<style is:global>
+  .blog-post { max-width: 800px; margin: 0 auto; padding: 60px 40px; line-height: 1.6; color: rgb(55, 53, 47); }
+  .post-header { margin-bottom: 40px; }
+  .blog-post h1 { font-size: 36px; margin: 0 0 16px 0; border-bottom: 1px solid rgba(55, 53, 47, 0.09); padding-bottom: 8px; font-weight: 700; }
+  .post-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  
+  .notion-blog { max-width: 900px; margin: 0 auto; padding: 40px 20px; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: rgb(55, 53, 47); }
+  .contents-title { font-size: 32px; font-weight: 700; margin: 0 0 16px 0; padding-bottom: 4px; border-bottom: 1px solid rgba(55, 53, 47, 0.09); }
+  .notion-list { list-style-type: disc; padding-left: 26px; margin: 12px 0; }
+  .list-item { margin-bottom: 16px; }
+  .notion-list a { color: rgb(35, 131, 226); text-decoration: underline; text-underline-offset: 0.1em; text-decoration-color: rgba(35, 131, 226, 0.4); }
+  .item-tags { display: flex; gap: 6px; margin-top: 4px; }
+</style>
