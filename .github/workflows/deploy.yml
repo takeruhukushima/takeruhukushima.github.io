@@ -25,6 +25,8 @@ jobs:
         # pnpmを使っていることを明示する（超重要！）
         with:
           package-manager: pnpm@latest
+          node-version: 22
+
 
   deploy:
     needs: build
