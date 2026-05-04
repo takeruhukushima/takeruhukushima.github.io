@@ -21,10 +21,16 @@ export async function getStaticPaths() {
     }
   });
 
-  const categoryPaths = Array.from(categoryMap.entries()).map(([catSlug, posts]) => ({
-    params: { slug: catSlug },
-    props: { type: 'list', title: catSlug.split('/').pop(), posts },
-  }));
+  const categoryPaths = Array.from(categoryMap.entries()).map(([catSlug, posts]) => {
+    // Sort posts by title using natural sort
+    const collator = new Intl.Collator('ja', { numeric: true, sensitivity: 'base' });
+    const sortedPosts = [...posts].sort((a, b) => collator.compare(a.data.title, b.data.title));
+    
+    return {
+      params: { slug: catSlug },
+      props: { type: 'list', title: catSlug.split('/').pop(), posts: sortedPosts },
+    };
+  });
 
   return [...postPaths, ...categoryPaths];
 }

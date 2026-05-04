@@ -9,9 +9,13 @@ export async function getStaticPaths() {
   
   return tags.map(tag => {
     const filteredPosts = posts.filter(post => post.data.tags?.includes(tag));
+    // Sort posts by title using natural sort
+    const collator = new Intl.Collator('ja', { numeric: true, sensitivity: 'base' });
+    const sortedPosts = [...filteredPosts].sort((a, b) => collator.compare(a.data.title, b.data.title));
+
     return {
       params: { tag },
-      props: { posts: filteredPosts },
+      props: { posts: sortedPosts },
     };
   });
 }
