@@ -8,6 +8,46 @@ const { title = "Takeru Fukushima" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    />
+    <style is:global>
+      /* Hide MathML but keep it for screen readers */
+      .katex-mathml {
+        position: absolute;
+        clip: rect(1px, 1px, 1px, 1px);
+        padding: 0;
+        border: 0;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+      }
+
+      /* Ensure display math ($$) is always a centered block */
+      .katex-display {
+        display: block !important;
+        text-align: center !important;
+        margin: 2em 0 !important;
+        width: 100% !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      /* Fix for potential flexbox/grid containers */
+      .katex-display > .katex {
+        display: inline-block !important;
+        text-align: center !important;
+        white-space: nowrap;
+        margin: 0 auto !important;
+      }
+
+      /* Remove any list-style or bullet points if it's inside a list by accident */
+      .notion-list .katex-display,
+      .content .katex-display {
+        list-style: none !important;
+      }
+    </style>
   </head>
   <body>
     <div class="layout-wrapper">
