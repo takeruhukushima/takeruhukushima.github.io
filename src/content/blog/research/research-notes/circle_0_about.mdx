@@ -20,8 +20,58 @@ tags: ["crcle reading"]
 
 　この章ではタイトルの通り、機械学習に必要な基礎数学について一番簡単な機械学習の例である単回帰直線を例にとって線形代数（行列）と微分がどう機械学習に使われるのか、また、機械学習が何をしようとしているのかを理解してもらう。
 
-　機械学習ではパラメータと説明変数を積和で表現して目的変数と結び、パラメータの誤差関数を最小化させることに焦点がおかれる。結果的にもとまった関数$f$に任意の値（しかし内挿に限られる）を代入することによって値を予測する。目的変数が離散値であれば分類タスクと呼ばれ、連続値であれば回帰タスクと呼ばれるが、数学的には離散値か連続値かくらいしか違いはない。
+　機械学習ではパラメータと説明変数を積和で表現して目的変数と結び、パラメータの誤差関数を最小化させることに焦点がおかれる。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; display: block; margin: 0 auto; font-family: sans-serif;">
+    <line x1="40" y1="200" x2="360" y2="200" stroke="#ccc" stroke-width="1" />
+    <line x1="40" y1="200" x2="40" y2="40" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="180" x2="340" y2="60" stroke="#1a1a1a" stroke-width="2" />
+    <circle cx="100" cy="150" r="4" fill="#3b82f6" />
+    <line x1="100" y1="150" x2="100" y2="163" stroke="#ef4444" stroke-dasharray="3,3" />
+    <circle cx="180" cy="100" r="4" fill="#3b82f6" />
+    <line x1="180" y1="100" x2="180" y2="128" stroke="#ef4444" stroke-dasharray="3,3" />
+    <circle cx="260" cy="120" r="4" fill="#3b82f6" />
+    <line x1="260" y1="120" x2="260" y2="94" stroke="#ef4444" stroke-dasharray="3,3" />
+    <circle cx="320" cy="50" r="4" fill="#3b82f6" />
+    <line x1="320" y1="50" x2="320" y2="68" stroke="#ef4444" stroke-dasharray="3,3" />
+    <text x="360" y="215" font-size="10" text-anchor="end" fill="#888">説明変数 x</text>
+    <text x="35" y="35" font-size="10" fill="#888">目的変数 y</text>
+    <text x="200" y="230" font-size="11" text-anchor="middle" font-weight="bold">最小二乗法：各点からの残差（赤点線）を最小化する</text>
+  </svg>
+</div>
+
+結果的にもとまった関数$f$に任意の値（しかし内挿に限られる）を代入することによって値を予測する。目的変数が離散値であれば分類タスクと呼ばれ、連続値であれば回帰タスクと呼ばれるが、数学的には離散値か連続値かくらいしか違いはない。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  <div>
+    <svg width="200" height="200" viewBox="0 0 200 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <line x1="20" y1="180" x2="180" y2="180" stroke="#ccc" />
+      <line x1="20" y1="180" x2="20" y2="20" stroke="#ccc" />
+      <circle cx="40" cy="150" r="3" fill="#3b82f6" />
+      <circle cx="70" cy="130" r="3" fill="#3b82f6" />
+      <circle cx="100" cy="110" r="3" fill="#3b82f6" />
+      <circle cx="130" cy="70" r="3" fill="#3b82f6" />
+      <circle cx="160" cy="50" r="3" fill="#3b82f6" />
+      <line x1="30" y1="160" x2="170" y2="40" stroke="#ef4444" stroke-width="2" />
+    </svg>
+    <p style="font-size: 0.85em; margin-top: 10px; font-weight: bold;">回帰 (Regression)</p>
+  </div>
+  <div>
+    <svg width="200" height="200" viewBox="0 0 200 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <line x1="20" y1="180" x2="180" y2="180" stroke="#ccc" />
+      <line x1="20" y1="180" x2="20" y2="20" stroke="#ccc" />
+      <circle cx="50" cy="50" r="3" fill="#3b82f6" />
+      <circle cx="70" cy="80" r="3" fill="#3b82f6" />
+      <circle cx="40" cy="100" r="3" fill="#3b82f6" />
+      <circle cx="150" cy="150" r="3" fill="#ef4444" />
+      <circle cx="130" cy="120" r="3" fill="#ef4444" />
+      <circle cx="170" cy="100" r="3" fill="#ef4444" />
+      <path d="M 20 150 Q 100 100 180 50" stroke="#1a1a1a" fill="none" stroke-dasharray="4,4" />
+    </svg>
+    <p style="font-size: 0.85em; margin-top: 10px; font-weight: bold;">分類 (Classification)</p>
+  </div>
+</div>
 
 $$
 \begin{aligned}
@@ -41,7 +91,33 @@ y_m &= w_1 x_{m1} + w_2 x_{m2} + \dots + w_n x_{mn} + b
 \end{aligned}
 $$
 
-積和を表現・演算するのに最も効率の良い方法が行列であり積和から行列を用いた演算を道具として用いて「空間」を表現し、「変換」を行うのが線形代数である。先ほどの関数は行列を使うと一気に以下のように書き下せる。
+積和を表現・演算するのに最も効率の良い方法が行列であり積和から行列を用いた演算を道具として用いて「空間」を表現し、「変換」を行うのが線形代数である。
+
+<div style="text-align: center; margin: 2em 0;">
+  <svg width="420" height="160" viewBox="0 0 420 160" style="font-family: sans-serif;">
+    <rect x="50" y="40" width="100" height="80" fill="none" stroke="#1a1a1a" stroke-width="1" />
+    <rect x="50" y="60" width="100" height="20" fill="#3b82f6" fill-opacity="0.1" />
+    <line x1="50" y1="60" x2="150" y2="60" stroke="#3b82f6" stroke-width="1.5" />
+    <line x1="50" y1="80" x2="150" y2="80" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">X (データ行列)</text>
+    
+    <text x="175" y="85" text-anchor="middle" font-size="20">×</text>
+    
+    <rect x="200" y="40" width="30" height="80" fill="none" stroke="#1a1a1a" stroke-width="1" />
+    <rect x="200" y="40" width="30" height="80" fill="#ef4444" fill-opacity="0.1" />
+    <text x="215" y="30" text-anchor="middle" font-size="14" font-weight="bold">w</text>
+    
+    <text x="260" y="85" text-anchor="middle" font-size="20">=</text>
+    
+    <rect x="290" y="40" width="30" height="80" fill="none" stroke="#1a1a1a" stroke-width="1" />
+    <rect x="290" y="60" width="30" height="20" fill="#10b981" fill-opacity="0.1" />
+    <text x="305" y="30" text-anchor="middle" font-size="14" font-weight="bold">y</text>
+    
+    <text x="210" y="150" text-anchor="middle" font-size="11" fill="#666">行ベクトルと列ベクトルの内積が行列積の各要素となる</text>
+  </svg>
+</div>
+
+先ほどの関数は行列を使うと一気に以下のように書き下せる。
 
 $$
 \begin{pmatrix}
@@ -78,6 +154,20 @@ $$
 
 さらに、関数の最小化には微分を用いる。微分とは何かと聞かれて即興で答えられるだろか。微分とは中学で習う「傾き」に極限値の概念を導入したものである。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; display: block; margin: 0 auto; font-family: sans-serif;">
+    <path d="M 50 200 Q 150 200 350 50" stroke="#ccc" fill="none" stroke-width="2" />
+    <circle cx="150" cy="188" r="4" fill="#1a1a1a" />
+    <text x="150" y="210" text-anchor="middle" font-size="11">x</text>
+    <circle cx="280" cy="120" r="3" fill="#999" />
+    <text x="280" y="210" text-anchor="middle" font-size="11" fill="#999">x + Δx</text>
+    <line x1="80" y1="210" x2="350" y2="100" stroke="#999" stroke-width="1" stroke-dasharray="4,4" />
+    <line x1="70" y1="225" x2="230" y2="155" stroke="#ef4444" stroke-width="2" />
+    <text x="110" y="150" font-size="11" fill="#ef4444" font-weight="bold">接線 (Δx → 0)</text>
+    <line x1="40" y1="200" x2="360" y2="200" stroke="#ccc" stroke-width="1" />
+    <text x="200" y="25" text-anchor="middle" font-size="12" font-weight="bold">微分の定義：割線から接線への極限</text>
+  </svg>
+</div>
 
 $$
 微分の定義:
@@ -100,15 +190,95 @@ $$
 現代はディープラーニングの台頭により、人工知能といえばニューラルネットワーク（NN）という認識が広まりつつある。しかし、実務の現場やデータ分析の最前線において、NN「以前」に確立された古典的な機械学習手法は決して過去の遺物ではない。むしろ、特定の領域においては今なお最強の武器として君臨している。本章では、これらの伝統的かつ強力なアルゴリズムの原理を紐解き、データ分析における多様なアプローチを学ぶ。
 
 まず触れるべきは、機械学習の最も基礎的な分類手法である「ロジスティック回帰」である。名前に「回帰」と付くが、実態は目的変数が離散値を取る分類タスク（例：スパムメールか否か）を解くためのモデルである。入力特徴量とパラメータの線形結合（積和）を計算し、その結果をシグモイド関数と呼ばれる非線形関数に通すことで、出力を0から1の間の「確率」として解釈する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="200" viewBox="0 0 500 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <text x="40" y="55" font-size="12" fill="#666">x₁</text>
+    <text x="40" y="105" font-size="12" fill="#666">x₂</text>
+    <text x="40" y="155" font-size="12" fill="#666">xₙ</text>
+    <line x1="60" y1="50" x2="160" y2="90" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="100" x2="160" y2="100" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="150" x2="160" y2="110" stroke="#ccc" stroke-width="1" />
+    <circle cx="180" cy="100" r="25" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
+    <text x="180" y="106" text-anchor="middle" font-size="20">Σ</text>
+    <line x1="205" y1="100" x2="255" y2="100" stroke="#1a1a1a" stroke-width="1.5" />
+    <rect x="260" y="75" width="80" height="50" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <path d="M 270 115 Q 300 115 300 100 T 330 85" fill="none" stroke="#3b82f6" stroke-width="2" />
+    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#3b82f6" font-weight="bold">Sigmoid</text>
+    <line x1="340" y1="100" x2="400" y2="100" stroke="#1a1a1a" stroke-width="1.5" />
+    <text x="410" y="105" font-size="14" font-weight="bold">y ∈ [0, 1]</text>
+    <text x="250" y="180" text-anchor="middle" font-size="11" fill="#666" font-style="italic">ロジスティック回帰 ＝ 単一のニューロン構造</text>
+  </svg>
+</div>
+
 特筆すべきは、この「入力の積和を取り、非線形な関数で変換して出力する」という数学的構造が、後に登場するニューラルネットワークを構成する最小単位（単一の人工ニューロン）と完全に一致している点である。つまり、ロジスティック回帰の原理と誤差関数（交差エントロピー）の最小化プロセスを深く理解することは、巨大で複雑な深層学習モデルの根源的なメカニズムを理解することに他ならない。ロジスティック回帰はNNの出発点であり、計算コストが極めて低く解釈性が高いため、結果の理由説明が求められる医療や金融の現場では現在でも第一選択として重宝されている。
 
 続いて、線形モデルでは捉えきれない複雑な境界線を引くための強力なアプローチとして「決定木（Decision Tree）」をベースとしたモデル群を解説する。単体の決定木は条件分岐を繰り返して予測を行う直感的な手法だが、訓練データに適合しすぎる「過学習」を起こしやすいという致命的な弱点を持つ。この弱点を克服し、劇的な性能向上をもたらしたのが、複数のモデルを組み合わせる「アンサンブル学習」である。
 
 アンサンブル学習の代表例として、データの抽出方法や使用する特徴量をランダムに変えながら多数の決定木を構築し、それらの多数決で予測を行う「ランダムフォレスト（Random Forest）」が挙げられる。これは非常に堅牢で、細かいパラメータ調整を行わずとも高い精度が出やすいため、分析の初期段階におけるベースラインとして極めて優秀である。
 
-さらに、ランダムフォレストとは異なるアプローチで精度を極限まで追求したのが「勾配ブースティング（GBDT: Gradient Boosting Decision Tree）」である。これは、前の決定木が間違えた予測誤差（勾配）を、次の決定木が順番に修正していくという直列的な学習プロセスを取る。本章では、このGBDTの計算を並列化して高速かつ高精度に実装し、世界中を席巻した「XGBoost」、カテゴリ変数の扱いに特化しチューニングの手間を大幅に削減した「CatBoost」、そしてMicrosoftが開発し、より軽量で大規模データに適した「LightGBM」などの派生手法についても、そのアルゴリズムの思想の違いを交えて詳解する。
+さらに、ランダムフォレストとは異なるアプローチで精度を極限まで追求したのが「勾配ブースティング（GBDT: Gradient Boosting Decision Tree）」である。これは、前の決定木が間違えた予測誤差（勾配）を、次の決定木が順番に修正していくという直列的な学習プロセスを取る。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  <div>
+    <svg width="240" height="180" viewBox="0 0 240 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <path d="M 40 45 L 30 55 M 40 45 L 50 55" stroke="#666" fill="none" />
+      <rect x="100" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <rect x="180" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <text x="80" y="65" font-size="12">...</text>
+      <line x1="40" y1="80" x2="110" y2="120" stroke="#ccc" />
+      <line x1="120" y1="80" x2="120" y2="120" stroke="#ccc" />
+      <line x1="200" y1="80" x2="130" y2="120" stroke="#ccc" />
+      <circle cx="120" cy="135" r="15" fill="#fff" stroke="#1a1a1a" />
+      <text x="120" y="140" text-anchor="middle" font-size="10">多数決</text>
+      <text x="120" y="25" text-anchor="middle" font-size="11" font-weight="bold">Random Forest (並列)</text>
+    </svg>
+  </div>
+  <div>
+    <svg width="240" height="180" viewBox="0 0 240 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <line x1="60" y1="90" x2="90" y2="90" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrow)" />
+      <rect x="100" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <line x1="140" y1="90" x2="170" y2="90" stroke="#ef4444" stroke-width="1.5" />
+      <rect x="180" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <text x="40" y="130" text-anchor="middle" font-size="9" fill="#ef4444">誤差を学習</text>
+      <text x="120" y="130" text-anchor="middle" font-size="9" fill="#ef4444">さらに修正</text>
+      <text x="120" y="25" text-anchor="middle" font-size="11" font-weight="bold">GBDT (直列)</text>
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+本章では、このGBDTの計算を並列化して高速かつ高精度に実装し、世界中を席巻した「XGBoost」、カテゴリ変数の扱いに特化しチューニングの手間を大幅に削減した「CatBoost」、そしてMicrosoftが開発し、より軽量で大規模データに適した「LightGBM」などの派生手法についても、そのアルゴリズムの思想の違いを交えて詳解する。
 
 ここで一つの疑問が生じるかもしれない。「ディープラーニングが発展した現代において、なぜこれらの手法を学ぶ必要があるのか」と。その答えは、データの性質による明確な「棲み分け」が存在するからである。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="220" viewBox="0 0 500 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <rect x="40" y="40" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="130" y="30" text-anchor="middle" font-size="12" font-weight="bold">表形式データ (Structured)</text>
+    <path d="M 60 70 H 200 M 60 95 H 200 M 60 120 H 200" stroke="#eee" />
+    <text x="130" y="185" text-anchor="middle" font-size="14" fill="#1a1a1a" font-weight="bold">GBDT / 古典的ML</text>
+    <text x="130" y="205" text-anchor="middle" font-size="10" fill="#666">XGBoost, LightGBM...</text>
+    
+    <text x="250" y="105" text-anchor="middle" font-size="20">vs</text>
+    
+    <rect x="280" y="40" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="370" y="30" text-anchor="middle" font-size="12" font-weight="bold">非構造化データ (Unstructured)</text>
+    <circle cx="340" cy="80" r="15" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="340" y="84" text-anchor="middle" font-size="10" fill="#3b82f6">画像</text>
+    <rect x="380" y="70" width="30" height="40" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+    <text x="395" y="94" text-anchor="middle" font-size="10" fill="#10b981">言語</text>
+    <text x="370" y="185" text-anchor="middle" font-size="14" fill="#1a1a1a" font-weight="bold">深層学習 (NN)</text>
+    <text x="370" y="205" text-anchor="middle" font-size="10" fill="#666">CNN, Transformer...</text>
+  </svg>
+</div>
+
 画像、音声、自然言語といった非構造化データにおいては、特徴量を自ら抽出するNNが圧倒的な優位性を持つ。しかし、年齢、価格、商品カテゴリなどがエクセルのように整然と並んだ「表形式データ（テーブルデータ）」においては状況が全く異なる。テーブルデータにおいては、特徴量同士の複雑な条件分岐を捉えることに長けたGBDT系アルゴリズム（XGBoostやLightGBMなど）が、計算コスト、予測精度、そして扱いやすさの両面において、NNと同等あるいはそれ以上のパフォーマンスを叩き出すことが珍しくないのだ。
 
 実際、世界中の優秀なデータサイエンティストが精度を競い合う世界最大のデータ分析コンペティション「Kaggle」において、画像やテキストを含まない純粋なテーブルデータのコンペティションでは、上位陣の解法は未だにXGBoost、LightGBM、CatBoostといった勾配ブースティングの巧妙なアンサンブルで占められている。彼らは「最新の手法が常に最良の手法ではない」ことを熟知しており、データの性質に合わせて最も切れ味の鋭い道具を選択しているのである。
@@ -128,13 +298,101 @@ $$
 \end{aligned}
 $$
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="240" height="240" viewBox="0 0 240 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="40" y1="200" x2="220" y2="200" stroke="#ccc" stroke-width="1" />
+    <line x1="40" y1="200" x2="40" y2="20" stroke="#ccc" stroke-width="1" />
+    {/* (0,0) -> 0 */}
+    <circle cx="60" cy="180" r="6" fill="#3b82f6" />
+    <text x="60" y="215" text-anchor="middle" font-size="10">0,0</text>
+    {/* (1,1) -> 0 */}
+    <circle cx="180" cy="60" r="6" fill="#3b82f6" />
+    <text x="180" y="50" text-anchor="middle" font-size="10">1,1</text>
+    {/* (1,0) -> 1 */}
+    <path d="M 174 174 L 186 186 M 186 174 L 174 186" stroke="#ef4444" stroke-width="3" />
+    <text x="180" y="215" text-anchor="middle" font-size="10">1,0</text>
+    {/* (0,1) -> 1 */}
+    <path d="M 54 54 L 66 66 M 66 54 L 54 66" stroke="#ef4444" stroke-width="3" />
+    <text x="60" y="50" text-anchor="middle" font-size="10">0,1</text>
+    <text x="120" y="235" text-anchor="middle" font-size="11" font-weight="bold">XOR問題：直線1本では分離不可能</text>
+  </svg>
+</div>
+
 　この $4$ つの点を、$0$ のグループと $1$ のグループに分けるように「直線を $1$ 本」引いてみてほしい。……どうやっても不可能なはずだ。単一のニューロン（パーセプトロン）や単純なロジスティック回帰は、数学的に「空間に直線を引いて分類する（線形分離）」ことしかできないため、このような斜めに交差する非線形な関係を絶対に解くことができなかったのである。
 
-　この壁を突破したのが「隠れ層（中間層）」の導入、すなわちニューラルネットワーク（多層パーセプトロン）の誕生である。入力を直接出力に繋ぐのではなく、中間に別の層を挟んで空間そのものを歪め（非線形変換をかけ）、曲がりくねった複雑な境界線を引けるようにしたのだ。層を深く重ねる（Deepにする）ことで、原理的にはいかなる複雑な関数・境界線も近似できることが数学的に証明されている（普遍近似定理）。これが「深層学習（Deep Learning）」の根本的な原理である。
+　この壁を突破したのが「隠れ層（中間層）」の導入、すなわちニューラルネットワーク（多層パーセプトロン）の誕生である。入力を直接出力に繋ぐのではなく、中間に別の層を挟んで空間そのものを歪め（非線形変換をかけ）、曲がりくねった複雑な境界線を引けるようにしたのだ。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="200" viewBox="0 0 460 200" style="font-family: sans-serif;">
+    {/* Original Space */}
+    <rect x="20" y="40" width="120" height="120" rx="4" fill="#fcfcfc" stroke="#eee" />
+    <circle cx="50" cy="130" r="4" fill="#3b82f6" />
+    <circle cx="110" cy="70" r="4" fill="#3b82f6" />
+    <path d="M 106 126 L 114 134 M 114 126 L 106 134" stroke="#ef4444" stroke-width="2" />
+    <path d="M 46 66 L 54 74 M 54 66 L 46 74" stroke="#ef4444" stroke-width="2" />
+    
+    <text x="230" y="105" text-anchor="middle" font-size="12" fill="#666">非線形変換 (隠れ層)</text>
+    <path d="M 160 100 H 300" stroke="#ccc" stroke-width="2" marker-end="url(#arrow-black)" />
+    
+    {/* Distorted Space */}
+    <rect x="320" y="40" width="120" height="120" rx="4" fill="#fcfcfc" stroke="#eee" />
+    <path d="M 320 100 Q 380 40 440 100" stroke="#eee" fill="none" />
+    <path d="M 320 140 Q 380 140 440 60" stroke="#eee" fill="none" />
+    <circle cx="350" cy="145" r="4" fill="#3b82f6" />
+    <circle cx="375" cy="120" r="4" fill="#3b82f6" />
+    <path d="M 381 76 L 389 84 M 389 76 L 381 84" stroke="#ef4444" stroke-width="2" />
+    <path d="M 406 51 L 414 59 M 414 51 L 406 59" stroke="#ef4444" stroke-width="2" />
+    <line x1="330" y1="150" x2="430" y2="50" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="3,3" />
+    
+    <defs>
+      <marker id="arrow-black" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+    <text x="230" y="190" text-anchor="middle" font-size="11" font-weight="bold">「空間を歪める」ことで、直線での分類を可能にする</text>
+  </svg>
+</div>
+
+層を深く重ねる（Deepにする）ことで、原理的にはいかなる複雑な関数・境界線も近似できることが数学的に証明されている（普遍近似定理）。これが「深層学習（Deep Learning）」の根本的な原理である。
 
 　しかし、深層学習が世界を根底から覆した真の理由は、複雑な関数を近似できることだけではない。最大の功績は「特徴量抽出の自動化（表現学習）」を実現したことにある。
 
 　ニューラルネットワーク以前の機械学習では、データの「どこに注目すべきか（特徴量）」を人間が手作業で設計する必要があった。これを特徴量エンジニアリングと呼ぶ。例えば画像認識であれば、「ここにエッジ（輪郭）がある」「ここに丸い模様がある」といったルールを職人芸のようにプログラムで定義し、それをアルゴリズムに入力していた。深層学習は、この常識を破壊した。生ピクセルデータをそのまま入力するだけで、ネットワーク自身が誤差を最小化する過程で「何に注目すれば分類できるか」を自動的に学習し、最適な特徴量を自ら獲得するようになったのである。人間のドメイン知識やバイアスに依存せず、データから直接「表現」を学習するこの仕組みをEnd-to-End学習と呼び、これが画像・音声・自然言語といった非構造化データの処理において人間を凌駕するブレイクスルーをもたらした。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="260" viewBox="0 0 500 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Traditional */}
+    <text x="20" y="30" font-size="12" font-weight="bold">従来の手法 (Traditional ML)</text>
+    <rect x="30" y="50" width="40" height="40" fill="#eee" />
+    <text x="50" y="75" text-anchor="middle" font-size="10">画像</text>
+    <path d="M 80 70 H 120" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <rect x="130" y="50" width="100" height="40" rx="4" fill="#fff" stroke="#666" />
+    <text x="180" y="75" text-anchor="middle" font-size="9">手動の特徴量抽出</text>
+    <path d="M 240 70 H 280" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <rect x="290" y="50" width="80" height="40" rx="4" fill="#fff" stroke="#666" />
+    <text x="330" y="75" text-anchor="middle" font-size="9">学習アルゴリズム</text>
+    <path d="M 380 70 H 420" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <text x="430" y="75" font-size="12" font-weight="bold">「犬」</text>
+    
+    {/* Deep Learning */}
+    <text x="20" y="140" font-size="12" font-weight="bold">深層学習 (End-to-End)</text>
+    <rect x="30" y="160" width="40" height="40" fill="#eee" />
+    <text x="50" y="185" text-anchor="middle" font-size="10">画像</text>
+    <path d="M 80 180 H 120" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <rect x="130" y="150" width="240" height="60" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="250" y="185" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">Deep Neural Network (特徴量も自動学習)</text>
+    <path d="M 380 180 H 420" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <text x="430" y="185" font-size="12" font-weight="bold">「犬」</text>
+    
+    <text x="250" y="240" text-anchor="middle" font-size="11" fill="#666" font-style="italic">人間の「職人芸」が、データからの「自動獲得」へ</text>
+
+    <defs>
+      <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
 
 　この深層学習の恐るべきポテンシャルが世界に衝撃を与えた歴史的転換点がいくつか存在する。最初の特異点は $2012$ 年の画像認識コンペティション「ImageNet（ILSVRC）」である。ここでトロント大学のチームが開発した「AlexNet」と呼ばれる深層畳み込みニューラルネットワーク（CNN）が、従来の手法に圧倒的な大差をつけて優勝し、第 $3$ 次AIブームの火蓋を切った。
 
@@ -150,14 +408,105 @@ $$
 　2010年代半ばまで、言語のような「系列データ（順番に意味があるデータ）」を処理する深層学習の主役は、RNN（リカレントニューラルネットワーク）やLSTMといったアーキテクチャだった。これらは文章を「先頭から1単語ずつ順番に」読み込む仕組みであった。しかし、この方式には致命的な弱点があった。長い文章になると文頭の情報を忘れてしまう「記憶の限界」があり、何より単語を順番に処理するためGPUによる並列計算が効かず、モデルの規模を大きくすることができなかったのである。
 
 　この限界を完全に破壊したのが、2017年にGoogleの研究者らが発表した歴史的論文『Attention Is All You Need』で提唱された「Transformer（トランスフォーマー）」というアーキテクチャである。
-Transformerの最大の発明は、「Self-Attention（自己注意機構）」にある。これは、文章中のある単語を処理する際、文中の「他のすべての単語」に同時に注意を向け、どの単語同士が強い結びつきを持っているかを一瞬で計算する数学的メカニズムである。これにより、文章を先頭から順に読む必要がなくなり、文全体を一括で並列処理できるようになった。結果として、計算速度が飛躍的に向上し、膨大なデータを巨大なスーパーコンピュータで一気に学習させることが可能となった。
+Transformerの最大の発明は、「Self-Attention（自己注意機構）」にある。これは、文章中のある単語を処理する際、文中の「他のすべての単語」に同時に注意を向け、どの単語同士が強い結びつきを持っているかを一瞬で計算する数学的メカニズムである。これにより、文章を先頭から順に読む必要がなくなり、文全体を一括で並列処理できるようになった。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="280" viewBox="0 0 500 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* RNN/LSTM */}
+    <text x="20" y="30" font-size="12" font-weight="bold">RNN / LSTM (Sequential)</text>
+    <rect x="50" y="50" width="40" height="30" fill="#fff" stroke="#666" />
+    <text x="70" y="70" text-anchor="middle" font-size="9">単語1</text>
+    <path d="M 90 65 H 120" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <rect x="130" y="50" width="40" height="30" fill="#fff" stroke="#666" opacity="0.8" />
+    <text x="150" y="70" text-anchor="middle" font-size="9" opacity="0.8">単語2</text>
+    <path d="M 170 65 H 200" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <rect x="210" y="50" width="40" height="30" fill="#fff" stroke="#666" opacity="0.6" />
+    <text x="230" y="70" text-anchor="middle" font-size="9" opacity="0.6">単語3</text>
+    <path d="M 250 65 H 280" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <text x="300" y="70" font-size="12" fill="#999">...</text>
+    <text x="250" y="100" text-anchor="middle" font-size="10" fill="#ef4444">文頭の情報を忘れやすい</text>
+    
+    <line x1="20" y1="120" x2="480" y2="120" stroke="#eee" />
+
+    {/* Transformer */}
+    <text x="20" y="150" font-size="12" font-weight="bold">Transformer (Parallel + Attention)</text>
+    <rect x="50" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="110" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="170" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="230" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    
+    <path d="M 70 200 Q 140 240 210 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 70 200 Q 110 230 150 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 130 200 Q 190 230 250 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 70 200 Q 150 250 250 200" stroke="#3b82f6" fill="none" stroke-opacity="0.5" stroke-width="1.5" />
+    
+    <text x="250" y="260" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">Self-Attention：全単語が相互に「注意」を向ける</text>
+    
+    <defs>
+      <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+結果として、計算速度が飛躍的に向上し、膨大なデータを巨大なスーパーコンピュータで一気に学習させることが可能となった。
 
 　Transformerの登場により、AI研究者たちはある暴力的な、しかし美しい法則に気がついた。「スケール則（Scaling Law）」である。モデルのパラメータ数（脳のシナプスの数に相当）、学習データの量、そして計算資源（GPUの数）の3つを単純に増やせば増やすほど、モデルの性能が予測可能な数学的法則に従ってどこまでも向上し続けるという事実だ。これにいち早く賭けたのがOpenAIであり、インターネット上の膨大なテキストを読み込ませた巨大なモデル「GPT」シリーズを開発していくことになる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="260" viewBox="0 0 400 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="60" y1="200" x2="360" y2="200" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="200" x2="60" y2="40" stroke="#ccc" stroke-width="1" />
+    
+    <path d="M 80 60 L 340 180" stroke="#3b82f6" stroke-width="3" fill="none" />
+    
+    <text x="360" y="215" text-anchor="end" font-size="10" fill="#888">計算量 (Compute) [log scale]</text>
+    <text x="55" y="35" font-size="10" fill="#888">誤差 (Loss) [log scale]</text>
+    <text x="210" y="110" transform="rotate(27, 210, 110)" font-size="11" fill="#3b82f6" font-weight="bold">Scaling Law</text>
+    <text x="210" y="240" text-anchor="middle" font-size="11" font-weight="bold">スケール則：投資した分だけAIは賢くなる</text>
+  </svg>
+</div>
 
 　大規模言語モデルの根本的な原理は、実は拍子抜けするほどシンプルである。それは「入力された文章の次にくる確率が最も高い単語（トークン）を予測し続ける」こと、ただそれだけである。
 しかし、数千億というパラメータを持つ巨大モデルが、人類の全知の結晶であるインターネット上のテキストを使って「次の単語予測」を極限まで学習した結果、奇跡のような現象が起きた。AIが単なる確率的オウム返しの枠を超え、文法、論理的推論、事実知識、さらにはプログラミングコードの記述能力までも自ら獲得し始めたのである。量的な拡大が質的な変化を生むこの現象は、AIの「創発（Emergence）」と呼ばれる。
 
 　だが、極めて賢くなっただけの言語モデルは、ネットの海に漂う偏見や嘘も含めて「ただ続きの文章を書く機械」に過ぎなかった。これを人間にとって使いやすく、かつ安全な「対話型アシスタント」へと昇華させた最後のピースが「RLHF（人間からのフィードバックによる強化学習）」である。人間の評価者がAIの回答に対して「有益か」「無害か」という基準で採点を行い、その価値観（アライメント）をモデルに後付けで学習させたのである。この技術を実装し、2022年末に公開された「ChatGPT」は、史上最速で1億人以上のユーザーを獲得し、人類社会に「生成AI革命」を引き起こした。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="280" viewBox="0 0 500 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Step 1 */}
+    <rect x="20" y="40" width="100" height="40" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="70" y="65" text-anchor="middle" font-size="9">プロンプト入力</text>
+    <path d="M 120 60 H 160" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Step 2 */}
+    <rect x="170" y="20" width="80" height="120" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="1" fill-opacity="0.05" />
+    <text x="210" y="40" text-anchor="middle" font-size="9" font-weight="bold">AIの回答群</text>
+    <rect x="180" y="55" width="60" height="15" fill="#fff" stroke="#ccc" />
+    <rect x="180" y="80" width="60" height="15" fill="#fff" stroke="#ccc" />
+    <rect x="180" y="105" width="60" height="15" fill="#fff" stroke="#ccc" />
+    <path d="M 250 80 H 290" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Step 3 */}
+    <circle cx="330" cy="80" r="25" fill="#fff" stroke="#10b981" stroke-width="2" />
+    <text x="330" y="84" text-anchor="middle" font-size="9" font-weight="bold">人間による比較</text>
+    <path d="M 330 105 V 140" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Step 4 */}
+    <rect x="270" y="150" width="120" height="40" rx="4" fill="#fff" stroke="#10b981" stroke-dasharray="4,4" />
+    <text x="330" y="175" text-anchor="middle" font-size="9" fill="#10b981">ランキング・報酬モデル</text>
+    <path d="M 270 170 H 100 V 80" stroke="#10b981" fill="none" stroke-opacity="0.5" marker-end="url(#arrow-green)" />
+    
+    <text x="250" y="240" text-anchor="middle" font-size="11" font-weight="bold">RLHF：人間の「好み」をAIに教え込む</text>
+    
+    <defs>
+      <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
 
 　かつて、翻訳には翻訳専用のモデルが、感情分析には感情分析専用のモデルが必要であった。しかし現在では、たった一つの巨大な「基盤モデル（Foundation Model）」に対し、自然言語で指示（プロンプト）を与えるだけで、ありとあらゆる知的なタスクを汎用的にこなせるようになった。
 
@@ -169,14 +518,94 @@ Transformerの最大の発明は、「Self-Attention（自己注意機構）」�
 
 　PythonがAI・機械学習の分野で世界的な覇権を握っている理由は、言語自体の構文がシンプルであることに加え、世界中の研究者やエンジニアが開発した強力な「ライブラリ（拡張機能のパッケージ）」がエコシステムとして完璧に整備されているからである。本章では、車輪の再発明を避け、これらのライブラリを適切に組み合わせて効率的にモデルを構築する「現代のデータサイエンスの作法」を身につける。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="260" viewBox="0 0 500 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Deep Learning / LLM */}
+    <rect x="100" y="30" width="300" height="60" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    <text x="250" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">深層学習 / LLM</text>
+    <text x="250" y="75" text-anchor="middle" font-size="10" fill="#666">PyTorch, Transformers (Hugging Face)</text>
+    
+    <path d="M 250 90 V 110" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Classical ML */}
+    <rect x="100" y="110" width="300" height="60" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="1.5" />
+    <text x="250" y="135" text-anchor="middle" font-size="14" font-weight="bold" fill="#10b981">古典的機械学習</text>
+    <text x="250" y="155" text-anchor="middle" font-size="10" fill="#666">Scikit-learn, XGBoost, LightGBM</text>
+    
+    <path d="M 250 170 V 190" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Base */}
+    <rect x="100" y="190" width="300" height="40" rx="4" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" stroke-width="1.5" />
+    <text x="250" y="215" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">データ処理基盤</text>
+    <text x="250" y="232" text-anchor="middle" font-size="9" fill="#666">NumPy, pandas</text>
+    
+    <defs>
+      <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
 　まず、テーブルデータを対象とした古典的な機械学習やデータ前処理において、絶対に避けて通れないのが「NumPy」と「pandas」である。NumPyは第$2$章で触れた行列演算や積和をC言語に迫る速度で高速処理する土台であり、pandasはエクセルのような表計算データをプログラム上で柔軟に操作・加工するための必須ツールである。
-そして、これらで整えたデータを学習させるための最大の武器が「Scikit-learn（サイキットラーン）」である。ロジスティック回帰、決定木、ランダムフォレストといった主要なアルゴリズムのほぼすべてが網羅されており、たった数行のコード（`fit` で学習し、`predict` で予測する）を記述するだけで、複雑な数学的処理を裏側で実行してくれる。さらに、Kaggleなどのコンペティションで猛威を振るう「XGBoost」や「LightGBM」といった勾配ブースティング手法も、専用のPythonパッケージを導入することで簡単に実装が可能である。
+そして、これらで整えたデータを学習させるための最大の武器が「Scikit-learn（サイキットラーン）」である。ロジスティック回帰、決定木、ランダムフォレストといった主要なアルゴリズムのほぼすべてが網羅されており、たった数行のコード（`fit` で学習し、`predict` で予測する）を記述するだけで、複雑な数学的処理を裏側で実行してくれる。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  <div>
+    <svg width="200" height="160" viewBox="0 0 200 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="60" height="40" rx="4" fill="#eee" />
+      <text x="50" y="65" text-anchor="middle" font-size="10">X, y</text>
+      <path d="M 80 60 H 110" stroke="#ccc" marker-end="url(#arrow-gray)" />
+      <rect x="120" y="40" width="60" height="40" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+      <text x="150" y="65" text-anchor="middle" font-size="10" font-weight="bold">model.fit()</text>
+      <text x="100" y="110" text-anchor="middle" font-size="11" font-weight="bold">学習 (Training)</text>
+      <text x="100" y="130" text-anchor="middle" font-size="9" fill="#666">データから法則を学ぶ</text>
+    </svg>
+  </div>
+  <div>
+    <svg width="200" height="160" viewBox="0 0 200 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="60" height="40" rx="4" fill="#eee" />
+      <text x="50" y="65" text-anchor="middle" font-size="10">未知のX</text>
+      <path d="M 80 60 H 110" stroke="#ccc" marker-end="url(#arrow-gray)" />
+      <rect x="120" y="40" width="60" height="40" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+      <text x="150" y="65" text-anchor="middle" font-size="10" font-weight="bold">predict()</text>
+      <path d="M 150 80 V 100" stroke="#ccc" marker-end="url(#arrow-gray)" />
+      <text x="150" y="120" text-anchor="middle" font-size="10" font-weight="bold">予測値 y</text>
+      <text x="100" y="25" text-anchor="middle" font-size="11" font-weight="bold">予測 (Inference)</text>
+    </svg>
+  </div>
+</div>
+
+さらに、Kaggleなどのコンペティションで猛威を振るう「XGBoost」や「LightGBM」といった勾配ブースティング手法も、専用のPythonパッケージを導入することで簡単に実装が可能である。
 
 　次に、第$3$章で解説した深層学習（ニューラルネットワーク）の実装フレームワークへと進む。現在、研究から産業応用まで最も広く使われているのが、Meta社が主導して開発した「PyTorch（パイトーチ）」である。
 深層学習の実装では、モデルのパラメータを更新するために誤差関数を「微分」するステップが不可欠だが、PyTorchは「自動微分（Autograd）」という強力な機能を備えている。これにより、開発者は複雑な微分の計算式を自ら導出する必要がなくなり、レゴブロックを組み立てるようにネットワークの層（全結合層や畳み込み層）を定義するだけで、モデルの学習ループを直感的に記述することができる。また、行列計算をGPU（グラフィックボード）上で実行するための記述も極めて容易であり、計算速度を劇的に引き上げることが可能である。
 
 　最後に、第$4$章で触れた大規模言語モデル（LLM）やTransformerといった最先端のAIを扱うための実装アプローチを紹介する。
 数億〜数千億のパラメータを持つLLMを個人が一から学習させることは、計算資源の観点から不可能に近い。そのため現代の開発では、Hugging Face社が提供する「Transformers」というライブラリを活用するのが標準となっている。このライブラリを使えば、世界中の研究機関が莫大なコストをかけて事前学習した強力なモデル（基盤モデル）をインターネット経由で簡単にダウンロードし、自身のPythonコードに組み込むことができる。開発者は、用意されたモデルに対して自社特有の少量のデータで「ファインチューニング（微調整）」を行ったり、適切なプロンプトを与えてタスクを解かせたりする手法（API経由での推論）を学ぶことで、最新のAI技術を即座にアプリケーションへと実装できる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="240" viewBox="0 0 500 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Pre-training */}
+    <rect x="30" y="40" width="200" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="130" y="30" text-anchor="middle" font-size="11" font-weight="bold">事前学習 (Pre-training)</text>
+    <circle cx="130" cy="100" r="35" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    <text x="130" y="105" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">巨大な知能</text>
+    <text x="130" y="175" text-anchor="middle" font-size="9" fill="#666">膨大なデータ・莫大なコスト</text>
+    
+    <path d="M 230 100 H 270" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* Fine-tuning */}
+    <rect x="270" y="40" width="200" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="370" y="30" text-anchor="middle" font-size="11" font-weight="bold">微調整 (Fine-tuning)</text>
+    <circle cx="370" cy="100" r="35" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    <rect x="385" y="75" width="30" height="20" rx="2" fill="#10b981" />
+    <text x="400" y="88" text-anchor="middle" font-size="8" fill="#fff">専門知識</text>
+    <text x="370" y="175" text-anchor="middle" font-size="9" fill="#666">特定のタスクに特化</text>
+    
+    <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold">「巨人の肩」に乗り、自分好みのAIへ</text>
+  </svg>
+</div>
 
 　本章を通し、データの加工からモデルの学習、そして最新の基盤モデルの呼び出しに至るまで、Pythonエコシステムがいかに強力かつ洗練されているかを体感してほしい。理論と実装の両輪を回すことではじめて、機械学習の真の価値を引き出すことができるはずである。
 
@@ -187,6 +616,38 @@ Transformerの最大の発明は、「Self-Attention（自己注意機構）」�
 
 ### なぜAI-CLIが必要なのか
 ブラウザのチャットUIでは、エラーログやコードをコピー＆ペーストするたびに「文脈（コンテキスト）」が断絶し、集中力が削がれる。一方、AI-CLIは実行中のターミナルの出力をリアルタイムで読み取り、修正案を即座にファイルへ反映させることができる。AIは単なる相談役ではなく、ターミナル内で共に作業を行う「自律型エージェント」へと進化した。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="240" viewBox="0 0 500 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Browser UI */}
+    <rect x="30" y="50" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="120" y="35" text-anchor="middle" font-size="11" font-weight="bold">ブラウザ UI (従来)</text>
+    <rect x="50" y="70" width="40" height="30" fill="#eee" /> {/* Editor */}
+    <rect x="150" y="110" width="40" height="30" fill="#3b82f6" fill-opacity="0.1" /> {/* Browser */}
+    <path d="M 95 85 Q 120 70 145 110" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
+    <path d="M 145 125 Q 120 140 95 100" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
+    <text x="120" y="185" text-anchor="middle" font-size="9" fill="#ef4444">コピペの往復・文脈の断絶</text>
+    
+    <text x="250" y="110" text-anchor="middle" font-size="20">vs</text>
+    
+    {/* AI-CLI */}
+    <rect x="290" y="50" width="180" height="120" rx="8" fill="#1a1c23" stroke="#333" />
+    <text x="380" y="35" text-anchor="middle" font-size="11" font-weight="bold">AI-CLI (シームレス)</text>
+    <rect x="310" y="70" width="140" height="80" fill="#000" fill-opacity="0.5" /> {/* Terminal */}
+    <text x="320" y="85" font-size="8" fill="#10b981">$ gemini "fix error"</text>
+    <path d="M 380 95 V 135" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-cli)" />
+    <text x="380" y="185" text-anchor="middle" font-size="9" fill="#10b981">ターミナル内で完結</text>
+    
+    <defs>
+      <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+      </marker>
+      <marker id="arrow-green-cli" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
 
 ### 代表的なAI-CLIと基盤モデル
 1. **OpenAI Codex**
@@ -215,9 +676,67 @@ gemini login
 ```
 自動的にWebブラウザが立ち上がり、Googleアカウントの認証画面が表示される。「許可」を押すだけで、ローカル環境に認証情報がセキュアに統合される。APIキーを環境変数に書き込む手間もリスクもなく、数秒でAIとの対話が開始できる。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="180" viewBox="0 0 460 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Past */}
+    <text x="110" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">過去 (複雑・リスク)</text>
+    <rect x="30" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#ccc" stroke-dasharray="2,2" />
+    <text x="110" y="70" text-anchor="middle" font-size="8">APIキーをコピペ</text>
+    <text x="110" y="85" text-anchor="middle" font-size="8">.envファイルを編集</text>
+    <text x="110" y="100" text-anchor="middle" font-size="8">環境変数の読み込み</text>
+    <text x="110" y="145" text-anchor="middle" font-size="18" fill="#ef4444">×</text>
+    
+    <path d="M 210 85 H 250" stroke="#ccc" stroke-width="2" />
+    
+    {/* Present */}
+    <text x="350" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">現在 (シンプル・安全)</text>
+    <rect x="270" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#10b981" fill-opacity="0.05" />
+    <text x="350" y="70" text-anchor="middle" font-size="8">$ gemini login</text>
+    <rect x="310" y="85" width="80" height="25" rx="4" fill="#10b981" />
+    <text x="350" y="101" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">許可 (Authorize)</text>
+    <text x="350" y="145" text-anchor="middle" font-size="18" fill="#10b981">✓</text>
+  </svg>
+</div>
+
 ### AI-CLIの主な活用場面
 *   **プランニングと実装の分離:** OpenCodeなどでは「Planモード」で修正案を検討し、「Buildモード」で一括適用するといった使い分けができる。
 *   **エラーの自動解決:** プログラムがクラッシュした際、「今のエラーログを見て原因を修正して」と打てば、AIがログを解析し、コードを直し、テストを再実行して確認する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="260" viewBox="0 0 400 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Loop */}
+    <circle cx="200" cy="120" r="70" fill="none" stroke="#ccc" stroke-dasharray="4,4" />
+    
+    {/* Error */}
+    <circle cx="200" cy="50" r="25" fill="#fff" stroke="#ef4444" stroke-width="2" />
+    <text x="200" y="54" text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">エラー発生</text>
+    
+    {/* Step 1 */}
+    <circle cx="270" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="270" y="124" text-anchor="middle" font-size="8">ログ解析</text>
+    
+    {/* Step 2 */}
+    <circle cx="200" cy="190" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="200" y="194" text-anchor="middle" font-size="8">コード修正</text>
+    
+    {/* Step 3 */}
+    <circle cx="130" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="130" y="124" text-anchor="middle" font-size="8">テスト検証</text>
+    
+    {/* Success */}
+    <path d="M 280 50 L 320 50" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-success)" />
+    <text x="340" y="54" font-size="10" font-weight="bold" fill="#10b981">解決！</text>
+    
+    <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="bold">自律型エージェントによる修正ループ</text>
+    
+    <defs>
+      <marker id="arrow-green-success" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
 *   **インフラの自然言語操作:** 「ポート3000を専有しているプロセスを特定して終了させて」といった、覚えにくい複雑なUNIXコマンドの組み立てをAIに代行させる。
 
 ### おわりに
@@ -232,6 +751,25 @@ AI-CLIの導入は、開発効率を数倍に引き上げるだけでなく、�
 GitHub（ギットハブ）は、プログラムの変更履歴を記録する「Git（ギット）」という仕組みを、オンライン上で管理できるサービスである。
 単にファイルを保存するだけでなく、過去の状態にいつでも戻したり、世界中の開発者とコードを共有したりするためのプラットフォームだ。エンジニアにとっては実績の集積地でもあり、現代の開発プロセスにおいてGitHubを使わない選択肢はほぼ存在しないと言ってよい。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="160" viewBox="0 0 400 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Main Branch */}
+    <line x1="40" y1="80" x2="360" y2="80" stroke="#ccc" stroke-width="2" />
+    <circle cx="60" cy="80" r="4" fill="#333" />
+    <circle cx="140" cy="80" r="4" fill="#333" />
+    <circle cx="260" cy="80" r="4" fill="#333" />
+    <circle cx="340" cy="80" r="4" fill="#333" />
+    <text x="40" y="70" font-size="10" font-weight="bold">main</text>
+    
+    {/* Feature Branch */}
+    <path d="M 140 80 Q 180 30 220 30 H 260 Q 300 30 340 80" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+    <circle cx="200" cy="30" r="4" fill="#3b82f6" />
+    <circle cx="280" cy="30" r="4" fill="#3b82f6" />
+    <text x="240" y="20" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">feature-branch</text>
+    
+    <text x="200" y="140" text-anchor="middle" font-size="11" font-weight="bold">GitHub：歴史の分岐と統合を管理する</text>
+  </svg>
+</div>
 
 #### 2. Neovim (Nvim)：自分専用に改造できる「高機能エディタ」
 Neovim（ネオヴィム）は、マウスを使わずキーボードだけで全ての操作を完結させることを目的としたテキストエディタである。
@@ -241,11 +779,59 @@ Neovim（ネオヴィム）は、マウスを使わずキーボードだけで�
 「自分のパソコンでは動くのに、他の人のパソコンでは動かない」という問題は、開発現場で頻繁に発生する。Nix（ニックス）は、必要なツールとそのバージョンを一つの設定ファイルに記述することで、どんなマシン上でも「全く同じ開発環境」を一瞬で再現する仕組みを提供する。
 いわば「環境の設計図」を共有することで、環境構築に費やす無駄な時間をゼロにするための道具である。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="200" viewBox="0 0 460 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Blueprint */}
+    <rect x="190" y="20" width="80" height="100" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="2" />
+    <path d="M 205 45 H 255 M 205 65 H 255 M 205 85 H 230" stroke="#3b82f6" stroke-opacity="0.3" />
+    <text x="230" y="140" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">設計図 (flake.nix)</text>
+    
+    {/* Machines */}
+    <path d="M 180 80 L 100 130" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <path d="M 230 130 V 150" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    <path d="M 280 80 L 360 130" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    <rect x="40" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="80" y="165" text-anchor="middle" font-size="9">Machine A</text>
+    
+    <rect x="190" y="160" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="230" y="185" text-anchor="middle" font-size="9">Machine B</text>
+    
+    <rect x="340" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="380" y="165" text-anchor="middle" font-size="9">Machine C</text>
+    
+    <text x="230" y="195" text-anchor="middle" font-size="11" font-weight="bold" dy="0">Nix：1つの設計図から「全く同じ環境」を再現</text>
+  </svg>
+</div>
+
 #### 4. uv & pnpm：高速・軽量なパッケージ管理
 プログラムを作る際、一からすべてを書くのではなく、他人が作った便利な部品（パッケージ）を利用するのが一般的だ。それらを管理するツールが「パッケージマネージャ」である。
 
 *   **uv（ユーヴイ）:** Python専用の管理ツール。Rustという言語で書かれており、従来のツール（pipなど）に比べて圧倒的に高速に動作する。近年、Python開発の新しい標準になりつつある。
 *   **pnpm（ピーエヌピーエム）:** JavaScript/TypeScript用の管理ツール。パソコンのディスク容量を節約しつつ、非常に高速に部品をインストールできる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="220" viewBox="0 0 400 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Global Store */}
+    <rect x="150" y="30" width="100" height="60" rx="4" fill="#fff" stroke="#10b981" stroke-width="2" />
+    <text x="200" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">グローバルストア</text>
+    <rect x="170" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    <rect x="210" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    
+    {/* Projects */}
+    <rect x="40" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="90" y="130" text-anchor="middle" font-size="9">Project A</text>
+    
+    <rect x="260" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="310" y="130" text-anchor="middle" font-size="9">Project B</text>
+    
+    {/* Links */}
+    <path d="M 90 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray)" />
+    <path d="M 310 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray)" />
+    
+    <text x="200" y="210" text-anchor="middle" font-size="11" font-weight="bold">pnpm/uv：実体は1つ、参照は複数（省スペース）</text>
+  </svg>
+</div>
 
 #### まとめ
 本章で紹介したツール群は、いずれも「自動化」「高速化」「再現性」をキーワードに進化してきた。AIという高度なソフトウェアを扱うからこそ、その足場となる開発環境をこれらのモダンなツールで整えることが、結果として最も効率的な学習・開発への近道となる。
@@ -268,6 +854,34 @@ Volcano Plotは、横軸に発現量の変化率（Fold Change）、縦軸に統
 
 これは単なるヒートマップではなく、発現パターンの類似度に基づいてサンプル（列）とタンパク質（行）を自動的に並べ替え、階層的な樹状図（デンドログラム）を付加したものである。これにより、特定の疾患群だけで共通して増減しているタンパク質の「塊（モジュール）」や、サンプル間の予期せぬ類似性を視覚的に発見することができる。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="480" height="200" viewBox="0 0 480 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Before */}
+    <text x="70" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">ソート前 (Random)</text>
+    <rect x="20" y="45" width="100" height="100" fill="#fff" stroke="#eee" />
+    {/* Simulating random dots */}
+    <rect x="25" y="50" width="15" height="15" fill="#ef4444" opacity="0.4" />
+    <rect x="45" y="50" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    <rect x="25" y="70" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    <rect x="65" y="90" width="15" height="15" fill="#ef4444" opacity="0.4" />
+    <rect x="85" y="110" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    
+    <path d="M 140 95 H 180" stroke="#ccc" marker-end="url(#arrow-gray)" />
+    
+    {/* After */}
+    <text x="300" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">clustermap (Sorted)</text>
+    {/* Heatmap with blocks */}
+    <rect x="220" y="45" width="100" height="100" fill="#fff" stroke="#eee" />
+    <rect x="220" y="45" width="50" height="50" fill="#ef4444" fill-opacity="0.3" />
+    <rect x="270" y="95" width="50" height="50" fill="#3b82f6" fill-opacity="0.3" />
+    {/* Dendrograms */}
+    <path d="M 325 45 H 340 V 70 H 325 M 325 95 H 340 V 120 H 325 M 340 57 H 355 V 107 H 340" stroke="#666" fill="none" />
+    <path d="M 220 150 V 165 H 245 V 150 M 270 150 V 165 H 295 V 150 M 232 165 V 180 H 282 V 165" stroke="#666" fill="none" />
+    
+    <text x="250" y="195" text-anchor="middle" font-size="10" font-weight="bold">並べ替えにより「意味のある塊」を抽出</text>
+  </svg>
+</div>
+
 ### 3. 独自開発手法：PO（Protein Ontology）解析
 
 従来の解析フローにおける最大の難所は、統計的な絞り込み（Volcano Plot）を行った後、有意に増減したタンパク質が数百から数千に及び、その一つひとつを人間が精査するには限界がある点だ。この情報の氾濫を打破し、解析者の意図に沿った「意味のあるターゲット」を論理的に抽出するため、著者はGene Ontology解析の概念をタンパク質構造レベルにまで拡張した**「PO（Protein Ontology）解析」**を開発した。
@@ -277,6 +891,31 @@ PO解析の根幹は、タンパク質を単なる「数値の変動」として
 
 #### ② 構造的近縁関係の可視化：UMAP & HDBSCAN
 次に、数千次元に及ぶ情報を**UMAP**によって低次元に圧縮し、空間内の分布を可視化する。さらに、**HDBSCAN**によるクラスタリングを行うことで、発現量の増減とは無関係に、機能や構造が類似したタンパク質のグループ（Ontology群）を自動的に定義する。これにより、Volcano Plotでヒットした膨大なリストを、意味のある「塊」として整理することが可能になる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Island Cluster 1 */}
+    <ellipse cx="100" cy="80" rx="40" ry="30" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-dasharray="2,2" />
+    <circle cx="85" cy="70" r="3" fill="#3b82f6" />
+    <circle cx="110" cy="85" r="3" fill="#3b82f6" />
+    <circle cx="95" cy="95" r="3" fill="#3b82f6" />
+    <text x="100" y="40" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">代謝系グループ</text>
+    
+    {/* Island Cluster 2 */}
+    <ellipse cx="280" cy="150" rx="50" ry="40" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-dasharray="2,2" />
+    <circle cx="260" cy="140" r="3" fill="#10b981" />
+    <circle cx="300" cy="160" r="3" fill="#10b981" />
+    <circle cx="270" cy="170" r="3" fill="#10b981" />
+    <circle cx="295" cy="135" r="3" fill="#10b981" />
+    <text x="280" y="100" text-anchor="middle" font-size="9" fill="#10b981" font-weight="bold">免疫系グループ</text>
+    
+    {/* Outliers */}
+    <circle cx="200" cy="120" r="2" fill="#ccc" />
+    <circle cx="150" cy="180" r="2" fill="#ccc" />
+    
+    <text x="200" y="220" text-anchor="middle" font-size="11" font-weight="bold">UMAP & HDBSCAN：機能で「島」を形成する</text>
+  </svg>
+</div>
 
 #### ③ 恣意的なアンカー設定と類似度スコアリング
 PO解析の核心は、解析者の関心対象である特定のタンパク質を「**アンカー（錨）**」として設定し、そのタンパク質との「機能的な近さ」を定量化する点にある。
@@ -288,6 +927,31 @@ $$
 $$
 
 このスコアにより、「Volcano Plotで有意に変化したタンパク質群」の中から、さらに「アンカータンパク質と機能的に類似している順」にランキングを作成する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Ripples */}
+    <circle cx="200" cy="120" r="30" fill="none" stroke="#ef4444" stroke-opacity="0.1" />
+    <circle cx="200" cy="120" r="60" fill="none" stroke="#ef4444" stroke-opacity="0.1" />
+    <circle cx="200" cy="120" r="90" fill="none" stroke="#ef4444" stroke-opacity="0.1" />
+    
+    {/* Anchor */}
+    <path d="M 200 105 L 205 115 H 215 L 207 122 L 210 132 L 200 125 L 190 132 L 193 122 L 185 115 H 195 Z" fill="#ef4444" />
+    <text x="200" y="145" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="bold">アンカー (Anchor)</text>
+    
+    {/* Nearby Proteins */}
+    <circle cx="220" cy="100" r="4" fill="#ef4444" />
+    <circle cx="180" cy="130" r="4" fill="#ef4444" />
+    <text x="240" y="90" font-size="8" fill="#ef4444">高スコア (似ている)</text>
+    
+    {/* Far Proteins */}
+    <circle cx="300" cy="60" r="4" fill="#ccc" />
+    <circle cx="100" cy="180" r="4" fill="#ccc" />
+    <text x="320" y="55" font-size="8" fill="#999">低スコア</text>
+    
+    <text x="200" y="220" text-anchor="middle" font-size="11" font-weight="bold">アンカーからの「意味の近さ」で標的を一本釣りする</text>
+  </svg>
+</div>
 
 #### ④ 解析の意義：膨大なヒットリストからの脱却
 PO解析を用いることで、Volcano Plotの「有意なタンパク質が多すぎて選べない」という問題が解消される。解析者は自身の仮説に基づいたアンカーを設定するだけで、膨大なデータの中から「構造的・機能的に自身の興味に最も近い候補」を優先的に抽出できる。

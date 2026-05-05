@@ -48,11 +48,54 @@ Pythonの最大の特徴は、その文法が極めてシンプルで読みや�
 
 機械学習の根幹は、第1章で学んだ通り膨大な行列計算（積和）である。Pythonのコミュニティは、この計算負荷が極端に高いコアの部分だけを、実行速度が極めて速いC言語やC++、Fortranで開発した。そして、ユーザーが操作する表側のインターフェースだけを使いやすいPythonで覆い隠したのである。これにより、「コードを書くときはPythonのシンプルさを享受し、実行するときはC言語の爆速計算パワーを引き出す」という理想的な環境が完成した。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="260" viewBox="0 0 400 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Water line */}
+    <line x1="20" y1="120" x2="380" y2="120" stroke="#3b82f6" stroke-dasharray="4,4" />
+    <text x="375" y="110" text-anchor="end" font-size="9" fill="#3b82f6">水面 (Interface)</text>
+    
+    {/* Iceberg */}
+    <path d="M 200 40 L 260 110 L 280 200 L 120 220 L 140 110 Z" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    
+    {/* Above water */}
+    <text x="200" y="80" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">Python</text>
+    <text x="200" y="100" text-anchor="middle" font-size="9" fill="#666">シンプル・直感的・遅い</text>
+    
+    {/* Below water */}
+    <text x="200" y="160" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">C / C++ / CUDA</text>
+    <text x="200" y="180" text-anchor="middle" font-size="9" fill="#3b82f6">複雑・並列処理・爆速</text>
+    
+    <text x="200" y="245" text-anchor="middle" font-size="11" font-weight="bold">「接着剤」としてのPython：表は易しく、裏は凄まじく</text>
+  </svg>
+</div>
+
 ##### 5.1.3 「車輪の再発明」を避ける巨大なエコシステム
 
 こうして、Pythonの周囲には世界中の天才たちが開発した強力な「ライブラリ（特定の機能を持ったプログラムの部品群）」が次々と集結し、互いに連携し合う巨大なエコシステムが形成された。
 
 現代のデータサイエンティストは、行列の掛け算のアルゴリズムや、微分の計算式をゼロから自分の手でプログラミングすること（車輪の再発明）は絶対にしない。すでに世界最高峰の最適化が施されたライブラリを「適切に組み合わせて呼び出す」ことこそが、現代の実装の作法なのである。次節からは、そのエコシステムを構成する必須ライブラリたちを具体的に見ていこう。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="260" viewBox="0 0 500 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Deep Learning / LLM */}
+    <rect x="100" y="30" width="300" height="60" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    <text x="250" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">深層学習 / LLM</text>
+    <text x="250" y="75" text-anchor="middle" font-size="10" fill="#666">PyTorch, Transformers (Hugging Face)</text>
+    <path d="M 250 90 V 110" stroke="#ccc" marker-end="url(#arrow-gray-p1)" />
+    {/* Classical ML */}
+    <rect x="100" y="110" width="300" height="60" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="1.5" />
+    <text x="250" y="135" text-anchor="middle" font-size="14" font-weight="bold" fill="#10b981">古典的機械学習</text>
+    <text x="250" y="155" text-anchor="middle" font-size="10" fill="#666">Scikit-learn, XGBoost, LightGBM</text>
+    <path d="M 250 170 V 190" stroke="#ccc" marker-end="url(#arrow-gray-p1)" />
+    {/* Base */}
+    <rect x="100" y="190" width="300" height="40" rx="4" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" stroke-width="1.5" />
+    <text x="250" y="215" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">データ処理基盤</text>
+    <text x="250" y="232" text-anchor="middle" font-size="9" fill="#666">NumPy, pandas</text>
+    <defs>
+      <marker id="arrow-gray-p1" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#ccc" /></marker>
+    </defs>
+  </svg>
+</div>
 
 #### 5.2 データ前処理と古典的機械学習の標準装備
 
@@ -77,6 +120,35 @@ Scikit-learnの最も偉大な功績は、あらゆるアルゴリズムに対�
 3.  未知のデータに対する予測: `model.predict(X_test)`
 
 ロジスティック回帰を使いたければ、1行目を `model = LogisticRegression()` に変えるだけだ。たったこれだけで、裏側では交差エントロピー誤差が定義され、偏微分が計算され、勾配降下法が何千回と繰り返されて最適なパラメータが探索される。Scikit-learnは、機械学習の複雑な数学的処理を見事に「抽象化（ブラックボックス化）」し、誰でも簡単にAIモデルを訓練できるようにした魔法の杖なのである。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  <div>
+    <svg width="200" height="160" viewBox="0 0 200 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="60" height="40" rx="4" fill="#eee" />
+      <text x="50" y="65" text-anchor="middle" font-size="10">X, y</text>
+      <path d="M 80 60 H 110" stroke="#ccc" marker-end="url(#arrow-gray-p2)" />
+      <rect x="120" y="40" width="60" height="40" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+      <text x="150" y="65" text-anchor="middle" font-size="10" font-weight="bold">model.fit()</text>
+      <text x="100" y="110" text-anchor="middle" font-size="11" font-weight="bold">学習 (Training)</text>
+      <text x="100" y="130" text-anchor="middle" font-size="9" fill="#666">魔法の2行で学習完了</text>
+    </svg>
+  </div>
+  <div>
+    <svg width="200" height="160" viewBox="0 0 200 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="60" height="40" rx="4" fill="#eee" />
+      <text x="50" y="65" text-anchor="middle" font-size="10">未知のX</text>
+      <path d="M 80 60 H 110" stroke="#ccc" marker-end="url(#arrow-gray-p2)" />
+      <rect x="120" y="40" width="60" height="40" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+      <text x="150" y="65" text-anchor="middle" font-size="10" font-weight="bold">predict()</text>
+      <path d="M 150 80 V 100" stroke="#ccc" marker-end="url(#arrow-gray-p2)" />
+      <text x="150" y="120" text-anchor="middle" font-size="10" font-weight="bold">予測値 y</text>
+      <text x="100" y="25" text-anchor="middle" font-size="11" font-weight="bold">予測 (Inference)</text>
+    </svg>
+  </div>
+  <defs>
+    <marker id="arrow-gray-p2" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#ccc" /></marker>
+  </defs>
+</div>
 
 ##### 5.2.3 Kaggleの覇者たち：XGBoostとLightGBMの実装アプローチ
 
@@ -114,7 +186,30 @@ TensorFlowは、第3次AIブームの初期から業界を牽引してきたパ�
 
 PyTorchの最大の魅力は、「Define-by-Run（実行しながら計算グラフを構築する）」という思想にある。TensorFlowが「最初に完璧な設計図を書かなければならない」のに対し、PyTorchはデータが流れるその瞬間にネットワークの構造を決定できる。これにより、条件分岐（if文）やループ（for文）といった通常のPythonの文法をそのまま使って、極めて柔軟で複雑なネットワークを直感的に書くことができる。
 
-エラーが起きたときのデバッグも通常のPythonコードと同じように行えるため、新しい未踏のアーキテクチャを試行錯誤しながら開発する研究者たちから熱狂的な支持を集めた。現在、世界中のトップカンファレンスで発表されるAI論文のソースコードの大部分は、PyTorchで記述されている。
+エラーが起きたときのデバッグも通常のPythonコードと同じように行えるため、新しい未踏のアーキテクチャを試行錯誤しながら開発する研究者たちから熱狂的な支持を集めた。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  {/* Static Graph */}
+  <div style="flex: 1; min-width: 180px;">
+    <svg width="180" height="180" viewBox="0 0 180 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="140" height="100" rx="4" fill="#eee" stroke="#666" />
+      <text x="90" y="30" text-anchor="middle" font-size="10" font-weight="bold">Static (設計図型)</text>
+      <line x1="40" y1="90" x2="140" y2="90" stroke="#666" stroke-width="8" />
+      <text x="90" y="160" text-anchor="middle" font-size="9">最初に管を組む</text>
+    </svg>
+  </div>
+  {/* Dynamic Graph */}
+  <div style="flex: 1; min-width: 180px;">
+    <svg width="180" height="180" viewBox="0 0 180 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <path d="M 20 90 Q 50 40 90 90 T 160 90" stroke="#3b82f6" stroke-width="4" fill="none" stroke-dasharray="4,2" />
+      <text x="90" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">Dynamic (実行型)</text>
+      <circle cx="90" cy="90" r="10" fill="#3b82f6" />
+      <text x="90" y="160" text-anchor="middle" font-size="9">流れに合わせて変える</text>
+    </svg>
+  </div>
+</div>
+
+現在、世界中のトップカンファレンスで発表されるAI論文ソースコードの大部分は、PyTorchで記述されている。
 
 ##### 5.3.4 GPUの召喚：数行のコードで並列計算パワーを解放する
 
@@ -158,6 +253,29 @@ result = classifier("Pythonのライブラリは魔法のようだ！")
 1つは、OpenAI（ChatGPT）やAnthropic（Claude）が提供する**APIをPythonから呼び出す方法**である。モデル自体はクラウド上で稼働しており、開発者は「プロンプト（指示文）」をAPI経由で送信し、結果を受け取るだけでよい。高度な推論能力を即座に自社のシステムに組み込めるため、最も手軽で強力な手法である。
 
 もう1つは、Hugging FaceからオープンソースのLLM（MetaのLlama 3など）をダウンロードし、**「ファインチューニング（微調整）」**を行う方法である。基盤モデルに自社の社内規程や専門用語のデータを追加で学習させ、特定業務に特化した専用AIを作る。この際も、LoRA（Low-Rank Adaptation）と呼ばれる、一部のパラメータだけを効率的に更新する最新手法を適用するためのライブラリ（PEFT）がPython環境には完璧に整備されており、普通のゲーミングPC程度のGPUさえあれば、個人でも巨大なAIをカスタマイズすることが可能となっている。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="260" viewBox="0 0 500 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Foundation Pyramid */}
+    <path d="M 50 200 L 250 40 L 450 200 Z" fill="#fff" stroke="#ccc" stroke-width="2" />
+    <path d="M 100 160 H 400 M 150 120 H 350 M 200 80 H 300" stroke="#eee" />
+    <text x="250" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#666">基盤モデル (Foundation Model)</text>
+    
+    {/* Fine-tuning part */}
+    <path d="M 225 60 L 250 40 L 275 60 Z" fill="#10b981" />
+    <text x="250" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#10b981">微調整 (Fine-tuning)</text>
+    
+    {/* Helicopter/Tools */}
+    <rect x="350" y="50" width="60" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="380" y="70" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">PEFT / LoRA</text>
+    <path d="M 350 65 L 280 60" stroke="#3b82f6" stroke-dasharray="2,2" marker-end="url(#arrow-blue-p3)" />
+    
+    <text x="250" y="240" text-anchor="middle" font-size="11" font-weight="bold">「巨人の肩」に乗り、最小の労力で最大の知能を得る</text>
+    <defs>
+      <marker id="arrow-blue-p3" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#3b82f6" /></marker>
+    </defs>
+  </svg>
+</div>
 
 #### 5.5 まとめ：理論（数学）と実装（コード）の両輪を回す
 

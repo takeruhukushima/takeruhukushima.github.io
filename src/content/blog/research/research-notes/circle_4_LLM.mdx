@@ -52,6 +52,44 @@ RNNの仕組みは直感的である。文章を「先頭から1単語ずつ順�
 
 しかし、この方式には致命的な弱点があった。それが「記憶の限界（勾配消失問題）」である。文章が長くなればなるほど、バケツリレーの過程で文頭の重要な情報が薄れていってしまうのだ。長い小説の冒頭の伏線を、結末まで正確に保持し続けることは、RNNの数学的構造上極めて困難であった。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="280" viewBox="0 0 500 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* RNN/LSTM */}
+    <text x="20" y="30" font-size="12" font-weight="bold">RNN / LSTM (Sequential)</text>
+    <rect x="50" y="50" width="40" height="30" fill="#fff" stroke="#666" />
+    <text x="70" y="70" text-anchor="middle" font-size="9">単語1</text>
+    <path d="M 90 65 H 120" stroke="#ccc" marker-end="url(#arrow-gray-llm)" />
+    <rect x="130" y="50" width="40" height="30" fill="#fff" stroke="#666" opacity="0.8" />
+    <text x="150" y="70" text-anchor="middle" font-size="9" opacity="0.8">単語2</text>
+    <path d="M 170 65 H 200" stroke="#ccc" marker-end="url(#arrow-gray-llm)" />
+    <rect x="210" y="50" width="40" height="30" fill="#fff" stroke="#666" opacity="0.6" />
+    <text x="230" y="70" text-anchor="middle" font-size="9" opacity="0.6">単語3</text>
+    <path d="M 250 65 H 280" stroke="#ccc" marker-end="url(#arrow-gray-llm)" />
+    <text x="300" y="70" font-size="12" fill="#999">...</text>
+    <text x="250" y="100" text-anchor="middle" font-size="10" fill="#ef4444">バケツリレーによる情報の劣化</text>
+    
+    <line x1="20" y1="120" x2="480" y2="120" stroke="#eee" />
+
+    {/* Transformer */}
+    <text x="20" y="150" font-size="12" font-weight="bold">Transformer (Parallel + Attention)</text>
+    <rect x="50" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="110" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="170" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <rect x="230" y="170" width="40" height="30" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    
+    <path d="M 70 200 Q 140 240 210 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 70 200 Q 110 230 150 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 130 200 Q 190 230 250 200" stroke="#3b82f6" fill="none" stroke-opacity="0.3" />
+    <path d="M 70 200 Q 150 250 250 200" stroke="#3b82f6" fill="none" stroke-opacity="0.5" stroke-width="1.5" />
+    
+    <text x="250" y="260" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">Self-Attention：全単語を一斉照会（距離ゼロ）</text>
+    
+    <defs>
+      <marker id="arrow-gray-llm" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#ccc" /></marker>
+    </defs>
+  </svg>
+</div>
+
 ##### 4.1.3 逐次処理のジレンマ：計算資源のボトルネック
 
 記憶の限界以上に深刻だったのが、RNNが「逐次処理（順番にしか計算できない）」という性質を持っていることだった。
@@ -107,6 +145,33 @@ AI研究者たちは、Transformerを巨大化させていく過程で、ある�
 
 かつての機械学習モデル（決定木や小規模なニューラルネットワーク）は、ある一定のデータ量やパラメータ数を超えると、それ以上賢くならない「頭打ち（性能の飽和）」が起きていた。しかし、Transformerベースの巨大言語モデルには、その「天井」が見えなかったのだ。この法則を信じ、莫大な資金を投じて世界中のGPUを買い占め、インターネット上のありとあらゆるテキストをモデルに読み込ませる「力技」にいち早く賭けたのがOpenAIであり、彼らが生み出したのが「GPT（Generative Pre-trained Transformer）」シリーズである。
 
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  {/* Panel 1: Scaling Law */}
+  <div style="flex: 1; min-width: 220px;">
+    <svg width="220" height="220" viewBox="0 0 220 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <line x1="40" y1="180" x2="200" y2="180" stroke="#ccc" stroke-width="1" />
+      <line x1="40" y1="180" x2="40" y2="40" stroke="#ccc" stroke-width="1" />
+      <path d="M 50 50 L 190 160" stroke="#3b82f6" stroke-width="2" fill="none" />
+      <text x="120" y="100" transform="rotate(38, 120, 100)" font-size="9" fill="#3b82f6" font-weight="bold">Scaling Law</text>
+      <text x="120" y="200" text-anchor="middle" font-size="10" font-weight="bold">① 規則的な誤差の低下</text>
+      <text x="40" y="30" font-size="8" fill="#888">誤差 (Loss) [log]</text>
+      <text x="200" y="190" text-anchor="end" font-size="8" fill="#888">計算量 [log]</text>
+    </svg>
+  </div>
+  {/* Panel 2: Emergence */}
+  <div style="flex: 1; min-width: 220px;">
+    <svg width="220" height="220" viewBox="0 0 220 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <line x1="40" y1="180" x2="200" y2="180" stroke="#ccc" stroke-width="1" />
+      <line x1="40" y1="180" x2="40" y2="40" stroke="#ccc" stroke-width="1" />
+      <path d="M 40 175 H 120 Q 140 175 150 120 T 180 50" stroke="#ef4444" stroke-width="2" fill="none" />
+      <text x="140" y="90" font-size="9" fill="#ef4444" font-weight="bold">創発 (Emergence)</text>
+      <text x="120" y="200" text-anchor="middle" font-size="10" font-weight="bold">② 突如とした能力の獲得</text>
+      <text x="40" y="30" font-size="8" fill="#888">正解率 (%)</text>
+      <text x="200" y="190" text-anchor="end" font-size="8" fill="#888">モデル規模</text>
+    </svg>
+  </div>
+</div>
+
 ##### 4.3.2 究極のシンプルさ：「次の単語」を予測し続けるだけ
 
 数千億というパラメータを持つ巨大な言語モデル（LLM）の内部構造は気が遠くなるほど複雑だが、実はそのモデルが「学習」している目的は、拍子抜けするほどシンプルである。それは**「入力された文章の、次にくる確率が最も高い単語（トークン）を予測し続けること」**、ただそれだけである。
@@ -146,6 +211,45 @@ RLHFは、大きく3つのステップで構成される。
 3.  **PPO（強化学習）による最適化:** 最後に、この「報酬モデル（人間の価値観の代行者）」を教師として使い、言語モデル本体が「より高い報酬（スコア）をもらえるような回答を生成するように」、強化学習（PPOというアルゴリズム）を用いてパラメータを最終調整する。
 
 このRLHFという後付けの教育によって、AIは「爆弾の作り方」には「お答えできません」と断り、「あなたは誰ですか？」には「私はAIアシスタントです」と礼儀正しく答えるように調教されたのである。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="280" viewBox="0 0 500 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Step 1: SFT */}
+    <rect x="20" y="40" width="80" height="40" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="60" y="65" text-anchor="middle" font-size="8">SFT</text>
+    <text x="60" y="100" text-anchor="middle" font-size="7" fill="#666">① 回答の型を学ぶ</text>
+    <path d="M 100 60 H 130" stroke="#ccc" marker-end="url(#arrow-gray-rlhf)" />
+    
+    {/* Step 2: Reward Model */}
+    <rect x="140" y="20" width="120" height="120" rx="4" fill="#3b82f6" fill-opacity="0.05" stroke="#3b82f6" stroke-dasharray="2,2" />
+    <text x="200" y="35" text-anchor="middle" font-size="8" font-weight="bold">人間によるランク付け</text>
+    <rect x="150" y="50" width="100" height="12" fill="#10b981" fill-opacity="0.3" />
+    <text x="155" y="59" font-size="7">良: 親切な回答</text>
+    <rect x="150" y="70" width="100" height="12" fill="#999" fill-opacity="0.3" />
+    <text x="155" y="79" font-size="7">中: 普通の回答</text>
+    <rect x="150" y="90" width="100" height="12" fill="#ef4444" fill-opacity="0.3" />
+    <text x="155" y="99" font-size="7">悪: 危険な回答</text>
+    <text x="200" y="130" text-anchor="middle" font-size="7" fill="#666">② 価値観の数値化</text>
+    
+    <path d="M 260 80 H 290" stroke="#ccc" marker-end="url(#arrow-gray-rlhf)" />
+    
+    {/* Step 3: PPO */}
+    <rect x="300" y="40" width="100" height="80" rx="4" fill="#fff" stroke="#10b981" stroke-width="1.5" />
+    <text x="350" y="75" text-anchor="middle" font-size="9" font-weight="bold">強化学習</text>
+    <text x="350" y="90" text-anchor="middle" font-size="7">高スコアを狙う</text>
+    <text x="350" y="145" text-anchor="middle" font-size="7" fill="#666">③ 「お行儀」の自動調整</text>
+    
+    {/* Loop arrow */}
+    <path d="M 350 120 V 160 H 60 V 80" stroke="#10b981" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-green-rlhf)" />
+    
+    <text x="250" y="240" text-anchor="middle" font-size="11" font-weight="bold">RLHF：野性の知能を人間のパートナーへ調律する</text>
+    
+    <defs>
+      <marker id="arrow-gray-rlhf" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#ccc" /></marker>
+      <marker id="arrow-green-rlhf" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#10b981" /></marker>
+    </defs>
+  </svg>
+</div>
 
 ##### 4.4.3 ChatGPTの誕生と「基盤モデル（Foundation Model）」の完成
 

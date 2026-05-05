@@ -63,6 +63,26 @@ $$
 \end{aligned}
 $$
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="240" height="240" viewBox="0 0 240 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="40" y1="200" x2="220" y2="200" stroke="#ccc" stroke-width="1" />
+    <line x1="40" y1="200" x2="40" y2="20" stroke="#ccc" stroke-width="1" />
+    {/* (0,0) -> 0 */}
+    <circle cx="60" cy="180" r="6" fill="#3b82f6" />
+    <text x="60" y="215" text-anchor="middle" font-size="10">0,0</text>
+    {/* (1,1) -> 0 */}
+    <circle cx="180" cy="60" r="6" fill="#3b82f6" />
+    <text x="180" y="50" text-anchor="middle" font-size="10">1,1</text>
+    {/* (1,0) -> 1 */}
+    <path d="M 174 174 L 186 186 M 186 174 L 174 186" stroke="#ef4444" stroke-width="3" />
+    <text x="180" y="215" text-anchor="middle" font-size="10">1,0</text>
+    {/* (0,1) -> 1 */}
+    <path d="M 54 54 L 66 66 M 66 54 L 54 66" stroke="#ef4444" stroke-width="3" />
+    <text x="60" y="50" text-anchor="middle" font-size="10">0,1</text>
+    <text x="120" y="235" text-anchor="middle" font-size="11" font-weight="bold">XOR問題：直線1本では分離不可能</text>
+  </svg>
+</div>
+
 頭の中でグラフを思い浮かべるか、紙にこの4つの点を打ってみてほしい。
 そして、0のグループ（原点と右上）と、1のグループ（右下と左上）を分けるように、**「直線を1本だけ」**引いてみてほしい。
 
@@ -81,9 +101,40 @@ $$
 研究者たちは、「入力（$x_1, x_2$）」と「出力（$y$）」の間に、クッションとなる別の層**（隠れ層）**を挟み込む構造を考案した。これを**多層パーセプトロン（MLP: Multi-Layer Perceptron）**、あるいは私たちがよく知る**ニューラルネットワーク**と呼ぶ。
 
 この「隠れ層」がやっていることは、数学的に言えば**「空間の非線形変換」**である。
-入力されたデータを、いきなり直線で区切ろうとするのではなく、一度隠れ層という別の次元（空間）に持ち上げる。そこでシグモイド関数やReLU（ランプ関数）といった「直線を曲げる（非線形な）」関数を通すことで、元の2次元平面の座標を、ゴムシートを引っ張ったり折りたたんだりするようにグニャグニャに歪めるのである。
+入力されたデータを、いきなり直線で区切ろうとするのではなく、一度隠れ層という別の次元（空間）に持ち上げる。そこでシグモイド関数やReLU（ランプ関数）といった「直線を曲げる（非線形な）」関数を通すことで、元の2次元平面の座標を、ゴムシートを引っ張ったようにグニャグニャに歪めるのである。
 
-元の空間ではどうやっても直線で切り離せなかったXORの4つの点も、空間ごと適切に歪めてしまえば、**歪んだあとの空間においてなら「1本の直線」で綺麗に切り分けることができる**ようになる。先ほどのデモで「隠れ層あり」を選択したときに境界線が曲がりくねって点を囲い込んだのは、まさにネットワークが「空間の歪め方」を学習した結果なのだ。
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="200" viewBox="0 0 460 200" style="font-family: sans-serif;">
+    {/* Original Space */}
+    <rect x="20" y="40" width="120" height="120" rx="4" fill="#fcfcfc" stroke="#eee" />
+    <circle cx="50" cy="130" r="4" fill="#3b82f6" />
+    <circle cx="110" cy="70" r="4" fill="#3b82f6" />
+    <path d="M 106 126 L 114 134 M 114 126 L 106 134" stroke="#ef4444" stroke-width="2" />
+    <path d="M 46 66 L 54 74 M 54 66 L 46 74" stroke="#ef4444" stroke-width="2" />
+    
+    <text x="230" y="105" text-anchor="middle" font-size="12" fill="#666">非線形変換 (隠れ層)</text>
+    <path d="M 160 100 H 300" stroke="#ccc" stroke-width="2" marker-end="url(#arrow-black-s)" />
+    
+    {/* Distorted Space */}
+    <rect x="320" y="40" width="120" height="120" rx="4" fill="#fcfcfc" stroke="#eee" />
+    <path d="M 320 100 Q 380 40 440 100" stroke="#eee" fill="none" />
+    <path d="M 320 140 Q 380 140 440 60" stroke="#eee" fill="none" />
+    <circle cx="350" cy="145" r="4" fill="#3b82f6" />
+    <circle cx="375" cy="120" r="4" fill="#3b82f6" />
+    <path d="M 381 76 L 389 84 M 389 76 L 381 84" stroke="#ef4444" stroke-width="2" />
+    <path d="M 406 51 L 414 59 M 414 51 L 406 59" stroke="#ef4444" stroke-width="2" />
+    <line x1="330" y1="150" x2="430" y2="50" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="3,3" />
+    
+    <defs>
+      <marker id="arrow-black-s" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+    <text x="230" y="190" text-anchor="middle" font-size="11" font-weight="bold">「空間を歪める」ことで、直線での分類を可能にする</text>
+  </svg>
+</div>
+
+元の空間ではどうやっても直線で切り離せなかったXORの4つの点も、空間ごと適切に歪めてしまえば、歪んだあとの空間においてなら「1本の直線」で綺麗に切り分けることができるようになる。先ほどのデモで「隠れ層あり」を選択したときに境界線が曲がりくねって点を囲い込んだのは、まさにネットワークが「空間の歪め方」を学習した結果なのだ。
 
 ##### 3.2.2 普遍近似定理：いかなる複雑な関数も表現できる数学的証明
 
@@ -100,7 +151,34 @@ $$
 
 この途方もない調整作業を、第1章で学んだ「微分（連鎖律）」の力を使ってエレガントに解決したアルゴリズムが**誤差逆伝播法（Backpropagation）**である。
 
-これは、出力層で発生した「予測と正解のズレ（誤差）」を、出力層→隠れ層→入力層へと、計算の順番を逆向きにたどりながら「それぞれの重みが誤差にどれくらい悪影響を与えたか（偏微分）」を分配していく手法だ。これにより、どれほどネットワークが深くなろうとも、すべてのパラメータを誤差の谷底へ向けて一斉に更新（勾配降下法）することが可能になったのである。
+これは、出力層で発生した「予測と正解のズレ（誤差）」を、出力層→隠れ層→入力層へと、計算の順番を逆向きにたどりながら「それぞれの重みが誤差にどれくらい悪影響を与えたか（偏微分）」を分配していく手法だ。これを何千回、何万回と高速で繰り返す。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="200" viewBox="0 0 400 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Nodes */}
+    <circle cx="50" cy="100" r="15" fill="#fff" stroke="#ccc" />
+    <circle cx="200" cy="100" r="15" fill="#fff" stroke="#ccc" />
+    <circle cx="350" cy="100" r="15" fill="#fff" stroke="#ccc" />
+    <text x="50" y="135" text-anchor="middle" font-size="9">入力層</text>
+    <text x="200" y="135" text-anchor="middle" font-size="9">隠れ層</text>
+    <text x="350" y="135" text-anchor="middle" font-size="9">出力層</text>
+    
+    {/* Forward Pass */}
+    <path d="M 70 90 Q 200 40 330 90" stroke="#3b82f6" fill="none" stroke-width="2" marker-end="url(#arrow-blue-f)" />
+    <text x="200" y="60" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">順伝播 (Forward): 予測</text>
+    
+    {/* Backward Pass */}
+    <path d="M 330 110 Q 200 160 70 110" stroke="#ef4444" fill="none" stroke-width="2" marker-end="url(#arrow-red-b)" />
+    <text x="200" y="160" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="bold">逆伝播 (Backward): 誤差を配分</text>
+    
+    <defs>
+      <marker id="arrow-blue-f" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" /></marker>
+      <marker id="arrow-red-b" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#ef4444" /></marker>
+    </defs>
+  </svg>
+</div>
+
+これにより、どれほどネットワークが深くなろうとも、すべてのパラメータを誤差の谷底へ向けて一斉に更新（勾配降下法）することが可能になったのである。
 
 こうして、「多層化による圧倒的な表現力」と「誤差逆伝播法による効率的な学習」という両輪が揃い、深層学習は覚醒の時を待つこととなる。
 
@@ -119,12 +197,81 @@ $$
 
 深層学習は、この「人間による特徴量設計」という常識を完全に破壊した。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="260" viewBox="0 0 500 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Traditional */}
+    <text x="20" y="30" font-size="12" font-weight="bold">従来の手法 (Traditional ML)</text>
+    <rect x="30" y="50" width="40" height="40" fill="#eee" />
+    <text x="50" y="75" text-anchor="middle" font-size="10">画像</text>
+    <path d="M 80 70 H 120" stroke="#ccc" marker-end="url(#arrow-gray-dl)" />
+    <rect x="130" y="50" width="100" height="40" rx="4" fill="#fff" stroke="#666" />
+    <text x="180" y="75" text-anchor="middle" font-size="9">手動の特徴量抽出</text>
+    <path d="M 240 70 H 280" stroke="#ccc" marker-end="url(#arrow-gray-dl)" />
+    <rect x="290" y="50" width="80" height="40" rx="4" fill="#fff" stroke="#666" />
+    <text x="330" y="75" text-anchor="middle" font-size="9">学習アルゴリズム</text>
+    <path d="M 380 70 H 420" stroke="#ccc" marker-end="url(#arrow-gray-dl)" />
+    <text x="430" y="75" font-size="12" font-weight="bold">「自動車」</text>
+    
+    {/* Deep Learning */}
+    <text x="20" y="140" font-size="12" font-weight="bold">深層学習 (End-to-End)</text>
+    <rect x="30" y="160" width="40" height="40" fill="#eee" />
+    <text x="50" y="185" text-anchor="middle" font-size="10">画像</text>
+    <path d="M 80 180 H 120" stroke="#ccc" marker-end="url(#arrow-gray-dl)" />
+    <rect x="130" y="150" width="240" height="60" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="250" y="185" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">Deep Neural Network (特徴量も自動学習)</text>
+    <path d="M 380 180 H 420" stroke="#ccc" marker-end="url(#arrow-gray-dl)" />
+    <text x="430" y="185" font-size="12" font-weight="bold">「自動車」</text>
+    
+    <text x="250" y="240" text-anchor="middle" font-size="11" fill="#666" font-style="italic">人間の「職人芸」が、データからの「自動獲得」へ</text>
+
+    <defs>
+      <marker id="arrow-gray-dl" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
 深層ニューラルネットワーク、特に画像認識で用いられる畳み込みニューラルネットワーク（CNN）においては、生のピクセルデータをそのまま入力層に放り込む。そして、「これが自動車である」という正解ラベルとの誤差を最小化するように、誤差逆伝播法を用いてネットワーク全体のパラメータを更新していく。
 
 この学習の過程でネットワーク内部を観察すると、驚くべき現象が起きていることがわかる。
 ネットワークの浅い層（入力に近い層）は、自動的に「縦や横の単純な輪郭（エッジ）」に反応するフィルターを獲得する。そこから層が深くなるにつれて、輪郭を組み合わせた「丸や四角の形状」へ、さらに深い層では「タイヤ」や「窓ガラス」、最終的には「自動車全体の概念」へと、階層的に複雑な特徴を自ら学習していくのである。
 
-
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="180" viewBox="0 0 500 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Raw Image */}
+    <rect x="20" y="50" width="60" height="60" fill="#eee" />
+    <text x="50" y="130" text-anchor="middle" font-size="9">生の画像</text>
+    <path d="M 90 80 H 120" stroke="#ccc" marker-end="url(#arrow-gray-h)" />
+    {/* Edges */}
+    <rect x="130" y="60" width="40" height="40" rx="2" fill="#fff" stroke="#ccc" />
+    <line x1="140" y1="70" x2="160" y2="90" stroke="#1a1a1a" />
+    <line x1="160" y1="70" x2="140" y2="90" stroke="#1a1a1a" />
+    <text x="150" y="115" text-anchor="middle" font-size="8">エッジ (輪郭)</text>
+    <text x="150" y="130" text-anchor="middle" font-size="7" fill="#666">浅い層</text>
+    <path d="M 180 80 H 210" stroke="#ccc" marker-end="url(#arrow-gray-h)" />
+    {/* Shapes */}
+    <rect x="220" y="60" width="40" height="40" rx="2" fill="#fff" stroke="#ccc" />
+    <circle cx="240" cy="80" r="12" fill="none" stroke="#1a1a1a" />
+    <text x="240" y="115" text-anchor="middle" font-size="8">パーツ (形状)</text>
+    <text x="240" y="130" text-anchor="middle" font-size="7" fill="#666">中間の層</text>
+    <path d="M 270 80 H 300" stroke="#ccc" marker-end="url(#arrow-gray-h)" />
+    {/* Concept */}
+    <rect x="310" y="60" width="40" height="40" rx="2" fill="#fff" stroke="#ccc" />
+    <rect x="315" y="75" width="30" height="15" fill="#1a1a1a" />
+    <circle cx="320" cy="90" r="4" fill="#1a1a1a" />
+    <circle cx="340" cy="90" r="4" fill="#1a1a1a" />
+    <text x="330" y="115" text-anchor="middle" font-size="8">全体概念</text>
+    <text x="330" y="130" text-anchor="middle" font-size="7" fill="#666">深い層</text>
+    <path d="M 360 80 H 390" stroke="#ccc" marker-end="url(#arrow-gray-h)" />
+    {/* Label */}
+    <text x="430" y="85" font-size="12" font-weight="bold">「自動車」</text>
+    <defs>
+      <marker id="arrow-gray-h" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#ccc" /></marker>
+    </defs>
+    <text x="250" y="165" text-anchor="middle" font-size="10" font-weight="bold">階層的な特徴表現の獲得</text>
+  </svg>
+</div>
 
 人間が「どこに注目すべきか」を一切教えなくても、データと目的（誤差関数の最小化）さえ与えれば、機械が自律的に最適な特徴量（表現）を見つけ出す。入力（生のデータ）から出力（最終的な予測）までを一貫して一つのネットワークで学習するこの画期的な仕組みを**End-to-End（端から端まで）学習**と呼ぶ。
 

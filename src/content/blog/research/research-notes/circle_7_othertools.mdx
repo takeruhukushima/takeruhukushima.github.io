@@ -51,6 +51,26 @@ GitHubの根底で動いているのは、Linuxの生みの親であるリーナ
 
 Gitは、ソースコードの変更履歴を「スナップショット（特定の瞬間の状態）」として記録していく。これにより、過去の任意の時点にコードを巻き戻すことが可能になる。さらに強力なのが「ブランチ（分岐）」という概念だ。本流のコード（mainブランチ）に影響を与えることなく、別の並行世界（機能追加用のブランチ）を作成して安全に開発を進め、完成した後に本流に合流（マージ）させることができる。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="160" viewBox="0 0 400 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Main Branch */}
+    <line x1="40" y1="80" x2="360" y2="80" stroke="#ccc" stroke-width="2" />
+    <circle cx="60" cy="80" r="4" fill="#333" />
+    <circle cx="140" cy="80" r="4" fill="#333" />
+    <circle cx="260" cy="80" r="4" fill="#333" />
+    <circle cx="340" cy="80" r="4" fill="#333" />
+    <text x="40" y="70" font-size="10" font-weight="bold">main</text>
+    
+    {/* Feature Branch */}
+    <path d="M 140 80 Q 180 30 220 30 H 260 Q 300 30 340 80" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+    <circle cx="200" cy="30" r="4" fill="#3b82f6" />
+    <circle cx="280" cy="30" r="4" fill="#3b82f6" />
+    <text x="240" y="20" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">feature-branch</text>
+    
+    <text x="200" y="140" text-anchor="middle" font-size="11" font-weight="bold">Gitブランチ：並行世界の分岐と安全な統合</text>
+  </svg>
+</div>
+
 
 ##### 7.2.2 世界最大のオープンソース・エコシステム
 
@@ -94,6 +114,37 @@ Nixは、単なるパッケージマネージャではなく、OSの環境その
 
 一方Nixでは、「このプロジェクトには、Python 3.11と、特定のバージョンのNumPyが必要である」という**環境の設計図（Nix言語で書かれたコード）**を宣言的に記述する。Nixはこの設計図を読み込み、システムの他の部分とは完全に隔離された特別な領域（Nix store）に必要なツールを配置する。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="220" viewBox="0 0 460 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Blueprint */}
+    <rect x="190" y="20" width="80" height="100" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="2" />
+    <path d="M 205 45 H 255 M 205 65 H 255 M 205 85 H 230" stroke="#3b82f6" stroke-opacity="0.3" />
+    <text x="230" y="140" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">設計図 (flake.nix)</text>
+    
+    {/* Machines */}
+    <path d="M 180 80 L 100 130" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 230 130 V 150" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 280 80 L 360 130" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    
+    <rect x="40" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="80" y="165" text-anchor="middle" font-size="9">Machine A</text>
+    
+    <rect x="190" y="160" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="230" y="185" text-anchor="middle" font-size="9">Machine B</text>
+    
+    <rect x="340" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="380" y="165" text-anchor="middle" font-size="9">Machine C</text>
+    
+    <text x="230" y="210" text-anchor="middle" font-size="11" font-weight="bold">Nix：1つの設計図から「全く同じ環境」を再現</text>
+
+    <defs>
+      <marker id="arrow-gray-c7" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
 ##### 7.4.2 開発環境の使い捨てと完全再現（Nix flakes）
 
 この仕組みにより、恐るべき「再現性」が担保される。同じ設計図（`flake.nix`）を持っていれば、MacであろうとLinuxであろうと、一言コマンド（`nix develop`）を打つだけで、**1バイトの狂いもなく全く同じバージョンのツール群が揃った開発環境（シェル）**が一瞬で立ち上がるのだ。
@@ -117,6 +168,29 @@ uvの最大の特徴は、システムプログラミング言語である「Rus
 旧来の `npm` では、プロジェクトごとに大量のパッケージ（`node_modules` フォルダ）を重複してダウンロード・保存していたため、パソコンのディスク容量をあっという間に食いつぶすという致命的な問題があった。
 
 pnpmは、パッケージをPC内の「一つの隠し保管庫」に一度だけダウンロードし、各プロジェクトからは「ハードリンク（シンボリックリンクのようなもの）」を張るだけという賢いアーキテクチャを採用した。これにより、ディスク容量の消費を劇的に節約しつつ、インストール速度も極限まで引き上げることに成功している。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="220" viewBox="0 0 400 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Global Store */}
+    <rect x="150" y="30" width="100" height="60" rx="4" fill="#fff" stroke="#10b981" stroke-width="2" />
+    <text x="200" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">グローバルストア (実体)</text>
+    <rect x="170" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    <rect x="210" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    
+    {/* Projects */}
+    <rect x="40" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="90" y="130" text-anchor="middle" font-size="9">Project A</text>
+    
+    <rect x="260" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="310" y="130" text-anchor="middle" font-size="9">Project B</text>
+    
+    {/* Links */}
+    <path d="M 90 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 310 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray-c7)" />
+    
+    <text x="200" y="210" text-anchor="middle" font-size="11" font-weight="bold">pnpm/uv：実体は1つ、参照は複数（省スペース）</text>
+  </svg>
+</div>
 
 #### 7.6 まとめ：モダンな道具が思考の摩擦をゼロにする
 

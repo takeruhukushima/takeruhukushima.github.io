@@ -64,6 +64,43 @@ t検定は、2群間の平均値の差が、データのばらつきを考慮し
 このグラフに全タンパク質をプロットすると、中央下部（変化が少なく、統計的信頼性も低いノイズ群）から、左右の上方に向かってデータ点が広がっていく。その形状がまるで火山の噴火（Volcano）のように見えることから、この名が付けられた。
 グラフの「右上」と「左上」に吹き飛んだ点こそが、「変化量が劇的に大きく、かつ統計的にも極めて信頼できる」最重要タンパク質の候補群となる。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="280" viewBox="0 0 400 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="50" y1="220" x2="350" y2="220" stroke="#ccc" stroke-width="1" />
+    <line x1="200" y1="220" x2="200" y2="40" stroke="#ccc" stroke-width="1" />
+    
+    {/* Noise points */}
+    <circle cx="200" cy="200" r="2" fill="#ccc" />
+    <circle cx="180" cy="190" r="2" fill="#ccc" />
+    <circle cx="220" cy="185" r="2" fill="#ccc" />
+    <circle cx="160" cy="170" r="2" fill="#ccc" />
+    <circle cx="240" cy="165" r="2" fill="#ccc" />
+    
+    {/* Significant points - Right */}
+    <circle cx="280" cy="100" r="3" fill="#ef4444" />
+    <circle cx="310" cy="70" r="4" fill="#ef4444" />
+    <circle cx="340" cy="50" r="3" fill="#ef4444" />
+    
+    {/* Significant points - Left */}
+    <circle cx="120" cy="110" r="3" fill="#3b82f6" />
+    <circle cx="90" cy="80" r="4" fill="#3b82f6" />
+    <circle cx="60" cy="60" r="3" fill="#3b82f6" />
+    
+    {/* Threshold lines */}
+    <line x1="140" y1="220" x2="140" y2="40" stroke="#999" stroke-dasharray="3,3" />
+    <line x1="260" y1="220" x2="260" y2="40" stroke="#999" stroke-dasharray="3,3" />
+    <line x1="50" y1="130" x2="350" y2="130" stroke="#999" stroke-dasharray="3,3" />
+    
+    <text x="350" y="235" text-anchor="end" font-size="9" fill="#888">Fold Change (変化量)</text>
+    <text x="195" y="35" text-anchor="end" font-size="9" fill="#888">-log₁₀(p)</text>
+    
+    <text x="330" y="120" font-size="9" fill="#ef4444" font-weight="bold">有意に増加</text>
+    <text x="70" y="120" font-size="9" fill="#3b82f6" font-weight="bold">有意に減少</text>
+    
+    <text x="200" y="260" text-anchor="middle" font-size="11" font-weight="bold">Volcano Plot：統計的な「確実さ」と「強さ」を可視化する</text>
+  </svg>
+</div>
+
 ##### 8.2.4 従来の壁：「ヒットしすぎる」ジレンマ
 Volcano Plotは強力だが、現代の高感度な質量分析では一つの致命的な問題を引き起こす。それは「右上に吹き飛ぶタンパク質が数百、数千個に及んでしまう」ことだ。統計的に正しい候補が多すぎる場合、人間はそのリストを前にして「次にどのタンパク質の実験を行うべきか」という決定を下せなくなる。この情報の氾濫をどう突破するかが、後半の深層学習アプローチの鍵となる。
 
@@ -81,7 +118,42 @@ Volcano Plotが「個々のタンパク質」の変動をミクロに見るツ�
 
 ##### 8.3.3 モジュールの発見と品質管理
 clustermapを出力すると、乱雑だった色のパターンが整列し、美しいモザイク模様が浮かび上がる。
-特定の疾患群のサンプルだけがデンドログラムの一つの枝に集まっていれば、実験と解析が成功している強い証拠となる。さらに、特定のサンプル群において一斉に赤く（発現量が高く）染まっているタンパク質の「塊（モジュール）」を視覚的に発見できる。これらは、細胞内で同じシグナル伝達経路を構成しているか、協調して働くタンパク質複合体である可能性が高い。全体を俯瞰することで、データに潜む「予期せぬグループ分け」をデータ主導（Data-driven）で発見できるのである。
+特定の疾患群のサンプルだけがデンドログラムの一つの枝に集まっていれば、実験と解析が成功している強い証拠となる。さらに、特定のサンプル群において一斉に赤く（発現量が高く）染まっているタンパク質の「塊（モジュール）」を視覚的に発見できる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="480" height="220" viewBox="0 0 480 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Before */}
+    <text x="70" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">ソート前 (Random)</text>
+    <rect x="20" y="45" width="100" height="100" fill="#fff" stroke="#eee" />
+    <rect x="25" y="50" width="15" height="15" fill="#ef4444" opacity="0.4" />
+    <rect x="45" y="50" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    <rect x="25" y="70" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    <rect x="65" y="90" width="15" height="15" fill="#ef4444" opacity="0.4" />
+    <rect x="85" y="110" width="15" height="15" fill="#3b82f6" opacity="0.4" />
+    
+    <path d="M 140 95 H 180" stroke="#ccc" marker-end="url(#arrow-gray-c8)" />
+    
+    {/* After */}
+    <text x="300" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">clustermap (Sorted)</text>
+    <rect x="220" y="45" width="100" height="100" fill="#fff" stroke="#eee" />
+    <rect x="220" y="45" width="50" height="50" fill="#ef4444" fill-opacity="0.3" />
+    <rect x="270" y="95" width="50" height="50" fill="#3b82f6" fill-opacity="0.3" />
+    
+    {/* Dendrograms */}
+    <path d="M 325 45 H 340 V 70 H 325 M 325 95 H 340 V 120 H 325 M 340 57 H 355 V 107 H 340" stroke="#666" fill="none" />
+    <path d="M 220 150 V 165 H 245 V 150 M 270 150 V 165 H 295 V 150 M 232 165 V 180 H 282 V 165" stroke="#666" fill="none" />
+    
+    <text x="250" y="205" text-anchor="middle" font-size="10" font-weight="bold">並べ替えにより、隠れた「モジュール（塊）」を視覚化する</text>
+    
+    <defs>
+      <marker id="arrow-gray-c8" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L6,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+これらは、細胞内で同じシグナル伝達経路を構成しているか、協調して働くタンパク質複合体である可能性が高い。全体を俯瞰することで、データに潜む「予期せぬグループ分け」をデータ主導（Data-driven）で発見できるのである。
 
 #### 8.4 著者の独自開発手法：PO（Protein Ontology）解析
 
@@ -105,6 +177,26 @@ ESM-2は、地球上のあらゆる生物の数億個に及ぶタンパク質の
 
 これにより、「発現量」とは全く無関係な、純粋に「機能と構造（配列）の類似性」だけに基づく巨大なタンパク質の分布地図（Ontology Map）が完成する。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Functional Clusters */}
+    <ellipse cx="100" cy="80" rx="40" ry="30" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-dasharray="2,2" />
+    <text x="100" y="40" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">代謝系グループ</text>
+    
+    <ellipse cx="280" cy="150" rx="50" ry="40" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-dasharray="2,2" />
+    <text x="280" y="100" text-anchor="middle" font-size="9" fill="#10b981" font-weight="bold">免疫系グループ</text>
+    
+    <ellipse cx="120" cy="180" rx="35" ry="25" fill="#f59e0b" fill-opacity="0.1" stroke="#f59e0b" stroke-dasharray="2,2" />
+    <text x="120" y="215" text-anchor="middle" font-size="9" fill="#f59e0b" font-weight="bold">シグナル伝達</text>
+
+    {/* Points */}
+    <circle cx="95" cy="75" r="3" fill="#3b82f6" /><circle cx="110" cy="85" r="2" fill="#3b82f6" />
+    <circle cx="270" cy="160" r="3" fill="#10b981" /><circle cx="300" cy="145" r="2" fill="#10b981" />
+    
+    <text x="200" y="235" text-anchor="middle" font-size="11" font-weight="bold">UMAP/HDBSCAN：意味の近さで「島」を形成する</text>
+  </svg>
+</div>
+
 ##### 8.4.4 恣意的なアンカー設定とコサイン類似度
 ここからがPO解析の真骨頂である。解析者は、自身の仮説や研究テーマに基づいて、関心のある特定のタンパク質を1つ（または複数）選び、それを**「アンカー（錨）」**として設定する。（例：「私はこのがん細胞の増殖に関わる『特定のキナーゼ酵素X』に注目している」）
 
@@ -116,6 +208,33 @@ $$
 $$
 
 この数式は、ベクトル同士の長さ（ベクトルの絶対値）を無視し、純粋に「方向がどれくらい一致しているか」を $-1$ から $1$ のスコアで定量化する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="300" height="240" viewBox="0 0 300 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Origin */}
+    <circle cx="50" cy="190" r="3" fill="#333" />
+    <text x="40" y="205" font-size="9">原点</text>
+    
+    {/* Vector A (Anchor) */}
+    <line x1="50" y1="190" x2="220" y2="80" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red-c8-s)" />
+    <text x="230" y="75" font-size="11" fill="#ef4444" font-weight="bold">アンカー A</text>
+    
+    {/* Vector B (Target) */}
+    <line x1="50" y1="190" x2="150" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue-c8-s)" />
+    <text x="140" y="40" font-size="11" fill="#3b82f6" font-weight="bold">タンパク質 B</text>
+    
+    {/* Angle theta */}
+    <path d="M 80 171 Q 100 160 100 130" fill="none" stroke="#666" stroke-width="1" />
+    <text x="105" y="155" font-size="12" fill="#666">θ</text>
+    
+    <text x="150" y="220" text-anchor="middle" font-size="11" font-weight="bold">コサイン類似度：ベクトルの「角度」で意味を測る</text>
+    
+    <defs>
+      <marker id="arrow-red-c8-s" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#ef4444" /></marker>
+      <marker id="arrow-blue-c8-s" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" /></marker>
+    </defs>
+  </svg>
+</div>
 
 ##### 8.4.5 実践的意義：仮説駆動型のターゲット抽出
 すべてのヒットタンパク質に対してこの類似度スコアを計算し、降順にランキングを作成する。すると何が起きるか。

@@ -52,7 +52,28 @@ tags: ["crcle reading"]
 
 ##### 2.1.2 非構造化データとテーブルデータ：明確な棲み分け
 
-なぜ古典的手法が今もなお生き残っているのか。その答えは、対象とする「データの性質」による明確な棲み分けが存在するからである。
+なぜ古典的手法が今もなお生き残っているのか。その答えは、対象とする「データの性質」による明確な「棲み分け」が存在するからである。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="220" viewBox="0 0 500 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <rect x="40" y="40" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="130" y="30" text-anchor="middle" font-size="12" font-weight="bold">表形式データ (Structured)</text>
+    <path d="M 60 70 H 200 M 60 95 H 200 M 60 120 H 200" stroke="#eee" />
+    <text x="130" y="185" text-anchor="middle" font-size="14" fill="#1a1a1a" font-weight="bold">GBDT / 古典的ML</text>
+    <text x="130" y="205" text-anchor="middle" font-size="10" fill="#666">XGBoost, LightGBM...</text>
+
+    <text x="250" y="105" text-anchor="middle" font-size="20">vs</text>
+
+    <rect x="280" y="40" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="370" y="30" text-anchor="middle" font-size="12" font-weight="bold">非構造化データ (Unstructured)</text>
+    <circle cx="340" cy="80" r="15" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="340" y="84" text-anchor="middle" font-size="10" fill="#3b82f6">画像</text>
+    <rect x="380" y="70" width="30" height="40" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+    <text x="395" y="94" text-anchor="middle" font-size="10" fill="#10b981">言語</text>
+    <text x="370" y="185" text-anchor="middle" font-size="14" fill="#1a1a1a" font-weight="bold">深層学習 (NN)</text>
+    <text x="370" y="205" text-anchor="middle" font-size="10" fill="#666">CNN, Transformer...</text>
+  </svg>
+</div>
 
 画像（ピクセルの配列）、音声（波形データ）、自然言語（単語の連続）といったデータは**「非構造化データ」**と呼ばれる。これらのデータは、どこに重要な情報が隠れているかを人間が事前に定義することが難しい。ニューラルネットワークは、この非構造化データの中から、自律的に「特徴（パターンのうねり）」を抽出することにおいて絶対的な優位性を持っている。
 
@@ -94,6 +115,22 @@ $$
 
 この関数は、$z$ の値が大きくなればなるほど出力は $1$ に近づき、$z$ の値が小さく（マイナスに）なればなるほど出力は $0$ に近づく。そして $z=0$ のときはちょうど $0.5$ となる美しいS字カーブを描く。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="300" height="200" viewBox="0 0 300 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="20" y1="180" x2="280" y2="180" stroke="#ccc" />
+    <line x1="150" y1="20" x2="150" y2="180" stroke="#ccc" />
+    <text x="280" y="195" text-anchor="end" font-size="10" fill="#888">z</text>
+    <text x="145" y="30" text-anchor="end" font-size="10" fill="#888">確率 σ(z)</text>
+    <path d="M 20 178 Q 150 178 150 100 T 280 22" fill="none" stroke="#3b82f6" stroke-width="2" />
+    <line x1="20" y1="20" x2="280" y2="20" stroke="#eee" stroke-dasharray="2,2" />
+    <text x="25" y="25" font-size="9" fill="#999">1.0</text>
+    <text x="25" y="175" font-size="9" fill="#999">0.0</text>
+    <circle cx="150" cy="100" r="3" fill="#ef4444" />
+    <text x="160" y="105" font-size="9" fill="#ef4444">z=0 -> 0.5</text>
+    <text x="150" y="195" text-anchor="middle" font-size="11" font-weight="bold">シグモイド関数：無限を[0,1]に圧縮</text>
+  </svg>
+</div>
+
 ロジスティック回帰では、線形回帰の出力 $z = \mathbf{w}^T\mathbf{x} + b$ をこのシグモイド関数に入力する。
 
 $$
@@ -122,6 +159,26 @@ $$
 
 つまり、ロジスティック回帰の原理を理解することは、巨大な深層学習モデルの根源的なメカニズムを理解することに直結する。
 
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="200" viewBox="0 0 500 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <text x="40" y="55" font-size="12" fill="#666">x₁</text>
+    <text x="40" y="105" font-size="12" fill="#666">x₂</text>
+    <text x="40" y="155" font-size="12" fill="#666">xₙ</text>
+    <line x1="60" y1="50" x2="160" y2="90" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="100" x2="160" y2="100" stroke="#ccc" stroke-width="1" />
+    <line x1="60" y1="150" x2="160" y2="110" stroke="#ccc" stroke-width="1" />
+    <circle cx="180" cy="100" r="25" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
+    <text x="180" y="106" text-anchor="middle" font-size="20">Σ</text>
+    <line x1="205" y1="100" x2="255" y2="100" stroke="#1a1a1a" stroke-width="1.5" />
+    <rect x="260" y="75" width="80" height="50" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <path d="M 270 115 Q 300 115 300 100 T 330 85" fill="none" stroke="#3b82f6" stroke-width="2" />
+    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#3b82f6" font-weight="bold">Sigmoid</text>
+    <line x1="340" y1="100" x2="400" y2="100" stroke="#1a1a1a" stroke-width="1.5" />
+    <text x="410" y="105" font-size="14" font-weight="bold">y ∈ [0, 1]</text>
+    <text x="250" y="180" text-anchor="middle" font-size="11" fill="#666" font-style="italic">ロジスティック回帰 ＝ 単一のニューロン構造</text>
+  </svg>
+</div>
+
 さらに、ロジスティック回帰は単なる「古いNNの一部」ではない。算出された重みパラメータ $\mathbf{w}$ を見ることで、「どの変数が確率をどれだけ上げるか（下げるか）」という影響度（オッズ比）を明確に計算できる。この「結果の理由を数学的に説明できる（解釈性が高い）」という特性は、ブラックボックスを嫌う医療の診断支援システムや、金融機関の融資審査において、現在でも第一選択として重宝される最大の理由となっている。
 
 #### 2.3 決定木（Decision Tree）：人間の思考を模倣する直感的なアルゴリズム
@@ -138,7 +195,28 @@ $$
 「年齢は30歳以上か？」→YES→「年収は500万以上か？」→NO→「買わない」
 このように、条件分岐（ノード）を木の枝のように展開し、最終的な予測結果（葉）に行き着く。
 
-数学的に見れば、これは「特徴量の空間を、軸に平行な直線で繰り返し分割し、複数の長方形（箱）の領域に切り分けている」ことと同義である。複雑なデータであっても、細かく空間を区切っていけば、非線形な境界線を近似して表現することができる。
+数学的に見れば、これは「特徴量の空間を、軸に平行な直線で繰り返し分割し、複数の長方形（箱）の領域に切り分けている」ことと同義である。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="240" height="240" viewBox="0 0 240 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="30" y1="210" x2="210" y2="210" stroke="#ccc" />
+    <line x1="30" y1="210" x2="30" y2="30" stroke="#ccc" />
+    {/* Partitions */}
+    <line x1="120" y1="210" x2="120" y2="30" stroke="#3b82f6" stroke-width="1.5" />
+    <line x1="30" y1="120" x2="120" y2="120" stroke="#3b82f6" stroke-width="1.5" />
+    <line x1="120" y1="150" x2="210" y2="150" stroke="#3b82f6" stroke-width="1.5" />
+    {/* Data points */}
+    <circle cx="70" cy="160" r="3" fill="#ef4444" />
+    <circle cx="50" cy="180" r="3" fill="#ef4444" />
+    <circle cx="70" cy="70" r="3" fill="#3b82f6" />
+    <circle cx="160" cy="180" r="3" fill="#ef4444" />
+    <circle cx="180" cy="100" r="3" fill="#3b82f6" />
+    
+    <text x="120" y="230" text-anchor="middle" font-size="10" font-weight="bold">軸に平行な直線で空間を切り分ける</text>
+  </svg>
+</div>
+
+複雑なデータであっても、細かく空間を区切っていけば、非線形な境界線を近似して表現することができる。
 
 ##### 2.3.2 分割の指標：「情報利得（ジニ不純度・エントロピー）」
 
@@ -209,6 +287,41 @@ $$
 これを何百回と繰り返すことで、前の木が間違えた苦手な部分を、次の木が順番に補完していく。第1章で学んだ「誤差を微分して（勾配を求めて）少しずつ正解の谷底へ下っていく勾配降下法」の概念を、パラメータの数値ではなく「決定木という関数そのもの」を使って実行しているため、「勾配（Gradient）」ブースティングと呼ばれる。
 
 ランダムフォレストが「個性がバラバラな専門家の多数決」だとすれば、GBDTは「前の職人が残した微細な削り残しを、次の職人が少しずつ丁寧に削り取っていくリレー作業」と言える。
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 2.5em 0; text-align: center; font-family: sans-serif;">
+  <div>
+    <svg width="240" height="180" viewBox="0 0 240 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <path d="M 40 45 L 30 55 M 40 45 L 50 55" stroke="#666" fill="none" />
+      <rect x="100" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <rect x="180" y="40" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <text x="80" y="65" font-size="12">...</text>
+      <line x1="40" y1="80" x2="110" y2="120" stroke="#ccc" />
+      <line x1="120" y1="80" x2="120" y2="120" stroke="#ccc" />
+      <line x1="200" y1="80" x2="130" y2="120" stroke="#ccc" />
+      <circle cx="120" cy="135" r="15" fill="#fff" stroke="#1a1a1a" />
+      <text x="120" y="140" text-anchor="middle" font-size="10">多数決</text>
+      <text x="120" y="25" text-anchor="middle" font-size="11" font-weight="bold">Random Forest (並列)</text>
+    </svg>
+  </div>
+  <div>
+    <svg width="240" height="180" viewBox="0 0 240 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
+      <rect x="20" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <line x1="60" y1="90" x2="90" y2="90" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrow-red-s)" />
+      <rect x="100" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <line x1="140" y1="90" x2="170" y2="90" stroke="#ef4444" stroke-width="1.5" />
+      <rect x="180" y="70" width="40" height="40" rx="2" fill="none" stroke="#666" />
+      <text x="40" y="130" text-anchor="middle" font-size="9" fill="#ef4444">誤差を学習</text>
+      <text x="120" y="130" text-anchor="middle" font-size="9" fill="#ef4444">さらに修正</text>
+      <text x="120" y="25" text-anchor="middle" font-size="11" font-weight="bold">GBDT (直列)</text>
+      <defs>
+        <marker id="arrow-red-s" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
 
 ##### 2.5.2 XGBoost：決定木と微分の融合、そして計算の並列化による覇権
 
