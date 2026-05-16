@@ -24,8 +24,10 @@ jobs:
         uses: withastro/action@v3
         # pnpmを使っていることを明示する（超重要！）
         with:
-          package-manager: pnpm@latest
+          package-manager: pnpm@10
           node-version: 22
+        env:
+          PNPM_ONLY_BUILT_DEPENDENCIES: esbuild,sharp
 
 
   deploy:
