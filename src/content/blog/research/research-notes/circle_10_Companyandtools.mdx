@@ -1,0 +1,161 @@
+---
+title: "10章:AI活用関連最新研究(2026年5月現在)"
+category: "research"
+tags: ["crcle reading"]
+---
+
+10.1 企業別の最新動向
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="320" viewBox="0 0 500 320" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="60" y1="260" x2="440" y2="260" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <line x1="60" y1="260" x2="60" y2="40" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <text x="440" y="275" text-anchor="end" font-size="10" fill="#888">対象：産業・物理空間 (Applied / Lab)</text>
+    <text x="55" y="35" font-size="10" fill="#888">技術：推論・シミュレーション (Soft / Logic)</text>
+    
+    <rect x="80" y="60" width="100" height="40" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="130" y="85" text-anchor="middle" font-size="9" font-weight="bold" fill="#1e40af">DeepMind</text>
+    <text x="130" y="96" text-anchor="middle" font-size="7" fill="#1e40af">純粋推論・基礎科学</text>
+    
+    <rect x="300" y="60" width="100" height="40" rx="4" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" />
+    <text x="350" y="85" text-anchor="middle" font-size="9" font-weight="bold" fill="#374151">NVIDIA</text>
+    <text x="350" y="96" text-anchor="middle" font-size="7" fill="#374151">物理・シミュインフラ</text>
+    
+    <rect x="190" y="130" width="100" height="40" rx="4" fill="#ef4444" fill-opacity="0.1" stroke="#ef4444" />
+    <text x="240" y="155" text-anchor="middle" font-size="9" font-weight="bold" fill="#991b1b">Sakana AI</text>
+    <text x="240" y="166" text-anchor="middle" font-size="7" fill="#991b1b">進化的アルゴリズム</text>
+    
+    <rect x="300" y="200" width="100" height="40" rx="4" fill="#f59e0b" fill-opacity="0.1" stroke="#f59e0b" />
+    <text x="350" y="225" text-anchor="middle" font-size="9" font-weight="bold" fill="#92400e">Edison Sci</text>
+    <text x="350" y="236" text-anchor="middle" font-size="7" fill="#92400e">ウェットラボ統合</text>
+    
+    <rect x="120" y="200" width="100" height="40" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+    <text x="170" y="225" text-anchor="middle" font-size="9" font-weight="bold" fill="#065f46">PFN</text>
+    <text x="170" y="236" text-anchor="middle" font-size="7" fill="#065f46">Matlantis / MN-Core</text>
+    
+    <text x="250" y="305" text-anchor="middle" font-size="11" font-weight="bold">AI for Science 主要5社の戦略的ポジション</text>
+    <defs>
+      <marker id="arrow-gray-10" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+10.1.1 Google DeepMind
+AlphaFoldシリーズによるタンパク質構造予測の革命以降も、Google DeepMindはAI for Scienceの不動のトップランナーである。現在は「Gemini Thinkingチーム」を中心とし、LLMの純粋な論理的推論能力（Chain-of-Thoughtや強化学習を用いた自己改善）の強化に注力している。単なるパターン認識から「数学的証明」や「物理法則の発見」といった、より高度な論理的飛躍を伴う科学タスクへの応用（例：AlphaGeometryの発展系など）を進めており、基礎科学分野の未解決問題の解決を目指している。
+
+10.1.2 Sakana AI
+自然界の進化や群知能からインスピレーションを得た独自のアプローチ（進化的アルゴリズムとLLMの融合）で急成長を遂げている。前述の「The AI Scientist」のほかにも、「Shinka-Evolve」などのオープンエンドな発見システムを開発。巨大な計算資源による力技（スケール）ではなく、計算効率が高く、日本の特定の産業ニーズに即した適応性の高いAIモデルの開発に強みを持つ。
+
+10.1.3 Edison Scientific (旧Futurehouse)
+FutureHouseからスピンアウトし、営利企業として新たなスタートを切ったEdison Scientificは、バイオテクノロジーや化学分野に特化したAIエージェントの開発で存在感を放っている。元Googleの著名な起業家やトップ研究者からの資金調達を背景に、単なるソフトウェア開発にとどまらず、実際のウェットラボ（生物・化学実験室）とAIをシームレスに統合するプラットフォーム（Edison Platform）の構築を推進している。
+
+10.1.4 NVIDIA
+AIブームのハードウェア的基盤を独占するNVIDIAであるが、AI for Science分野ではソフトウェア・フレームワークの提供者としても極めて重要である。特に気候モデリング（Earth-2）、医療・創薬（BioNeMo）、量子コンピューティングシミュレーション（cuQuantum）など、物理シミュレーションとAIを融合させた「Physics-Informed Neural Networks (PINNs)」の開発基盤において業界標準を確立しつつある。
+
+10.1.5 Preferred Networks (PFN)
+日本のAI企業を代表するPFNは、専用AI半導体（MN-Core）の開発と並行して、材料科学（マテリアルズ・インフォマティクス）や創薬分野でのAI活用に注力している。特に、原子レベルのシミュレーションを高速化する汎用原子レベル基盤モデル（Matlantisなど）を軸に、化学メーカーやエネルギー企業との協業を深め、実産業におけるAI for Scienceの実用化を世界に先駆けて進めている。
+
+10.2 最新ツール・プラットフォームの動向
+研究の各プロセスを自動化・効率化するツール群は、単体のスクリプトから統合的なプラットフォームへと進化を遂げている。
+
+10.2.1 paper-qa
+膨大な学術文献から、特定の問いに対する回答を正確な引用（Citations）付きで抽出する検索拡張生成（RAG: Retrieval-Augmented Generation）ツール。ハルシネーション（AIの嘘）が許されない科学研究において、回答の根拠となる論文のパラグラフを厳密にトレースできる点が評価され、研究者の文献レビュー作業のデファクトスタンダードの一つとなっている。
+
+10.2.2 Shinka-Evolve
+Sakana AIが中心となって開発した、LLMと進化的アルゴリズムを組み合わせたオープンソースのプログラム進化フレームワーク。「AI Scientist」の技術的系譜にあり、LLMがコードの「突然変異（改善案）」を提案し、シミュレータ等の評価環境でテストを行い、より優れたプログラムを次代に引き継いでいくシステムである。科学計算コードの最適化や、未知のアルゴリズムの自動探索など、オープンエンドな科学的発見のエンジンとして注目を集めている。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="240" viewBox="0 0 460 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <circle cx="230" cy="110" r="70" fill="none" stroke="#ccc" stroke-dasharray="4,4" />
+    
+    <rect x="190" y="20" width="80" height="40" rx="4" fill="#fff" stroke="#ef4444" stroke-width="1.5" />
+    <text x="230" y="45" text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">LLM 突然変異</text>
+    
+    <rect x="310" y="90" width="80" height="40" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="350" y="115" text-anchor="middle" font-size="8" font-weight="bold" fill="#3b82f6">評価・テスト</text>
+    
+    <rect x="190" y="160" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" stroke-width="1.5" />
+    <text x="230" y="185" text-anchor="middle" font-size="8" font-weight="bold" fill="#10b981">自然選択</text>
+    
+    <path d="M 80 110 L 140 110" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    <text x="110" y="100" text-anchor="middle" font-size="8">初期コード</text>
+    
+    <path d="M 320 170 L 380 190" stroke="#10b981" marker-end="url(#arrow-green-10)" />
+    <text x="385" y="205" font-size="9" font-weight="bold" fill="#10b981">未知のアルゴリズム発見</text>
+    
+    <text x="230" y="225" text-anchor="middle" font-size="11" font-weight="bold">Shinka-Evolve：LLMによるプログラム進化ループ</text>
+    
+    <defs>
+      <marker id="arrow-green-10" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+10.2.3 Edison platform (Literature, Analysis, Kosmos他)
+Edison Scientificが提供する、科学研究のための統合マルチエージェント・プラットフォーム。
+
+Literature: CrowやFalconといったエージェント群が、高度な文献のQ&Aや統合的なレビューを数分で実行する。
+
+Analysis / Kosmos: 実験データの分析から次なる仮説の生成までを行う。例えば「ChemCrow」の技術をベースにしたエージェントが、特定の疾患に対する新規化合物の設計や実験手順の策定を行うなど、単一のツールではなく「複数の専門AIエージェントが協調してタスクをこなす」アーキテクチャを採用しているのが特徴である。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="480" height="220" viewBox="0 0 480 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <rect x="20" y="60" width="80" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="60" y="85" text-anchor="middle" font-size="8" font-weight="bold">Literature</text>
+    <text x="60" y="95" text-anchor="middle" font-size="6">Crow / Falcon</text>
+    
+    <path d="M 100 80 H 130" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="130" y="60" width="80" height="40" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="170" y="85" text-anchor="middle" font-size="8" font-weight="bold">Analysis</text>
+    <text x="170" y="95" text-anchor="middle" font-size="6">Kosmos / Optuna</text>
+    
+    <path d="M 210 80 H 240" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="240" y="60" width="80" height="40" rx="4" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" />
+    <text x="280" y="85" text-anchor="middle" font-size="8" font-weight="bold">Planning</text>
+    <text x="280" y="95" text-anchor="middle" font-size="6">ChemCrow系</text>
+    
+    <path d="M 320 80 H 350" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="350" y="60" width="110" height="40" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+    <text x="405" y="85" text-anchor="middle" font-size="8" font-weight="bold">Lab Action</text>
+    <text x="405" y="95" text-anchor="middle" font-size="6">自動実験プロトコル</text>
+    
+    <text x="240" y="180" text-anchor="middle" font-size="11" font-weight="bold">Edison Platform：専門エージェントのバトンリレー</text>
+  </svg>
+</div>
+
+10.2.4 Optuna
+PFNが開発した、機械学習のハイパーパラメータ自動最適化フレームワーク。2026年現在においても、AIモデルの開発から物理シミュレーションのパラメータ探索まで、世界中の研究者やエンジニアに広く利用され続けている。柔軟性が高く、分散コンピューティング環境への適応も容易であるため、大規模な「AI駆動型研究（AI-driven Science）」のバックエンドを支える不可欠なインフラとして確固たる地位を築いている。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="320" viewBox="0 0 500 320" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="60" y1="260" x2="440" y2="260" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <line x1="60" y1="260" x2="60" y2="40" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <text x="440" y="275" text-anchor="end" font-size="10" fill="#888">シミュレーション・実験 (Action)</text>
+    <text x="55" y="35" font-size="10" fill="#888">文献・アルゴリズム (Insight)</text>
+    
+    <rect x="70" y="50" width="150" height="90" rx="8" fill="#3b82f6" fill-opacity="0.05" stroke="#3b82f6" stroke-dasharray="2,2" />
+    <text x="145" y="70" text-anchor="middle" font-size="9" font-weight="bold" fill="#3b82f6">文献・解析</text>
+    <text x="145" y="90" text-anchor="middle" font-size="8" fill="#666">paper-qa / DeepMind</text>
+    
+    <rect x="250" y="50" width="150" height="90" rx="8" fill="#ef4444" fill-opacity="0.05" stroke="#ef4444" stroke-dasharray="2,2" />
+    <text x="325" y="70" text-anchor="middle" font-size="9" font-weight="bold" fill="#ef4444">アルゴリズム創出</text>
+    <text x="325" y="90" text-anchor="middle" font-size="8" fill="#666">Shinka-Evolve</text>
+    
+    <rect x="70" y="150" width="150" height="90" rx="8" fill="#6b7280" fill-opacity="0.05" stroke="#6b7280" stroke-dasharray="2,2" />
+    <text x="145" y="170" text-anchor="middle" font-size="9" font-weight="bold" fill="#374151">最適化・計算</text>
+    <text x="145" y="190" text-anchor="middle" font-size="8" fill="#666">Optuna / NVIDIA</text>
+    
+    <rect x="250" y="150" width="150" height="90" rx="8" fill="#10b981" fill-opacity="0.05" stroke="#10b981" stroke-dasharray="2,2" />
+    <text x="325" y="170" text-anchor="middle" font-size="9" font-weight="bold" fill="#10b981">産業・実証</text>
+    <text x="325" y="190" text-anchor="middle" font-size="8" fill="#666">Edison / PFN</text>
+    
+    <text x="250" y="305" text-anchor="middle" font-size="11" fontWeight="bold">科学研究プロセスの各フェーズを支えるツール群</text>
+  </svg>
+</div>

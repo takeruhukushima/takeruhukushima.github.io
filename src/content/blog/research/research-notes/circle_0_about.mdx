@@ -961,18 +961,252 @@ PO解析を用いることで、Volcano Plotの「有意なタンパク質が多
 ### まとめ
 プロテオミクス解析は、単なる数値処理の羅列ではない。統計学で確実な変化を捉え、クラスター分析で全体を俯瞰し、そして深層学習によるベクトル解析で機能的な意味を掘り起こす。この多角的なアプローチこそが、混沌としたデータの海から生物学的な真理を導き出すための、著者が導き出した一つの答えである。
 
-## $9$章:ゲノミクス 
+## $9$章:AI for Science
 
-coming soon まだ勉強中。
+2024年から2026年にかけ、大規模言語モデル（LLM）の高度化に伴り、文献調査、仮説立案、実験コード作成、さらには論文執筆に至る「研究のライフサイクル」を自律的に遂行するAIエージェントが次々と台頭した。科学研究におけるAIの役割は、単なるツールから以下の3つの新たなパラダイムへと進化している。
 
-## $10$章:その他のバイオインフォマティクス
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="300" viewBox="0 0 500 300" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Axes */}
+    <line x1="60" y1="240" x2="440" y2="240" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray)" />
+    <line x1="60" y1="240" x2="60" y2="40" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray)" />
+    <text x="440" y="255" text-anchor="end" font-size="10" fill="#888">自律性 (Autonomy)</text>
+    <text x="55" y="35" font-size="10" fill="#888">スケール (Scale / Parallelism)</text>
+    
+    {/* Google */}
+    <circle cx="150" cy="180" r="8" fill="#3b82f6" />
+    <text x="150" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#3b82f6">Google</text>
+    <text x="150" y="220" text-anchor="middle" font-size="9" fill="#666">AI co-scientist</text>
+    
+    {/* Sakana AI */}
+    <circle cx="380" cy="180" r="8" fill="#ef4444" />
+    <text x="380" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#ef4444">Sakana AI</text>
+    <text x="380" y="220" text-anchor="middle" font-size="9" fill="#666">The AI Scientist</text>
+    
+    {/* Edison */}
+    <circle cx="380" cy="80" r="8" fill="#10b981" />
+    <text x="380" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">Edison Scientific</text>
+    <text x="380" y="120" text-anchor="middle" font-size="9" fill="#666">Kosmos</text>
+    
+    <text x="250" y="280" text-anchor="middle" font-size="11" font-weight="bold">AI for Science の3つの立ち位置</text>
+    <defs>
+      <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
 
-comming soon 本を読んでいます。
+人間との高度な協働（Google「AI co-scientist」）
+AIを人間の「共同研究者」と位置づける「Human-in-the-Loop」のアプローチである。対戦ゲームの手法（ランクマッチ）を取り入れた仮説評価やマルチエージェントの協働により、創薬やバイオメディカル分野で実用的な新発見をもたらしている。
 
-## $11$章:Alphafold3
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="200" viewBox="0 0 400 200" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* AI Agents */}
+    <rect x="40" y="60" width="100" height="80" rx="8" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="90" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#3b82f6">AI Agents</text>
+    <text x="90" y="125" text-anchor="middle" font-size="9" fill="#3b82f6">ランクマッチ・評価</text>
+    
+    {/* Human / Wet Lab */}
+    <rect x="260" y="60" width="100" height="80" rx="8" fill="#f59e0b" fill-opacity="0.1" stroke="#f59e0b" />
+    <text x="310" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#f59e0b">Human / Lab</text>
+    <text x="310" y="125" text-anchor="middle" font-size="9" fill="#f59e0b">ウェットラボでの検証</text>
+    
+    {/* Cycle */}
+    <path d="M 150 85 Q 200 65 250 85" stroke="#ccc" fill="none" stroke-width="2" marker-end="url(#arrow-gray)" />
+    <text x="200" y="60" text-anchor="middle" font-size="9" fill="#666">有望な仮説を提示</text>
+    
+    <path d="M 250 115 Q 200 135 150 115" stroke="#ccc" fill="none" stroke-width="2" marker-end="url(#arrow-gray)" />
+    <text x="200" y="155" text-anchor="middle" font-size="9" fill="#666">フィードバック</text>
+    
+    <text x="200" y="185" text-anchor="middle" font-size="11" font-weight="bold">AI co-scientist：人間との共創ループ</text>
+  </svg>
+</div>
 
-coming soon 論文を読みます。
+研究の完全自動化と倫理的波紋（Sakana AI「The AI Scientist」）
+人間の介入を極限まで排除し、AI単独で研究から論文執筆までを完結させるフルオートメーションの試みである。AI生成論文が人間の査読を通過する歴史的快挙を達成した一方で、「粗悪なAI論文による学術エコシステムの汚染」や「科学のミーム化」という激しい批判と倫理的議論を巻き起こした。
 
-## $12$章:bioの機械学習
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="180" viewBox="0 0 500 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Pipeline */}
+    <rect x="20" y="70" width="80" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="60" y="95" text-anchor="middle" font-size="9">文献検索</text>
+    
+    <path d="M 100 90 H 120" stroke="#ef4444" marker-end="url(#arrow-red-sakana)" />
+    
+    <rect x="120" y="70" width="80" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="160" y="95" text-anchor="middle" font-size="9">アイデア生成</text>
+    
+    <path d="M 200 90 H 220" stroke="#ef4444" marker-end="url(#arrow-red-sakana)" />
+    
+    <rect x="220" y="70" width="80" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="260" y="95" text-anchor="middle" font-size="9">実験・コード</text>
+    
+    <path d="M 300 90 H 320" stroke="#ef4444" marker-end="url(#arrow-red-sakana)" />
+    
+    <rect x="320" y="70" width="80" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="360" y="95" text-anchor="middle" font-size="9">論文執筆</text>
+    
+    <path d="M 400 90 H 420" stroke="#ef4444" marker-end="url(#arrow-red-sakana)" />
+    
+    <rect x="420" y="70" width="60" height="40" rx="4" fill="#fff" stroke="#ef4444" />
+    <text x="450" y="95" text-anchor="middle" font-size="9" font-weight="bold" fill="#ef4444">自動査読</text>
+    
+    <text x="250" y="150" text-anchor="middle" font-size="11" font-weight="bold" fill="#ef4444">完全自動：人間が介在しないパイプライン</text>
+    
+    <defs>
+      <marker id="arrow-red-sakana" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+      </marker>
+    </defs>
+  </svg>
+</div>
 
-comming soon 本を読みます。
+産業特化型の大規模並列処理（Edison Scientific「Kosmos」）
+非営利組織FutureHouseからスピンアウトし、生物・化学分野に特化したエンタープライズ向けの統合プラットフォームである。専門家が数週間かけるデータ解析を数百の並列エージェントが一晩で完遂するなど、巨大製薬企業等における創薬プロセスのタイムラインを根底から覆しつつある。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="240" viewBox="0 0 400 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Central Goal */}
+    <circle cx="200" cy="120" r="30" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="2" />
+    <text x="200" y="124" text-anchor="middle" font-size="10" font-weight="bold" fill="#10b981">研究目的</text>
+    
+    {/* Parallel Agents */}
+    <g opacity="0.6">
+      <circle cx="120" cy="60" r="15" fill="#fff" stroke="#ccc" />
+      <circle cx="280" cy="60" r="15" fill="#fff" stroke="#ccc" />
+      <circle cx="100" cy="120" r="15" fill="#fff" stroke="#ccc" />
+      <circle cx="300" cy="120" r="15" fill="#fff" stroke="#ccc" />
+      <circle cx="120" cy="180" r="15" fill="#fff" stroke="#ccc" />
+      <circle cx="280" cy="180" r="15" fill="#fff" stroke="#ccc" />
+      <line x1="145" y1="75" x2="175" y2="100" stroke="#eee" />
+      <line x1="255" y1="75" x2="225" y2="100" stroke="#eee" />
+      <line x1="130" y1="120" x2="170" y2="120" stroke="#eee" />
+      <line x1="270" y1="120" x2="230" y2="120" stroke="#eee" />
+      <line x1="145" y1="165" x2="175" y2="140" stroke="#eee" />
+      <line x1="255" y1="165" x2="225" y2="140" stroke="#eee" />
+    </g>
+    
+    <text x="200" y="215" text-anchor="middle" font-size="11" font-weight="bold">Kosmos：数百の専門エージェントによる超並列処理</text>
+  </svg>
+</div>
+
+これらの動向は、AIがもたらす圧倒的な生産性向上を示すと同時に、「真の科学的発見とは何か」「AIと人間の最適な役割分担はどうあるべきか」という、学術界全体を巻き込む新たな課題を突きつけている。
+
+## $10$章:AI活用関連最新研究(2026年5月現在)
+
+2026年現在、AIを活用した科学研究（AI for Science）は、基礎推論のブレイクスルーから産業界での実用化、そしてインフラ構築に至るまで、多様なトッププレイヤーと最先端ツールによって強固なエコシステムが形成されている。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="320" viewBox="0 0 500 320" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Layer 3 */}
+    <rect x="50" y="40" width="400" height="70" rx="8" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="2" />
+    <text x="250" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#065f46">実産業・物理空間への統合</text>
+    <text x="250" y="90" text-anchor="middle" font-size="10" fill="#065f46">Edison Scientific / PFN (Matlantis)</text>
+    
+    {/* Layer 2 */}
+    <rect x="50" y="125" width="400" height="70" rx="8" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" stroke-width="2" />
+    <text x="250" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e40af">基礎推論・新アルゴリズム探求</text>
+    <text x="250" y="175" text-anchor="middle" font-size="10" fill="#1e40af">DeepMind / Sakana AI</text>
+    
+    {/* Layer 1 */}
+    <rect x="50" y="210" width="400" height="70" rx="8" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" stroke-width="2" />
+    <text x="250" y="240" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">インフラ・シミュレーション基盤</text>
+    <text x="250" y="260" text-anchor="middle" font-size="10" fill="#374151">NVIDIA / Optuna / paper-qa</text>
+    
+    <text x="250" y="305" text-anchor="middle" font-size="11" font-weight="bold">AI for Science エコシステムの3層構造</text>
+    
+    <path d="M 120 210 V 195" stroke="#ccc" stroke-width="2" marker-end="url(#arrow-gray-10)" />
+    <path d="M 120 125 V 110" stroke="#ccc" stroke-width="2" marker-end="url(#arrow-gray-10)" />
+    
+    <defs>
+      <marker id="arrow-gray-10" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+その潮流は大きく以下の3つの領域に分類される。
+
+基礎推論の高度化と新アルゴリズムの探求（Google DeepMind / Sakana AI）
+Google DeepMindは、AIの純粋な論理的推論能力を強化し、数学的証明や物理法則の発見といった基礎科学の未解決問題に挑み続けている。一方、日本のSakana AIは、LLMと進化的アルゴリズムを融合させた「Shinka-Evolve」など、計算効率に優れ、オープンエンドな科学的発見をもたらす独自のアプローチで急成長を遂げている。
+
+実産業への実装と物理空間（ラボ）の統合（Edison Scientific / PFN）
+生物・化学分野に特化したEdison Scientificは、複数の専門AIエージェントと実際の実験室（ウェットラボ）をシームレスに統合するプラットフォームを展開している。また日本のPFNは、汎用原子レベル基盤モデル「Matlantis」などを軸にマテリアルズ・インフォマティクスを牽引し、化学・エネルギー産業におけるAIの実用化を世界に先駆けて推進している。
+
+研究インフラとシミュレーションの標準化（NVIDIA / 最新ツール群）
+NVIDIAは、気候モデリングや量子シミュレーションにおいて、物理法則とAIを融合させた開発基盤（PINNsなど）を提供し、業界標準を確立している。同時に、厳密な引用を担保する文献RAGツール「paper-qa」や、世界中で利用されるPFNの最適化フレームワーク「Optuna」など、研究プロセスを支えるツール群が、単なるスクリプトから科学研究に不可欠なバックエンド・インフラへと進化を遂げている。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="320" viewBox="0 0 460 320" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Coordinates */}
+    <line x1="60" y1="260" x2="400" y2="260" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <line x1="60" y1="260" x2="60" y2="40" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-10)" />
+    <text x="400" y="275" text-anchor="end" font-size="10" fill="#888">物理空間 (Wet Lab / Reality)</text>
+    <text x="55" y="35" font-size="10" fill="#888">応用・産業 (Applied)</text>
+    
+    {/* Plotting points */}
+    {/* NVIDIA */}
+    <circle cx="80" cy="200" r="5" fill="#6b7280" />
+    <text x="85" y="195" font-size="9" font-weight="bold">NVIDIA</text>
+    
+    {/* Sakana AI */}
+    <circle cx="100" cy="150" r="5" fill="#ef4444" />
+    <text x="105" y="145" font-size="9" font-weight="bold">Sakana AI</text>
+    
+    {/* DeepMind */}
+    <circle cx="120" cy="100" r="5" fill="#3b82f6" />
+    <text x="125" y="95" font-size="9" font-weight="bold">DeepMind</text>
+    
+    {/* PFN */}
+    <circle cx="250" cy="80" r="5" fill="#10b981" />
+    <text x="255" y="75" font-size="9" font-weight="bold">PFN</text>
+    
+    {/* Edison Scientific */}
+    <circle cx="350" cy="60" r="5" fill="#f59e0b" />
+    <text x="355" y="55" font-size="9" font-weight="bold">Edison Scientific</text>
+    
+    <text x="230" y="305" text-anchor="middle" font-size="11" font-weight="bold">プレイヤーの Cyber-Physical マッピング</text>
+  </svg>
+</div>
+
+これらの企業およびツール群の連繋により、AI for Scienceは単一のソフトウェア開発の枠を超え、次世代の科学的発見を自動化・加速させる巨大な統合的プラットフォームへと移行している。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="180" viewBox="0 0 500 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Pipeline */}
+    <rect x="20" y="70" width="70" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="55" y="85" text-anchor="middle" font-size="8" font-weight="bold">文献調査</text>
+    <text x="55" y="100" text-anchor="middle" font-size="7">paper-qa</text>
+    
+    <path d="M 90 90 H 115" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="115" y="70" width="85" height="40" rx="4" fill="#3b82f6" fill-opacity="0.1" stroke="#3b82f6" />
+    <text x="157" y="85" text-anchor="middle" font-size="8" font-weight="bold">仮説・生成</text>
+    <text x="157" y="100" text-anchor="middle" font-size="7">DeepMind/Sakana</text>
+    
+    <path d="M 200 90 H 225" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="225" y="70" width="85" height="40" rx="4" fill="#6b7280" fill-opacity="0.1" stroke="#6b7280" />
+    <text x="267" y="85" text-anchor="middle" font-size="8" font-weight="bold">最適化・シミュ</text>
+    <text x="267" y="100" text-anchor="middle" font-size="7">NVIDIA/Optuna</text>
+    
+    <path d="M 310 90 H 335" stroke="#ccc" marker-end="url(#arrow-gray-10)" />
+    
+    <rect x="335" y="70" width="85" height="40" rx="4" fill="#10b981" fill-opacity="0.1" stroke="#10b981" />
+    <text x="377" y="85" text-anchor="middle" font-size="8" font-weight="bold">物理ラボ検証</text>
+    <text x="377" y="100" text-anchor="middle" font-size="7">Edison/PFN</text>
+    
+    <path d="M 420 90 H 445" stroke="#10b981" marker-end="url(#arrow-green-10)" />
+    <text x="470" y="95" text-anchor="middle" font-size="10" font-weight="bold" fill="#10b981">発見</text>
+    
+    <text x="250" y="150" text-anchor="middle" font-size="11" font-weight="bold">ツール連携による次世代研究パイプライン</text>
+    
+    <defs>
+      <marker id="arrow-green-10" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>

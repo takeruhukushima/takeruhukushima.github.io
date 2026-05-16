@@ -1,0 +1,176 @@
+---
+title: "9章:AI for Science"
+category: "research"
+tags: ["crcle reading"]
+---
+
+
+2024年から2026年にかけて、大規模言語モデル（LLM）の推論能力向上に伴い、研究のライフサイクル（文献調査、仮説立案、実験コード作成、論文執筆）を自律的に実行するAIエージェントが次々と発表された。科学研究におけるAIの役割は、単なるツールから以下の3つの新たなパラダイムへと進化している。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="300" viewBox="0 0 500 300" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <line x1="60" y1="240" x2="440" y2="240" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-9)" />
+    <line x1="60" y1="240" x2="60" y2="40" stroke="#ccc" stroke-width="1" marker-end="url(#arrow-gray-9)" />
+    <text x="440" y="255" text-anchor="end" font-size="10" fill="#888">自律性 (Autonomy)</text>
+    <text x="55" y="35" font-size="10" fill="#888">スケール (Scale / Parallelism)</text>
+    
+    <circle cx="150" cy="180" r="8" fill="#3b82f6" />
+    <text x="150" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#3b82f6">Google</text>
+    <text x="150" y="220" text-anchor="middle" font-size="9" fill="#666">AI co-scientist (協働)</text>
+    
+    <circle cx="380" cy="180" r="8" fill="#ef4444" />
+    <text x="380" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#ef4444">Sakana AI</text>
+    <text x="380" y="220" text-anchor="middle" font-size="9" fill="#666">The AI Scientist (自律)</text>
+    
+    <circle cx="380" cy="80" r="8" fill="#10b981" />
+    <text x="380" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">Edison Scientific</text>
+    <text x="380" y="120" text-anchor="middle" font-size="9" fill="#666">Kosmos (産業・並列)</text>
+    
+    <text x="250" y="285" text-anchor="middle" font-size="11" font-weight="bold">AI for Science 3大アプローチのポジショニング</text>
+    <defs>
+      <marker id="arrow-gray-9" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+9.1.1 AI co-scientist (Google)
+Googleが2025年初頭に発表した「AI co-scientist」は、AIを人間の研究者の「共同研究者」として位置づけるアプローチの集大成である。完全な無人化ではなく、人間とAIが相互にフィードバックを与え合う「Human-in-the-Loop」の理想形を体現している。
+
+基盤技術とマルチエージェント・アーキテクチャ
+本システムは、特化型の科学モデルではなく、汎用モデルである「Gemini 2.0」をベースに構築されている。役割の異なる複数のエージェント（生成エージェント、査読エージェント、近接エージェントなど）が非同期で協働し、生成（Generate）、討論（Debate）、進化（Evolve）のプロセスを繰り返す。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="240" viewBox="0 0 460 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <rect x="20" y="40" width="180" height="140" rx="8" fill="#3b82f6" fill-opacity="0.05" stroke="#3b82f6" stroke-dasharray="4,2" />
+    <text x="110" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">AI Sandbox (Gemini 2.0)</text>
+    
+    <rect x="40" y="60" width="60" height="30" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="70" y="78" text-anchor="middle" font-size="8">生成 Agent</text>
+    <rect x="120" y="60" width="60" height="30" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="150" y="78" text-anchor="middle" font-size="8">査読 Agent</text>
+    
+    <circle cx="110" cy="130" r="20" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" />
+    <text x="110" y="134" text-anchor="middle" font-size="8" font-weight="bold" fill="#b45309">ランクマッチ</text>
+    
+    <rect x="280" y="70" width="140" height="80" rx="8" fill="#10b981" fill-opacity="0.05" stroke="#10b981" />
+    <text x="350" y="60" text-anchor="middle" font-size="10" font-weight="bold" fill="#10b981">Human 研究者 / Lab</text>
+    <text x="350" y="115" text-anchor="middle" font-size="9">ウェット実験・検証</text>
+    
+    <path d="M 200 100 H 280" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-9)" />
+    <text x="240" y="90" text-anchor="middle" font-size="8" fill="#666">有望な仮説</text>
+    <path d="M 280 130 H 200" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-9)" />
+    <text x="240" y="150" text-anchor="middle" font-size="8" fill="#666">実証データ還元</text>
+    
+    <text x="230" y="215" text-anchor="middle" font-size="11" font-weight="bold">AI co-scientist：マルチエージェントと人間の共創</text>
+  </svg>
+</div>
+
+ランクマッチ・アルゴリズムによる仮説のトーナメント進化
+AIが大量の仮説を生成する際、従来は「どの仮説が最も新規性と妥当性を両立しているか」を定量的に評価することが困難であった。AI co-scientistは、オンライン対戦ゲームで用いられる「ランクマッチ（レーティング）アルゴリズム」を導入した。生成された仮説同士を1対1で戦わせ（比較させ）、トーナメント方式で順位付けを行うことで、人間の直感に近いバランス感覚で有望な仮説をフィルタリングし、自己改善（Self-improvement）へと繋げている。
+
+実証された科学的成果
+単なる机上の空論にとどまらず、創薬およびバイオメディカル分野において実用的な成果を挙げている。例えば、肝線維症に対する新たなエピジェネティックな治療標的の発見や、急性骨髄性白血病における既存薬のドラッグリポジショニングの提案を行い、これらは人間の研究チームによるオルガノイド（ミニ臓器）を用いたウェット実験によって実際に有効性が検証された。
+
+9.1.2 AI Scientist (Sakana AI) と学術界の波紋
+東京を拠点とするSakana AIが発表した「The AI Scientist」は、人間の介入を極限まで排除し、AI研究の全自動化（フルオートメーション）を目指した野心的なプロジェクトである。2026年3月には、このシステムによって執筆された論文がNature誌に掲載されるという歴史的マイルストーンを達成した。
+
+技術的進化（v1からv2への飛躍）
+初期バージョン（v1）は、人間が与えた「コードのテンプレート」をベースにアイデアを派生させていた。しかし、最新の「AI Scientist-v2」ではテンプレートへの依存から脱却。実験マネージャーエージェントの指導の下、並列的なエージェント・ツリー探索（Progressive Agentic Tree Search）を用いることで、機械学習の広範な領域において、ゼロから自律的に文献を検索し、実験コードを実装・実行し、LaTeX形式の論文を生成するまでに進化した。
+
+「科学のチューリングテスト」の突破
+2025年、The AI Scientistは完全にAIのみで生成・執筆された未編集の論文を、ICLR 2025のワークショップ（ICBINB）へ投稿した。厳格な人間の盲目ピアレビュー（査読）を受けた結果、平均スコア6.33を獲得。これは人間が執筆した論文の上位45%に相当するスコアであり、採択基準を見事にクリアした（倫理規定に基づき、採択後に自ら取り下げを行っている）。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="280" viewBox="0 0 500 280" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <rect x="20" y="50" width="70" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="55" y="75" text-anchor="middle" font-size="8">文献検索</text>
+    <path d="M 90 70 H 110" stroke="#ef4444" marker-end="url(#arrow-red-9)" />
+    
+    <rect x="110" y="50" width="70" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="145" y="75" text-anchor="middle" font-size="8">アイデア生成</text>
+    <path d="M 180 70 H 200" stroke="#ef4444" marker-end="url(#arrow-red-9)" />
+    
+    <rect x="200" y="50" width="70" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="235" y="75" text-anchor="middle" font-size="8">実験・コード</text>
+    <path d="M 270 70 H 290" stroke="#ef4444" marker-end="url(#arrow-red-9)" />
+    
+    <rect x="290" y="50" width="70" height="40" rx="4" fill="#eee" stroke="#ccc" />
+    <text x="325" y="75" text-anchor="middle" font-size="8">論文執筆</text>
+    <path d="M 360 70 H 380" stroke="#ef4444" marker-end="url(#arrow-red-9)" />
+    
+    <rect x="380" y="50" width="80" height="40" rx="4" fill="#fff" stroke="#ef4444" />
+    <text x="420" y="75" text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">AI自動査読</text>
+    
+    <path d="M 420 90 V 130 H 145 V 90" stroke="#ef4444" fill="none" stroke-dasharray="4,2" marker-end="url(#arrow-red-9)" />
+    <text x="280" y="145" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="bold">閉じた評価ループの懸念</text>
+    
+    <rect x="100" y="170" width="300" height="60" rx="8" fill="#fff7ed" stroke="#f97316" stroke-width="1" />
+    <text x="250" y="195" text-anchor="middle" font-size="9" fill="#9a3412" font-weight="bold">学術エコシステムへの影響：</text>
+    <text x="250" y="212" text-anchor="middle" font-size="8" fill="#9a3412">「科学のミーム化」・粗悪なAI論文の大量生産</text>
+    
+    <text x="250" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="#ef4444">The AI Scientist：完全自律化とその波紋</text>
+    
+    <defs>
+      <marker id="arrow-red-9" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+ミーム化と学術界からの猛烈な批判
+一方で、この急進的なアプローチは学術界に激しい議論と拒絶反応を巻き起こした。Google DeepMindでGeminiの推論能力向上を牽引するShixiang Shane Gu氏からは、「科学が単なる論文生成ゲームとしてミーム化・形骸化している」との強い批判が寄せられた。批判の焦点は以下の通りである。
+
+エコシステムの汚染： 未熟なアイデアや浅い検証に基づく「もっともらしいAI生成論文」が大量生産されれば、人間の査読システムがパンクし、学術データベースがスパム的に汚染される。
+
+自己評価の限界： Sakana AIはLLMを用いた「Automated Reviewer（自動査読者）」を導入したが、AIがAIの論文を評価する閉鎖的なループは、真の現実世界の真理（グラウンド・トゥルース）から乖離する危険性を孕んでいる。
+
+9.1.3 FutureHouseからEdison Scientificへ：RobinとKosmos
+複雑な自然科学（生物学・化学）におけるAI活用を推進するため、非営利組織FutureHouseは2025年11月に営利企業「Edison Scientific」をスピンアウトさせた。Eric Schmidt氏らの支援を受け、シードラウンドで多額の資金を調達した同社は、産業界（特に巨大製薬企業）のニーズに直結するAI基盤を提供している。
+
+組織の二極化によるアプローチ
+FutureHouseが基礎的な生物学研究の完全自動化を目指す non-profit 機関として存続する一方で、Edison Scientificは商業化に特化している。これは、研究室レベルのプロトタイプを、エンタープライズの過酷なセキュリティと処理要求（膨大なレートリミットなど）に耐えうるプロダクトへと昇華させるための戦略的分割であった。
+
+初期基盤「Robin」から統合プラットフォーム「Kosmos」へ
+初期に開発された「Robin」は、文献レビューや仮説生成を支援する概念的エージェントであった。現在の中核プラットフォームである「Kosmos」は、それを劇的に進化させたものである。
+
+Kosmosの圧倒的な並列処理能力と産業実証
+Kosmosは単一のチャットボットではなく、「Literature Agent」や「Analysis Agent」などの専門エージェントが同時に数百のタスクを並列実行する環境である。化学情報学ツールと連携し、公開データと企業のプライベートデータを統合して新たな分子設計や合成計画を立案する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="420" height="260" viewBox="0 0 420 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    <circle cx="210" cy="110" r="30" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="2" />
+    <text x="210" y="114" text-anchor="middle" font-size="10" font-weight="bold" fill="#065f46">Kosmos</text>
+    
+    <g opacity="0.6">
+      <circle cx="100" cy="50" r="18" fill="#fff" stroke="#ccc" />
+      <text x="100" y="53" text-anchor="middle" font-size="6">Lit Agent</text>
+      <circle cx="320" cy="50" r="18" fill="#fff" stroke="#ccc" />
+      <text x="320" y="53" text-anchor="middle" font-size="6">Analysis</text>
+      <circle cx="60" cy="110" r="18" fill="#fff" stroke="#ccc" />
+      <text x="60" y="113" text-anchor="middle" font-size="6">ChemCrow</text>
+      <circle cx="360" cy="110" r="18" fill="#fff" stroke="#ccc" />
+      <text x="360" y="113" text-anchor="middle" font-size="6">Code</text>
+      <circle cx="100" cy="170" r="18" fill="#fff" stroke="#ccc" />
+      <text x="100" y="173" text-anchor="middle" font-size="6">Patent</text>
+      <circle cx="320" cy="170" r="18" fill="#fff" stroke="#ccc" />
+      <text x="320" y="173" text-anchor="middle" font-size="6">Synthesis</text>
+      
+      <line x1="125" y1="65" x2="185" y2="95" stroke="#eee" />
+      <line x1="295" y1="65" x2="235" y2="95" stroke="#eee" />
+      <line x1="80" y1="110" x2="180" y2="110" stroke="#eee" />
+      <line x1="340" y1="110" x2="240" y2="110" stroke="#eee" />
+      <line x1="125" y1="155" x2="185" y2="125" stroke="#eee" />
+      <line x1="295" y1="155" x2="235" y2="125" stroke="#eee" />
+    </g>
+    
+    <rect x="110" y="210" width="200" height="30" rx="4" fill="#e8f5e9" stroke="#10b981" />
+    <text x="210" y="228" text-anchor="middle" font-size="9" font-weight="bold" fill="#065f46">一晩で292の独立した解析を実行</text>
+    
+    <text x="210" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">Kosmos：数百の並列エージェントによる産業規模の処理</text>
+  </svg>
+</div>
+
+MITやUCL（ユニバーシティ・カレッジ・ロンドン）のトップ研究者からは、「人間のバイオインフォマティクス専門家2名が3週間かけて行うデータ解析の軌跡を、Kosmosは一晩の計算（292の独立した解析ルート）で完遂し、人間が見逃した洞察を導き出した」と絶賛されており、創薬プロセスのタイムラインを根底から覆すツールとして実用化が進んでいる。
