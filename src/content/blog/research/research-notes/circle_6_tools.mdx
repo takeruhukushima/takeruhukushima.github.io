@@ -1,0 +1,406 @@
+---
+title: "6章:GithubやNvim、Nix、uv、pnpmについて。"
+category: "research"
+tags: ["crcle reading"]
+---
+### 章の構成（ツリー構造）
+
+```text
+第6章: 現代エンジニアの「標準」開発環境（GitHub, Nvim, Nix, uv, pnpm）
+├── 6.1 開発環境という名の「武器庫」
+│   ├── 6.1.1 AI開発のボトルネックは「人間」と「環境」にある
+│   └── 6.1.2 自動化・高速化・再現性の3原則
+├── 6.2 GitHub：ソースコードの「保管庫」にして世界の「交差点」
+│   ├── 6.2.1 Gitの魔法：時間を巻き戻し、並行世界を分岐させる
+│   ├── 6.2.2 世界最大のオープンソース・エコシステム
+│   └── 6.2.3 CI/CDとAI時代のGitHub（GitHub ActionsとCopilot）
+├── 6.3 Neovim (Nvim)：思考とタイピングを直結させる「ハッカーの刃」
+│   ├── 6.3.1 マウスを捨てる勇気：モーダル編集というパラダイム
+│   ├── 6.3.2 無限の拡張性：Luaによるプラットフォーム化
+│   └── 6.3.3 AIエージェントとの完全融合：究極のPDEの構築
+├── 6.4 Nix：環境構築の「再現性」を担保する究極のパラダイム
+│   ├── 6.4.1 宣言的パッケージ管理：インフラをコードとして記述する
+│   ├── 6.4.2 開発環境の使い捨てと完全再現（Nix flakes）
+│   └── 6.4.3 home-manager：「個人の環境」そのものを宣言的に管理する
+├── 6.5 uv & pnpm：言語の壁を越える「次世代パッケージマネージャ」
+│   ├── 6.5.1 なぜパッケージマネージャの「速度」が重要なのか
+│   ├── 6.5.2 uv：RustがもたらしたPython環境構築の超高速化
+│   └── 6.5.3 pnpm：ハードリンクが解決したディスク容量と速度のジレンマ
+└── 6.6 まとめ：モダンな道具が思考の摩擦をゼロにする
+```
+
+---
+
+### 第6章: 現代エンジニアの「標準」開発環境（GitHub, Nvim, Nix, uv, pnpm）
+
+ここからは、構成に沿って各セクションを詳細に解説していく。
+
+#### 6.1 開発環境という名の「武器庫」
+
+第5章までに、機械学習の数学的原理から、Pythonを用いた実装までを一通り学んできた。しかし、どれほど強力なAIモデルやライブラリの知識を持っていても、それらを実行し、コードを記述する「開発環境」が貧弱であれば、エンジニアのパフォーマンスは著しく低下する。
+
+本章で紹介するツール群（GitHub、Neovim、Nix、uv、pnpm）は、直接的にAIモデルを構築するアルゴリズムではない。しかし、これらは現代のトップエンジニアたちが「標準」として採用している、開発スピードを極限まで引き上げるための重要な基盤である。「自動化」「高速化」「再現性」という3つの原則に基づき、開発者の認知負荷（考えるべき無駄なこと）を削ぎ落とす、強力な武器庫の中身を見ていこう。ここで整える「再現性のある環境」は、次章で扱う自律型AIエージェント（AI-CLI）が安心して動き回るための、揺るぎない土台にもなる。
+
+#### 6.2 GitHub：ソースコードの「保管庫」にして世界の「交差点」
+
+現代のソフトウェア開発において、コードを単なるローカルフォルダ（「最新版」「本当の最新版」「提出用」などと名付けられたフォルダ群）で管理する者はいない。ソースコードの履歴管理と共有を担うプラットフォームとして、**GitHub（ギットハブ）**は絶対的なインフラとなっている。
+
+##### 6.2.1 Gitの魔法：時間を巻き戻し、並行世界を分岐させる
+
+GitHubの根底で動いているのは、Linuxの生みの親であるリーナス・トーバルズが開発した**「Git（ギット）」**という分散型バージョン管理システムである。
+
+Gitは、ソースコードの変更履歴を「スナップショット（特定の瞬間の状態）」として記録していく。これにより、過去の任意の時点にコードを巻き戻すことが可能になる。さらに強力なのが「ブランチ（分岐）」という概念だ。本流のコード（mainブランチ）に影響を与えることなく、別の並行世界（機能追加用のブランチ）を作成して安全に開発を進め、完成した後に本流に合流（マージ）させることができる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="160" viewBox="0 0 400 160" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Main Branch */}
+    <line x1="40" y1="80" x2="360" y2="80" stroke="#ccc" stroke-width="2" />
+    <circle cx="60" cy="80" r="4" fill="#333" />
+    <circle cx="140" cy="80" r="4" fill="#333" />
+    <circle cx="260" cy="80" r="4" fill="#333" />
+    <circle cx="340" cy="80" r="4" fill="#333" />
+    <text x="40" y="70" font-size="10" font-weight="bold">main</text>
+    
+    {/* Feature Branch */}
+    <path d="M 140 80 Q 180 30 220 30 H 260 Q 300 30 340 80" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+    <circle cx="200" cy="30" r="4" fill="#3b82f6" />
+    <circle cx="280" cy="30" r="4" fill="#3b82f6" />
+    <text x="240" y="20" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">feature-branch</text>
+    
+    <text x="200" y="140" text-anchor="middle" font-size="11" font-weight="bold">Gitブランチ：並行世界の分岐と安全な統合</text>
+  </svg>
+</div>
+
+
+##### 6.2.2 世界最大のオープンソース・エコシステム
+
+GitHubは、このGitの仕組みをクラウド上に展開し、UI（ユーザーインターフェース）とSNSの要素を付加したサービスである。
+単にコードを保管するだけでなく、「このコードのここを修正しました（Pull Request）」「ここにバグがあります（Issue）」といったコミュニケーションを通じて、世界中の開発者が共同でソフトウェアを作り上げるプラットフォームとなっている。第5章で触れたPyTorchやTransformers、第7章のAI-CLIツールなども、すべてこのGitHub上でソースコードが公開され、世界中の天才たちの手によって日々改良されているのだ。
+
+##### 6.2.3 CI/CDとAI時代のGitHub
+
+現代のGitHubは、単なるコード置き場にとどまらない。コードがアップロードされた瞬間に、自動でテストを実行し、サーバーにデプロイ（配置）する**GitHub Actions（CI/CD）**という強力な自動化パイプラインを備えている。
+さらに、コードの自動補完を行うAI「GitHub Copilot」がプラットフォーム全体に深く統合されており、Issueの要約からPull Requestのレビューまで、AIが開発サイクル全体を支援する形へと進化を続けている。
+
+#### 6.3 Neovim (Nvim)：思考とタイピングを直結させる「ハッカーの刃」
+
+コードを書くためのエディタには、VSCode（Visual Studio Code）など多くの優れた選択肢が存在する。しかし、キーボードから手を離さず、思考のスピードでコードを編集したいと願うハッカー気質のエンジニアが行き着く究極のテキストエディタが**「Neovim（Nvim）」**である。
+
+##### 6.3.1 マウスを捨てる勇気：モーダル編集というパラダイム
+
+Neovimは、古くから存在する「Vim」というエディタの次世代版（フォーク）である。その最大の特徴は、マウスを一切使わないことを前提とした**「モーダル編集」**というパラダイムにある。
+
+普通のエディタは、常に文字を入力できる状態にある。しかしNeovimには「ノーマルモード（移動や削除などのコマンドを実行する状態）」「インサートモード（文字を入力する状態）」「ビジュアルモード（テキストを選択する状態）」という複数のモードが存在する。
+最初は戸惑うかもしれないが、慣れれば「`ciw`（カーソル下の単語を削除して入力モードに入る）」「`yy`（行をコピーする）」といった数回のキータッチで、マウスを使ったドラッグ＆ドロップよりも遥かに高速かつ精密にテキストを操作できるようになる。
+
+##### 6.3.2 無限の拡張性：Luaによるプラットフォーム化
+
+古いVimに対するNeovimの決定的な優位性は、**Lua（ルア）**という高速で軽量なプログラミング言語を第一級の拡張言語として組み込んだことにある。
+これにより、世界中の開発者が、エディタの動作を根底から書き換えるような強力なプラグイン（拡張機能）を次々と生み出すようになった。ファイルツリーの表示、LSP（Language Server Protocol）による強力なコード補完やエラー構文チェックなど、VSCodeが持つ機能はすべてNeovim上で再現でき、かつより軽量に動作させることができる。
+
+##### 6.3.3 AIエージェントとの完全融合：究極のPDEの構築
+
+近年、Neovimは「PDE（Personalized Development Environment：個人向けに最適化された開発環境）」の到達点として再評価されている。
+次章で紹介するAI-CLIツールや、GitHub Copilot、さらにはClaudeやGeminiのAPIを直接叩くプラグイン（`avante.nvim`など）をNeovimに組み込むことで、ターミナルに切り替えることすらなく、エディタ内で直接AIにコードを生成・リファクタリングさせることが可能になる。思考、タイピング、そしてAIへの指示が、一つの黒い画面の中でシームレスに完結する環境は、一度慣れると他のエディタには戻れないほどの没入感をもたらす。
+
+#### 6.4 Nix：環境構築の「再現性」を担保する究極のパラダイム
+
+ソフトウェア開発において、最も無駄でストレスの溜まる時間は「自分のパソコンでは動くのに、同僚のパソコン（あるいは本番サーバー）ではエラーが出て動かない」という現象の調査である。これは、OSの違いや、インストールされている依存ライブラリのバージョンが微妙に異なること（依存関係地獄）が原因だ。この問題を根本から解決するツールが**「Nix（ニックス）」**である。
+
+##### 6.4.1 宣言的パッケージ管理：インフラをコードとして記述する
+
+Nixは、単なるパッケージマネージャではなく、OSの環境そのものを「関数」として捉える関数型パッケージマネージャである。
+従来のインストール方法（`apt` や `brew` など）は、システム全体の状態を上書きしていくため、時間が経つと「何がインストールされてこの環境が動いているのか」が誰にも分からなくなってしまう。
+
+一方Nixでは、「このプロジェクトには、Python 3.11と、特定のバージョンのNumPyが必要である」という**環境の設計図（Nix言語で書かれたコード）**を宣言的に記述する。Nixはこの設計図を読み込み、システムの他の部分とは完全に隔離された特別な領域（Nix store）に必要なツールを配置する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="220" viewBox="0 0 460 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Blueprint */}
+    <rect x="190" y="20" width="80" height="100" rx="4" fill="#fff" stroke="#3b82f6" stroke-width="2" />
+    <path d="M 205 45 H 255 M 205 65 H 255 M 205 85 H 230" stroke="#3b82f6" stroke-opacity="0.3" />
+    <text x="230" y="140" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">設計図 (flake.nix)</text>
+    
+    {/* Machines */}
+    <path d="M 180 80 L 100 130" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 230 130 V 150" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 280 80 L 360 130" stroke="#ccc" stroke-width="1.5" marker-end="url(#arrow-gray-c7)" />
+    
+    <rect x="40" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="80" y="165" text-anchor="middle" font-size="9">Machine A</text>
+    
+    <rect x="190" y="160" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="230" y="185" text-anchor="middle" font-size="9">Machine B</text>
+    
+    <rect x="340" y="140" width="80" height="40" rx="4" fill="#fff" stroke="#10b981" />
+    <text x="380" y="165" text-anchor="middle" font-size="9">Machine C</text>
+    
+    <text x="230" y="210" text-anchor="middle" font-size="11" font-weight="bold">Nix：1つの設計図から「全く同じ環境」を再現</text>
+
+    <defs>
+      <marker id="arrow-gray-c7" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ccc" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+##### 6.4.2 開発環境の使い捨てと完全再現（Nix flakes）
+
+この仕組みにより、恐るべき「再現性」が担保される。同じ設計図（`flake.nix`）を持っていれば、MacであろうとLinuxであろうと、一言コマンド（`nix develop`）を打つだけで、**1バイトの狂いもなく全く同じバージョンのツール群が揃った開発環境（シェル）**が一瞬で立ち上がるのだ。
+プロジェクトが終われば、そのシェルを閉じるだけで環境は綺麗に消え去る。システム全体を汚すことなく、プロジェクトごとに完全に隔離された環境を何度でも、誰のマシン上でも正確に再現できる。AI開発に必要な複雑なCUDA（GPUライブラリ）のバージョン合わせなども、Nixを使えばチーム全体で一瞬にして共有可能となる。
+
+##### 6.4.3 home-manager：「個人の環境」そのものを宣言的に管理する
+
+ここまで見てきた`nix develop`は、あくまで「1つのプロジェクトに閉じた、使い捨ての作業シェル」を再現する仕組みだった。しかし実際の開発者は、シェルの中だけでなく、普段使うエディタの設定、シェルのプロンプト、常用するCLIツール群といった「個人の環境全体」もまた、別のマシンに移っても一瞬で再現したいと考える。この願いを叶えるのが、Nixコミュニティが開発する**home-manager（`github:nix-community/home-manager`）**である。
+
+home-managerは、Nixの宣言的な思想を、プロジェクト単位ではなく「1人のユーザーのホームディレクトリ全体」に適用するツールである。以下のように`flake.nix`の中に自分のユーザー向けの設定（`homeConfigurations`）を1つ書いておけば、`home-manager switch --flake .`という1つのコマンドで、インストールしたいCLIツール群から、6.3節で紹介したNeovimの設定まで、環境全体を丸ごと宣言的に構築・更新できる。次章で導入するAI-CLIエージェントも、この`home.packages`に1行追加するだけで、同じ仕組みの上に宣言的に載せることができる。
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs = { nixpkgs, home-manager, ... }:
+    let
+      system = "aarch64-darwin"; # 環境に応じて変更
+      pkgs = import nixpkgs { inherit system; };
+    in {
+      homeConfigurations."your-username" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [{
+          home.username = "your-username";
+          home.homeDirectory = "/Users/your-username"; # Linuxなら /home/your-username
+          home.stateVersion = "24.05";
+          home.packages = [ pkgs.python311 pkgs.nodejs pkgs.nodePackages.pnpm ];
+          programs.neovim.enable = true;
+        }];
+      };
+    };
+}
+```
+
+`nix develop`が「プロジェクトを開いている間だけ有効な、使い捨ての足場」だとすれば、home-managerは「マシンを乗り換えても、常に同じ道具箱と設定が手元に揃っている、恒久的な自分の部屋」を作る仕組みだと言える。両者を使い分けることで、Nixは「一時的な再現性（devShell）」と「永続的な再現性（home-manager）」の両方をカバーする、開発環境構築の決定版パラダイムとなっている。
+
+#### 6.5 uv & pnpm：言語の壁を越える「次世代パッケージマネージャ」
+
+プロジェクトで使う外部の便利な部品（パッケージ）を管理する「パッケージマネージャ」も、近年劇的な進化を遂げている。ここでのキーワードは圧倒的な「速度」と「容量効率」である。
+
+##### 6.5.1 uv：RustがもたらしたPython環境構築の超高速化
+
+Pythonのエコシステムには、これまで `pip` や `poetry` など複数のパッケージ管理ツールが乱立し、ライブラリの依存関係（Aというライブラリを入れるためには、BのバージョンX以上が必要、といった条件）を解決するのに非常に長い時間がかかっていた。
+
+この現状を破壊したのが、Astral社が開発した**「uv（ユーヴイ）」**である。
+uvの最大の特徴は、システムプログラミング言語である「Rust」でゼロから書き直されている点だ。Pythonで書かれていた従来のツールと比較して、パッケージのダウンロードや依存関係の解決が数十倍から数十分の一の時間で完了する。仮想環境（`venv`）の作成やPython自体のバージョンのインストールも瞬時に行えるため、Python開発における新たなデファクトスタンダード（事実上の標準）として急速に普及している。
+
+##### 6.5.2 pnpm：ハードリンクが解決したディスク容量と速度のジレンマ
+
+一方、JavaScriptやTypeScript（フロントエンド開発やAIのWeb UI構築で必須となる言語）の世界で現在最強のツールとされているのが**「pnpm（ピーエヌピーエム）」**である。
+
+旧来の `npm` では、プロジェクトごとに大量のパッケージ（`node_modules` フォルダ）を重複してダウンロード・保存していたため、パソコンのディスク容量をあっという間に食いつぶすという致命的な問題があった。
+
+pnpmは、パッケージをPC内の「一つの隠し保管庫」に一度だけダウンロードし、各プロジェクトからは「ハードリンク（シンボリックリンクのようなもの）」を張るだけという賢いアーキテクチャを採用した。これにより、ディスク容量の消費を劇的に節約しつつ、インストール速度も極限まで引き上げることに成功している。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="220" viewBox="0 0 400 220" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Global Store */}
+    <rect x="150" y="30" width="100" height="60" rx="4" fill="#fff" stroke="#10b981" stroke-width="2" />
+    <text x="200" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">グローバルストア (実体)</text>
+    <rect x="170" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    <rect x="210" y="45" width="20" height="20" fill="#10b981" fill-opacity="0.2" />
+    
+    {/* Projects */}
+    <rect x="40" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="90" y="130" text-anchor="middle" font-size="9">Project A</text>
+    
+    <rect x="260" y="140" width="100" height="50" rx="4" fill="#fff" stroke="#ccc" />
+    <text x="310" y="130" text-anchor="middle" font-size="9">Project B</text>
+    
+    {/* Links */}
+    <path d="M 90 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray-c7)" />
+    <path d="M 310 140 V 90" stroke="#ccc" stroke-dasharray="4,2" marker-end="url(#arrow-gray-c7)" />
+    
+    <text x="200" y="210" text-anchor="middle" font-size="11" font-weight="bold">pnpm/uv：実体は1つ、参照は複数（省スペース）</text>
+  </svg>
+</div>
+
+#### 6.6 まとめ：モダンな道具が思考の摩擦をゼロにする
+
+本章で紹介したツール群の目的はただ一つ。**「開発プロセスから人間が手動で介入すべき『摩擦』を取り除くこと」**である。
+
+GitHubによってコードの履歴管理と共有が自動化され、Neovimによってタイピングと編集の摩擦が極限まで削ぎ落とされる。Nixを使えば「環境構築の手順書」を読む時間はゼロになり、uvとpnpmを使えばパッケージのインストールを待つ無駄な時間は消失する。
+
+AIという高度なソフトウェアを相手にするからこそ、開発環境構築で躓いたり、ツールの待ち時間に集中力を削がれたりしてはならない。これらのモダンな基盤を整えることは、次章で紹介するAI-CLIを用いた「自律的開発」をさらに加速させ、エンジニアが本来向き合うべき「設計」や「本質的な問題解決」に100%の思考リソースを投下するための、最強の足場となるのである。
+
+---
+
+#### 6.7 演習問題（実践編：実際に手を動かして確認しよう）
+
+本節の問題は文章で説明するだけでなく、実際に自分のPC上でコマンドを実行し、動くところまで確認することを目的とする。問1〜5は一直線につながっており、「Nixで環境を構築し（問1）、Neovimでファイルを編集し（問2）、uvでPythonを、pnpmでTSXを動かし（問3・問4）、最後にgitで一元管理する（問5）」という、本章で紹介したツール群を一気通貫で体験する。ここで作るhome-manager環境は、次章のAI-CLI（Antigravity CLI）導入の土台としてもそのまま使う。
+
+**問1. home-managerを使ったflake.nixを書いて、Neovim・uv・pnpmをまとめて実際にインストールする。**
+
+6.4.3節で紹介した`home-manager`（`github:nix-community/home-manager`）を使い、以下のような`flake.nix`を実際に作成せよ（Nix未導入の場合は公式サイトの手順でインストールしてから行うこと）。`your-username`と`home.homeDirectory`は自分の環境に合わせて書き換えること。
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs = { nixpkgs, home-manager, ... }:
+    let
+      system = "aarch64-darwin"; # Intel MacやLinuxの場合は x86_64-darwin / x86_64-linux に変更
+      pkgs = import nixpkgs { inherit system; };
+    in {
+      homeConfigurations."your-username" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [{
+          home.username = "your-username";
+          home.homeDirectory = "/Users/your-username"; # Linuxなら /home/your-username
+          home.stateVersion = "24.05";
+          home.packages = [ pkgs.git pkgs.uv pkgs.nodejs pkgs.nodePackages.pnpm ];
+          programs.neovim.enable = true;
+        }];
+      };
+    };
+}
+```
+
+2点補足しておく。1つ目は`pkgs.git`を明示的に入れていることだ。macOSならXcodeのコマンドラインツールなどで、多くの環境ではすでにgitが入っているかもしれないが、それに頼るのは「自分のマシンでは動く」という6.4節冒頭で戒めた依存関係地獄の入り口である。問5でgitを使う以上、それもこの設計図の中で宣言しておくのが筋である。2つ目は`pkgs.python311`を明示的に入れていないことだ。6.5.1節で述べた通り、uvはPython本体のバージョン管理まで自前で行えるため、システムにPythonが1つも入っていなくても`uv run`実行時に自動でダウンロードしてくれる（ただし完全なNixOS環境ではこの自動ダウンロードしたPythonバイナリが標準的なFHSパスを前提にしているため動かないことがある、という既知の制約もある。home-managerをmacOSや普通のLinuxディストリビューション上で使う今回のような構成では問題にならない）。
+
+以下のコマンドで実際にビルド・適用（switch）し、`nix develop`のような特別なシェルに入らなくても、普段使っているターミナルでそのまま `git --version`・`nvim --version`・`uv --version`・`pnpm --version` が正しく表示されることを確認せよ。
+
+```bash
+nix run home-manager/master -- switch --flake .#your-username
+```
+
+<details>
+<summary>解答（確認ポイント）</summary>
+
+`switch`コマンドが完了すると、git・Neovim・uv・nodejs・pnpmへのシンボリックリンクが`~/.nix-profile`（またはhome-manager用のプロファイル）に張られ、それが`PATH`に組み込まれる。ターミナルを開き直すか`.bashrc`/`.zshrc`を再読み込みした上で`git --version`・`nvim --version`・`uv --version`・`pnpm --version`を実行し、`nix develop`のように「特別なシェルに入る」操作をしなくてもバージョンが表示されれば成功である。これは`nix develop`のdevShellとは異なり、**マシンにログインしている限り常に有効な、恒久的な個人環境**が構築されたことを意味する。`system`の値が自分のOS・CPUアーキテクチャ（`uname -m`と`uname -s`で確認できる）と合っていないとビルドに失敗する点に注意。
+
+</details>
+
+**問2. Neovimのモーダル編集で、実際にテキストを編集する。**
+
+6.3.1節で紹介した`ciw`（単語の変更）・`yy`/`p`（コピー＆貼り付け）・`dd`（行削除）を、実際にキーボードだけで使ってみる。
+
+1. `nvim greeting.txt` で新規ファイルを開く
+2. `i` でインサートモードに入り、以下の2行をタイプして`Esc`で抜ける（1行目はわざとタイプミスさせてある）
+   ```
+   Hello Pythn
+   Hello TypeScript
+   ```
+3. `gg` でファイル先頭にカーソルを移動し、`w` を1回押して2単語目（`Pythn`）の上にカーソルを合わせる
+4. `ciw` と打ち、`Python` と入力して `Esc`（1行目が `Hello Python` になる）
+5. `yy` で1行目をコピーし、`p` でその直下に貼り付ける（3行になり、2行目に `Hello Python` が複製される）
+6. カーソルは貼り付けた行（2行目）にあるはずなので、`dd` でその行を削除する
+7. `:wq` で保存して終了し、`cat greeting.txt` で最終的な中身を確認する
+
+<details>
+<summary>解答（確認ポイント）</summary>
+
+最終的な`greeting.txt`の中身は次の2行になっているはずである。
+
+```
+Hello Python
+Hello TypeScript
+```
+
+タイプミスだった1行目が`ciw`で正しく`Python`に修正され、`yy`/`p`で複製した行を`dd`で消して元の2行構成に戻っている。マウスを一切使わず、すべてキーボードのモーダルなコマンドだけでファイルを編集できたことを確認しよう。うまくいかない場合は、`Esc`を押してから確実にノーマルモードに戻ってからコマンドを打っているか（インサートモードのままだと文字がそのまま入力されてしまう）を確認するとよい。
+
+</details>
+
+**問3. uvでPythonプロジェクトを初期化し、`uv run`だけで依存関係の解決から実行までを完結させる。**
+
+6.5.1節で述べた通り、uvを使う場合はPythonの実行を`python3 hello.py`のように直接行うのではなく、`uv run`を介するのが基本の作法である。以下を実際に行え。
+
+```bash
+uv init fizzbuzz-project
+cd fizzbuzz-project
+uv add numpy
+```
+
+`main.py`を以下の内容に書き換える（問2で使ったNeovimで編集してもよい）。
+
+```python
+import numpy as np
+
+def fizzbuzz(n: int) -> None:
+    for i in range(1, n + 1):
+        if i % 15 == 0:
+            print("FizzBuzz")
+        elif i % 3 == 0:
+            print("Fizz")
+        elif i % 5 == 0:
+            print("Buzz")
+        else:
+            print(i)
+
+print("numpy version:", np.__version__)
+fizzbuzz(20)
+```
+
+仮想環境を手動で作成・有効化（`python -m venv` や `source .venv/bin/activate`）することなく、以下のコマンド1つだけで実行できることを確認せよ。
+
+```bash
+uv run main.py
+```
+
+<details>
+<summary>解答（確認ポイント）</summary>
+
+初回の`uv run main.py`実行時、裏側で自動的に`.venv`ディレクトリ（プロジェクト専用の仮想環境）が作成され、`uv add numpy`で指定したnumpyが高速にインストールされてからスクリプトが実行される。出力には`numpy version: ...`の行に続いて1〜20のFizzBuzzが表示される。ここで重要なのは、`source .venv/bin/activate`のような仮想環境の有効化コマンドを一度も打っていない点である。`uv run`はコマンドの前に自動的に正しい仮想環境を差し込んで実行してくれるため、「Pythonを実行するときはとりあえず`uv run`」という作法さえ覚えておけば、環境の状態を意識する必要がなくなる。
+
+</details>
+
+**問4. pnpmでTSX（React + TypeScript）のプログラムを書く。**
+
+問1で導入したpnpmを使い、`pnpm create vite@latest my-app -- --template react-ts` を実行してReact+TypeScriptのプロジェクトを作成し、`src/App.tsx` を編集して「ボタンを押すとカウントが1ずつ増える」だけの簡単なコンポーネントを実装せよ。
+
+```tsx
+import { useState } from "react";
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      count is {count}
+    </button>
+  );
+}
+```
+
+`pnpm install` の後 `pnpm dev` を実行し、ブラウザで実際にボタンをクリックしてカウントが増えることを確認せよ。
+
+<details>
+<summary>解答（確認ポイント）</summary>
+
+`pnpm dev` の出力に表示されたローカルURL（通常 `http://localhost:5173`）をブラウザで開き、「count is 0」と表示されたボタンをクリックするたびに数字が1ずつ増えれば成功。増えない場合は `useState` のセッター（`setCount`）を呼んでいるか、`onClick` にちゃんと関数を渡しているか（`onClick={setCount(count + 1)}`のように実行結果を直接渡してしまう間違いが典型的なミス）を見直すこと。
+
+</details>
+
+**問5（応用）. 問2〜4で作ったファイルをすべてgitで管理する。**
+
+問2の`greeting.txt`、問3の`fizzbuzz-project`ディレクトリ、問4のReactプロジェクトを1つの作業ディレクトリにまとめ、以下を実際に行え。
+
+1. `git init` でリポジトリを作成する
+2. `.gitignore` を作成し、`node_modules/`・`dist/`・`.venv/`・`__pycache__/` を除外する
+3. `git add` → `git commit` で初期コミットを作成する
+4. `git branch feature/add-readme` で新しいブランチを作り、問2で練習したNeovimを使って`README.md`を新規作成し、そのブランチにコミットする
+5. `git log --oneline --graph --all` で、mainブランチと`feature/add-readme`ブランチの分岐が見えることを確認する
+
+<details>
+<summary>解答（確認ポイント）</summary>
+
+`.gitignore`に`node_modules/`や`.venv/`を書いていないと、数万個のファイルがステージされてしまうので要注意（`git status`で確認してからaddするとよい）。`git log --oneline --graph --all`を実行すると、`*`記号でコミットが表示され、`feature/add-readme`ブランチのコミットが`main`から枝分かれしている様子がアスキーアートで見える。これが6.2節で説明した「並行世界の分岐」を、実際に自分の手で作り出せたことの証拠となる。ここまでで、Nix（環境構築）・Neovim（編集）・uv（Python実行）・pnpm（TSX実行）・git（管理）という本章のツール群を、すべて自分の手を動かして一通り体験したことになる。
+
+</details>

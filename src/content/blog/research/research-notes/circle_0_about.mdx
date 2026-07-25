@@ -609,143 +609,10 @@ Transformerの最大の発明は、「Self-Attention（自己注意機構）」�
 
 　本章を通し、データの加工からモデルの学習、そして最新の基盤モデルの呼び出しに至るまで、Pythonエコシステムがいかに強力かつ洗練されているかを体感してほしい。理論と実装の両輪を回すことではじめて、機械学習の真の価値を引き出すことができるはずである。
 
-## $6$章:AI-CLI入門
+## $6$章:GithubやNvim、Nix、uv、pnpmについて。
 
 
-第$5$章までは、Pythonを用いて機械学習モデルを実装する方法を学んできた。しかし、現代の開発者がLLMの恩恵を受ける場所は、エディタの中だけにとどまらない。日常的に最も多くの時間を過ごすターミナルにAIを直接統合する「AI-CLI（Command Line Interface）」ツールが、開発体験を劇的に変えている。
-
-### なぜAI-CLIが必要なのか
-ブラウザのチャットUIでは、エラーログやコードをコピー＆ペーストするたびに「文脈（コンテキスト）」が断絶し、集中力が削がれる。一方、AI-CLIは実行中のターミナルの出力をリアルタイムで読み取り、修正案を即座にファイルへ反映させることができる。AIは単なる相談役ではなく、ターミナル内で共に作業を行う「自律型エージェント」へと進化した。
-
-<div style="text-align: center; margin: 2.5em 0;">
-  <svg width="500" height="240" viewBox="0 0 500 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
-    {/* Browser UI */}
-    <rect x="30" y="50" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
-    <text x="120" y="35" text-anchor="middle" font-size="11" font-weight="bold">ブラウザ UI (従来)</text>
-    <rect x="50" y="70" width="40" height="30" fill="#eee" /> {/* Editor */}
-    <rect x="150" y="110" width="40" height="30" fill="#3b82f6" fill-opacity="0.1" /> {/* Browser */}
-    <path d="M 95 85 Q 120 70 145 110" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
-    <path d="M 145 125 Q 120 140 95 100" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
-    <text x="120" y="185" text-anchor="middle" font-size="9" fill="#ef4444">コピペの往復・文脈の断絶</text>
-    
-    <text x="250" y="110" text-anchor="middle" font-size="20">vs</text>
-    
-    {/* AI-CLI */}
-    <rect x="290" y="50" width="180" height="120" rx="8" fill="#1a1c23" stroke="#333" />
-    <text x="380" y="35" text-anchor="middle" font-size="11" font-weight="bold">AI-CLI (シームレス)</text>
-    <rect x="310" y="70" width="140" height="80" fill="#000" fill-opacity="0.5" /> {/* Terminal */}
-    <text x="320" y="85" font-size="8" fill="#10b981">$ gemini "fix error"</text>
-    <path d="M 380 95 V 135" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-cli)" />
-    <text x="380" y="185" text-anchor="middle" font-size="9" fill="#10b981">ターミナル内で完結</text>
-    
-    <defs>
-      <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
-      </marker>
-      <marker id="arrow-green-cli" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
-      </marker>
-    </defs>
-  </svg>
-</div>
-
-### 代表的なAI-CLIと基盤モデル
-1. **OpenAI Codex**
-   OpenAIのコーディング特化型モデル。現在も独立した基盤モデルとして進化を続けており、多くのツールのバックエンドとして「エージェントスタック」の核となっている。
-2. **OpenCode (opencode.ai)**
-   15万以上のGitHubスターを誇る、**今最も勢いのあるOSS系エージェント**。Go言語で書かれた高速なバイナリと、直感的なTUI（Terminal User Interface）が特徴だ。LSP（Language Server Protocol）との連携により、コードの型情報まで理解した高度な編集が可能。特定のベンダーに依存せず、後述のGeminiやClaude、ローカルのOllamaなどを自由自在に切り替えて「ペアプロ」ができる。
-3. **Claude Code**
-   Anthropic社による公式CLI。自律的なファイル検索やテスト実行の精度が高く、複雑なリファクタリングにおいて圧倒的な信頼感がある。
-4. **Gemini CLI (`@google/gemini-cli`)**
-   GoogleのGeminiを活用するCLI。**無料枠が非常に充実している**のが最大の特徴。マルチモーダル機能により、ターミナルに画像をドラッグ＆ドロップして「このデザイン通りに実装して」といった指示も可能。
-
-### インストールと初期設定（Gemini CLIの例）
-現在のモダンなツールは、APIキーの手動設定よりも「Webアカウント統合」が主流だ。ここでは高速なパッケージマネージャ **pnpm** を使った導入手順を紹介する。
-
-**1. ツールのインストール**
-ターミナルで以下のコマンドを実行し、グローバルにインストールする。
-```bash
-pnpm add -g @google/gemini-cli
-```
-※OpenCodeの場合は `pnpm add -g opencode-ai` で導入可能だ。
-
-**2. Webブラウザでのログイン統合**
-インストール後、ターミナルで以下のコマンドを打つ。
-```bash
-gemini login
-```
-自動的にWebブラウザが立ち上がり、Googleアカウントの認証画面が表示される。「許可」を押すだけで、ローカル環境に認証情報がセキュアに統合される。APIキーを環境変数に書き込む手間もリスクもなく、数秒でAIとの対話が開始できる。
-
-<div style="text-align: center; margin: 2.5em 0;">
-  <svg width="460" height="180" viewBox="0 0 460 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
-    {/* Past */}
-    <text x="110" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">過去 (複雑・リスク)</text>
-    <rect x="30" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#ccc" stroke-dasharray="2,2" />
-    <text x="110" y="70" text-anchor="middle" font-size="8">APIキーをコピペ</text>
-    <text x="110" y="85" text-anchor="middle" font-size="8">.envファイルを編集</text>
-    <text x="110" y="100" text-anchor="middle" font-size="8">環境変数の読み込み</text>
-    <text x="110" y="145" text-anchor="middle" font-size="18" fill="#ef4444">×</text>
-    
-    <path d="M 210 85 H 250" stroke="#ccc" stroke-width="2" />
-    
-    {/* Present */}
-    <text x="350" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">現在 (シンプル・安全)</text>
-    <rect x="270" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#10b981" fill-opacity="0.05" />
-    <text x="350" y="70" text-anchor="middle" font-size="8">$ gemini login</text>
-    <rect x="310" y="85" width="80" height="25" rx="4" fill="#10b981" />
-    <text x="350" y="101" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">許可 (Authorize)</text>
-    <text x="350" y="145" text-anchor="middle" font-size="18" fill="#10b981">✓</text>
-  </svg>
-</div>
-
-### AI-CLIの主な活用場面
-*   **プランニングと実装の分離:** OpenCodeなどでは「Planモード」で修正案を検討し、「Buildモード」で一括適用するといった使い分けができる。
-*   **エラーの自動解決:** プログラムがクラッシュした際、「今のエラーログを見て原因を修正して」と打てば、AIがログを解析し、コードを直し、テストを再実行して確認する。
-
-<div style="text-align: center; margin: 2.5em 0;">
-  <svg width="400" height="260" viewBox="0 0 400 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
-    {/* Loop */}
-    <circle cx="200" cy="120" r="70" fill="none" stroke="#ccc" stroke-dasharray="4,4" />
-    
-    {/* Error */}
-    <circle cx="200" cy="50" r="25" fill="#fff" stroke="#ef4444" stroke-width="2" />
-    <text x="200" y="54" text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">エラー発生</text>
-    
-    {/* Step 1 */}
-    <circle cx="270" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
-    <text x="270" y="124" text-anchor="middle" font-size="8">ログ解析</text>
-    
-    {/* Step 2 */}
-    <circle cx="200" cy="190" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
-    <text x="200" y="194" text-anchor="middle" font-size="8">コード修正</text>
-    
-    {/* Step 3 */}
-    <circle cx="130" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
-    <text x="130" y="124" text-anchor="middle" font-size="8">テスト検証</text>
-    
-    {/* Success */}
-    <path d="M 280 50 L 320 50" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-success)" />
-    <text x="340" y="54" font-size="10" font-weight="bold" fill="#10b981">解決！</text>
-    
-    <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="bold">自律型エージェントによる修正ループ</text>
-    
-    <defs>
-      <marker id="arrow-green-success" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
-      </marker>
-    </defs>
-  </svg>
-</div>
-
-*   **インフラの自然言語操作:** 「ポート3000を専有しているプロセスを特定して終了させて」といった、覚えにくい複雑なUNIXコマンドの組み立てをAIに代行させる。
-
-### おわりに
-AI-CLIの導入は、開発効率を数倍に引き上げるだけでなく、「退屈な作業はAIに任せ、人間は設計や創造的な意思決定に集中する」という新しい開発スタイルへの入り口となる。まずは無料で強力なGemini CLIや、OSSの雄であるOpenCodeから、その破壊的な利便性を体感してみてほしい。
-
-## $7$章:GithubやNvim、Nix、uv、pnpmについて。
-
-
-本章では、ソースコードの管理からエディタ、パッケージ管理に至るまで、現代のエンジニアが「標準」として採用している強力なツール群について紹介する。これらは直接AIを作る道具ではないが、AI開発のスピードを引き上げるための重要な基盤である。
+本章では、ソースコードの管理からエディタ、パッケージ管理に至るまで、現代のエンジニアが「標準」として採用している強力なツール群について紹介する。これらは直接AIを作る道具ではないが、次章で扱う自律型AIエージェント（AI-CLI）の土台にもなる、AI開発のスピードを引き上げるための重要な基盤である。
 
 #### 1. GitHub：ソースコードの「保管庫」と「SNS」
 GitHub（ギットハブ）は、プログラムの変更履歴を記録する「Git（ギット）」という仕組みを、オンライン上で管理できるサービスである。
@@ -835,6 +702,139 @@ Neovim（ネオヴィム）は、マウスを使わずキーボードだけで�
 
 #### まとめ
 本章で紹介したツール群は、いずれも「自動化」「高速化」「再現性」をキーワードに進化してきた。AIという高度なソフトウェアを扱うからこそ、その足場となる開発環境をこれらのモダンなツールで整えることが、結果として最も効率的な学習・開発への近道となる。
+
+## $7$章:AI-CLI入門
+
+
+第$6$章までは、Pythonを用いて機械学習モデルを実装する方法から、Git・Neovim・Nixといった「標準」開発環境の整備までを学んできた。しかし、現代の開発者がLLMの恩恵を受ける場所は、エディタの中だけにとどまらない。日常的に最も多くの時間を過ごすターミナルにAIを直接統合する「AI-CLI（Command Line Interface）」ツールが、開発体験を劇的に変えている。
+
+### なぜAI-CLIが必要なのか
+ブラウザのチャットUIでは、エラーログやコードをコピー＆ペーストするたびに「文脈（コンテキスト）」が断絶し、集中力が削がれる。一方、AI-CLIは実行中のターミナルの出力をリアルタイムで読み取り、修正案を即座にファイルへ反映させることができる。AIは単なる相談役ではなく、ターミナル内で共に作業を行う「自律型エージェント」へと進化した。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="500" height="240" viewBox="0 0 500 240" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Browser UI */}
+    <rect x="30" y="50" width="180" height="120" rx="8" fill="#fff" stroke="#ccc" />
+    <text x="120" y="35" text-anchor="middle" font-size="11" font-weight="bold">ブラウザ UI (従来)</text>
+    <rect x="50" y="70" width="40" height="30" fill="#eee" /> {/* Editor */}
+    <rect x="150" y="110" width="40" height="30" fill="#3b82f6" fill-opacity="0.1" /> {/* Browser */}
+    <path d="M 95 85 Q 120 70 145 110" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
+    <path d="M 145 125 Q 120 140 95 100" stroke="#ef4444" fill="none" marker-end="url(#arrow-red)" />
+    <text x="120" y="185" text-anchor="middle" font-size="9" fill="#ef4444">コピペの往復・文脈の断絶</text>
+    
+    <text x="250" y="110" text-anchor="middle" font-size="20">vs</text>
+    
+    {/* AI-CLI */}
+    <rect x="290" y="50" width="180" height="120" rx="8" fill="#1a1c23" stroke="#333" />
+    <text x="380" y="35" text-anchor="middle" font-size="11" font-weight="bold">AI-CLI (シームレス)</text>
+    <rect x="310" y="70" width="140" height="80" fill="#000" fill-opacity="0.5" /> {/* Terminal */}
+    <text x="320" y="85" font-size="8" fill="#10b981">$ agy -p "fix error"</text>
+    <path d="M 380 95 V 135" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-cli)" />
+    <text x="380" y="185" text-anchor="middle" font-size="9" fill="#10b981">ターミナル内で完結</text>
+    
+    <defs>
+      <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+      </marker>
+      <marker id="arrow-green-cli" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+### 代表的なAI-CLIと基盤モデル
+1. **OpenAI Codex**
+   OpenAIのコーディング特化型モデル。現在も独立した基盤モデルとして進化を続けており、多くのツールのバックエンドとして「エージェントスタック」の核となっている。
+2. **OpenCode (opencode.ai)**
+   15万以上のGitHubスターを誇る、**今最も勢いのあるOSS系エージェント**。Go言語で書かれた高速なバイナリと、直感的なTUI（Terminal User Interface）が特徴だ。LSP（Language Server Protocol）との連携により、コードの型情報まで理解した高度な編集が可能。特定のベンダーに依存せず、後述のGeminiやClaude、ローカルのOllamaなどを自由自在に切り替えて「ペアプロ」ができる。
+3. **Claude Code**
+   Anthropic社による公式CLI。自律的なファイル検索やテスト実行の精度が高く、複雑なリファクタリングにおいて圧倒的な信頼感がある。
+4. **Antigravity CLI**
+   GoogleのAIツール群を統合するブランド「Antigravity」のターミナル版。無料枠が非常に充実していた**Gemini CLI**は2026年6月18日に個人利用向けの提供を終了し、Go言語で書き直された単一バイナリのAntigravity CLI（コマンド名`agy`）へと世代交代した。デスクトップ版IDE「Antigravity 2.0」と同じエージェント基盤を共有しており、起動が高速なのが特徴（ただし無料枠はGemini CLI時代より大幅に縮小されている）。
+
+### インストールと初期設定（Antigravity CLIの例）
+現在のモダンなツールは、APIキーの手動設定よりも「Webアカウント統合」が主流だ。ここではAntigravity CLIを例に導入手順を紹介する。
+
+**1. ツールのインストール**
+公式のインストールスクリプトを実行するだけで、単一のGoバイナリが導入される。
+```bash
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+```
+※前章で構築したNix（home-manager）環境がある場合は、nixpkgsに登録済みの`pkgs.antigravity-cli`を`home.packages`に追加するだけで、宣言的にインストールすることもできる。
+
+**2. Webブラウザでのログイン統合**
+インストール後、ターミナルで以下のコマンドを打つ。
+```bash
+agy
+```
+初回起動時に認証方法を尋ねられ、「Google OAuth」を選ぶと自動的にWebブラウザが立ち上がり、Googleアカウントの認証画面が表示される。「許可」を押すだけで、ローカル環境に認証情報がセキュアに統合される。APIキーを環境変数に書き込む手間もリスクもなく、数秒でAIとの対話が開始できる。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="460" height="180" viewBox="0 0 460 180" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Past */}
+    <text x="110" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">過去 (複雑・リスク)</text>
+    <rect x="30" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#ccc" stroke-dasharray="2,2" />
+    <text x="110" y="70" text-anchor="middle" font-size="8">APIキーをコピペ</text>
+    <text x="110" y="85" text-anchor="middle" font-size="8">.envファイルを編集</text>
+    <text x="110" y="100" text-anchor="middle" font-size="8">環境変数の読み込み</text>
+    <text x="110" y="145" text-anchor="middle" font-size="18" fill="#ef4444">×</text>
+    
+    <path d="M 210 85 H 250" stroke="#ccc" stroke-width="2" />
+    
+    {/* Present */}
+    <text x="350" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#10b981">現在 (シンプル・安全)</text>
+    <rect x="270" y="45" width="160" height="80" rx="4" fill="#fff" stroke="#10b981" fill-opacity="0.05" />
+    <text x="350" y="70" text-anchor="middle" font-size="8">$ agy</text>
+    <rect x="310" y="85" width="80" height="25" rx="4" fill="#10b981" />
+    <text x="350" y="101" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">許可 (Authorize)</text>
+    <text x="350" y="145" text-anchor="middle" font-size="18" fill="#10b981">✓</text>
+  </svg>
+</div>
+
+### AI-CLIの主な活用場面
+*   **プランニングと実装の分離:** OpenCodeなどでは「Planモード」で修正案を検討し、「Buildモード」で一括適用するといった使い分けができる。
+*   **エラーの自動解決:** プログラムがクラッシュした際、「今のエラーログを見て原因を修正して」と打てば、AIがログを解析し、コードを直し、テストを再実行して確認する。
+
+<div style="text-align: center; margin: 2.5em 0;">
+  <svg width="400" height="260" viewBox="0 0 400 260" style="background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; font-family: sans-serif;">
+    {/* Loop */}
+    <circle cx="200" cy="120" r="70" fill="none" stroke="#ccc" stroke-dasharray="4,4" />
+    
+    {/* Error */}
+    <circle cx="200" cy="50" r="25" fill="#fff" stroke="#ef4444" stroke-width="2" />
+    <text x="200" y="54" text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">エラー発生</text>
+    
+    {/* Step 1 */}
+    <circle cx="270" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="270" y="124" text-anchor="middle" font-size="8">ログ解析</text>
+    
+    {/* Step 2 */}
+    <circle cx="200" cy="190" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="200" y="194" text-anchor="middle" font-size="8">コード修正</text>
+    
+    {/* Step 3 */}
+    <circle cx="130" cy="120" r="25" fill="#fff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="130" y="124" text-anchor="middle" font-size="8">テスト検証</text>
+    
+    {/* Success */}
+    <path d="M 280 50 L 320 50" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green-success)" />
+    <text x="340" y="54" font-size="10" font-weight="bold" fill="#10b981">解決！</text>
+    
+    <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="bold">自律型エージェントによる修正ループ</text>
+    
+    <defs>
+      <marker id="arrow-green-success" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+*   **インフラの自然言語操作:** 「ポート3000を専有しているプロセスを特定して終了させて」といった、覚えにくい複雑なUNIXコマンドの組み立てをAIに代行させる。
+
+### おわりに
+AI-CLIの導入は、開発効率を数倍に引き上げるだけでなく、「退屈な作業はAIに任せ、人間は設計や創造的な意思決定に集中する」という新しい開発スタイルへの入り口となる。まずは高速なAntigravity CLIや、OSSの雄であるOpenCodeから、その破壊的な利便性を体感してみてほしい。
 
 ## $8$章:プロテオミクス
 
@@ -1210,3 +1210,24 @@ NVIDIAは、気候モデリングや量子シミュレーションにおいて�
     </defs>
   </svg>
 </div>
+
+## $11$章:テクノロジーをめぐる哲学・思想的系譜
+
+これまでの章とは趣向を変え、最終章ではテクノロジーをめぐる思想・哲学の系譜を扱う。近年の「テクノロジーと国家・社会の関係」をめぐる議論は、大きく3つの立場に整理できるというのが本章の骨子である。これはAudrey Tang（オードリー・タン）とE・グレン・ワイルの共著『PLURALITY』が採用している対抗軸そのものでもある。
+
+| 観点 | テクノクラシー | Web3リバタリアニズム | デジタル民主主義（プルラリティ） |
+|---|---|---|---|
+| 国家との関係 | 国家と技術エリートの再融合 | 国家からの離脱（Exit） | 国家と市民社会の協働（Voice） |
+| 象徴的人物 | Alex Karp／Sam Altman | Balaji Srinivasan | Audrey Tang／E. Glen Weyl |
+| 象徴的テキスト | 『The Technological Republic』 | 『The Network State』 | 『PLURALITY』 |
+| キーフレーズ | 新しいマンハッタン計画 | Exit over Voice | 多元性（Plurality） |
+
+**テクノクラシー**は、Palantir共同創業者アレックス・カープらの著書『The Technological Republic』に象徴される、技術と国家権力の「再融合」を志向する立場である。OpenAIが2026年に国防総省とのモデル提供契約を結んだ一件（その後、社内外の反発で条件を再交渉）や、逆に自律型兵器への組み込みを拒んだAnthropicの対応は、この思想がまさに現在進行形で実演されている例として紹介されている。
+
+**Web3リバタリアニズム**は、バラジ・スリニヴァサンの『The Network State』に代表される、テクノロジーを使って国民国家から「離脱（Exit）」し、独自のコミュニティ国家を作ろうとする立場である。ただしヴィタリック・ブテリンのように、この純粋な離脱志向とコモンズの維持は両立しないとして距離を置く論者もおり、この緊張が第三の道への橋渡しになる。
+
+**デジタル民主主義（プルラリティ）**は、台湾のAudrey Tangが主導する、市民参加型の政策討議（vTaiwan・Polis）を通じて国家と市民社会の協働（Voice）を目指す立場である。日本でも「デジタル民主主義2030」プロジェクトを通じてこの手法が輸入され、チームみらいが議席を得るなど実装が始まっている。
+
+本章の後半では、この三分法が2026年の日本において具体的なインフラとして実装されつつある事例——円建てステーブルコインJPYC、マイナンバーカードをWeb3ウォレット化する「マイナウォレット」、そしてブロックチェーンで研究資金や査読を脱中央集権化するDeSci（分散型科学）——を紹介する。特にマイナウォレットは、国家のIDインフラ（テクノクラシー的要素）を土台に、Web3技術（本来リバタリアニズム的要素）を、誰も取り残さないという包摂的理念（プルラリティ的要素）のために用いる、三分法のどれにも綺麗に収まらない事例として論じられている。
+
+最後に筆者は、テクノクラシーの議論が「困難な問題」の対象をほとんど軍事・防衛に限定している点に違和感を表明し、老化・疾病・気候変動といった、DeSci（VitaDAOやAthenaDAOなど）がすでに国家を介さずに取り組み始めている領域こそ、本来同じ強度で扱われるべきだと結んでいる。
