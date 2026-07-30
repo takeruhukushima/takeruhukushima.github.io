@@ -73,6 +73,30 @@ import Badge from '../components/Badge.astro';
         <p class="lang-en">Coming soon.</p>
       </div>
     </section>
+
+    <div class="section-divider"></div>
+
+    <section class="presentations" id="presentations">
+      <h2 class="lang-ja">学会発表 / Presentations</h2>
+      <h2 class="lang-en">Presentations</h2>
+
+      <ul class="presentation-list">
+        <li>
+          <div class="lang-ja">
+            福島武, 那波瑞基, 三城恵美, 金子真大, 井藤彰.
+            「腫瘍DDSに向けたリン脂質ポリマー被覆磁性ナノ粒子のプロテインコロナの解析」
+            <a href="http://chubu-hyperthermia.kenkyuukai.jp/event/event_detail.asp?id=77143" target="_blank">第39回中部ハイパーサーミア学会</a>,
+            口頭発表, 2026年7月25日.
+          </div>
+          <div class="lang-en">
+            T. Fukushima, M. Nawa, E. Sanjo, M. Kaneko, A. Ito.
+            "Analysis of the Protein Corona on Phospholipid Polymer-Coated Magnetic Nanoparticles for Tumor DDS,"
+            <a href="http://chubu-hyperthermia.kenkyuukai.jp/event/event_detail.asp?id=77143" target="_blank">The 39th Annual Meeting of the Chubu Hyperthermia Society</a>,
+            Oral Presentation, Jul. 25, 2026.
+          </div>
+        </li>
+      </ul>
+    </section>
   </div>
 
   <script is:inline>
@@ -229,6 +253,19 @@ import Badge from '../components/Badge.astro';
   .no-publications {
     color: #888;
     font-style: italic;
+  }
+
+  .presentation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .presentation-list li {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #333;
   }
 
   @media (max-width: 640px) {
