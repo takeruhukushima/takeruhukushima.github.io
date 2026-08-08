@@ -1,0 +1,243 @@
+[
+  {
+    "rkey": "sv-cd47",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "CD47について",
+      "status": "surveyed",
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-survey/CD47"
+    }
+  },
+  {
+    "rkey": "sv-lnps-for-mrna",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Protein corona formed on lipid nanoparticles compromises delivery efficiency of mRNA cargo",
+      "status": "surveyed",
+      "paperUrl": "https://www.nature.com/articles/s41467-025-63726-2",
+      "venue": "nature.com",
+      "year": "2025",
+      "tags": [
+        "Proteomics",
+        "LNPs",
+        "mRNA"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-survey/LNPs-for-mRNA"
+    }
+  },
+  {
+    "rkey": "sv-magnetoferritin-2025",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Biomimetic mineralization synthesis of cobalt-doped magnetoferritin for enhancing magnetic hyperthermia",
+      "status": "surveyed",
+      "paperUrl": "https://link.springer.com/article/10.1007/s11706-025-0729-9",
+      "venue": "Frontiers of Materials Science",
+      "year": "2025",
+      "tags": [
+        "magnetoferritin",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-survey/magnetoferritin_2025"
+    }
+  },
+  {
+    "rkey": "tr-amp-atlas",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "AMP-Atlas: Comprehensive Atlas of Antimicrobial Peptides to Combat Multidrug-resistant Bacteria",
+      "status": "to-read",
+      "paperUrl": "https://www.science.org/doi/10.1126/science.1229568",
+      "venue": "bioRxiv",
+      "year": "2025",
+      "tags": [
+        "AMP",
+        "ESM",
+        "PLM"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/AMP-Atlas"
+    }
+  },
+  {
+    "rkey": "tr-bb-eit-riken",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "BB-EIT: A Generalized Prediction Model for Protein Adsorption on Polymer Brushes Using Augmented Chemical Embeddings",
+      "status": "to-read",
+      "paperUrl": "https://pubs.acs.org/doi/10.1021/acsami.5c25223",
+      "codeUrl": "https://github.com/st-su/BB-EIT",
+      "venue": "ACS",
+      "year": "2026",
+      "tags": [
+        "ML",
+        "Polymer",
+        "PPI",
+        "ESM",
+        "PLM"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/BB-EIT_riken"
+    }
+  },
+  {
+    "rkey": "tr-cd47-self-peptide",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Minimal Self Peptides That Inhibit Phagocytic Clearance and Enhance Delivery of Nanoparticles",
+      "status": "to-read",
+      "paperUrl": "https://www.science.org/doi/10.1126/science.1229568",
+      "venue": "Science",
+      "year": "2013",
+      "tags": [
+        "CD47",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/CD47_self_peptide"
+    }
+  },
+  {
+    "rkey": "tr-esm-2",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Evolutionary-scale prediction of atomic-level protein structure with a language model",
+      "status": "to-read",
+      "paperUrl": "https://www.science.org/doi/full/10.1126/science.ade2574",
+      "codeUrl": "https://github.com/facebookresearch/esm",
+      "venue": "Science",
+      "year": "2023",
+      "tags": [
+        "ESM",
+        "PLM"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/ESM-2"
+    }
+  },
+  {
+    "rkey": "tr-human-sized-3dmpi",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "System characterization of a human-sized 3D real-time magnetic particle imaging scanner for cerebral applications",
+      "status": "to-read",
+      "paperUrl": "https://www.nature.com/articles/s44172-024-00192-6",
+      "venue": "nature",
+      "year": "2024",
+      "tags": [
+        "MPI",
+        "human",
+        "in vivo"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/human_sized_3Dmpi"
+    }
+  },
+  {
+    "rkey": "tr-magnetoferritin-2025",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Biomimetic mineralization synthesis of cobalt-doped magnetoferritin for enhancing magnetic hyperthermia",
+      "status": "to-read",
+      "paperUrl": "https://link.springer.com/article/10.1007/s11706-025-0729-9",
+      "venue": "FMS",
+      "year": "2025",
+      "tags": [
+        "Magnetoferritin",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/magnetoferritin_2025"
+    }
+  },
+  {
+    "rkey": "tr-magnetoferritin-mdpi",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Enhanced Magnetic Hyperthermia of Magnetoferritin through Synthesis at Elevated Temperature",
+      "status": "to-read",
+      "paperUrl": "https://www.mdpi.com/1422-0067/23/7/4012",
+      "venue": "mdpi",
+      "year": "2022",
+      "tags": [
+        "Magnetoferritin",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/magnetoferritin_mdpi"
+    }
+  },
+  {
+    "rkey": "tr-magnetoferritin-nature",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Magnetoferritin nanoparticles for targeting and visualizing tumour tissues",
+      "status": "to-read",
+      "paperUrl": "https://www.nature.com/articles/nnano.2012.90",
+      "venue": "nature",
+      "year": "2012",
+      "tags": [
+        "Magnetoferritin",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/magnetoferritin_nature"
+    }
+  },
+  {
+    "rkey": "tr-magnetoferritin-science",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Magnetoferritin: in Vitro Synthesis of a Novel Magnetic Protein",
+      "status": "to-read",
+      "paperUrl": "https://www.science.org/doi/10.1126/science.1636086",
+      "venue": "Science",
+      "year": "1992",
+      "tags": [
+        "Magnetoferritin",
+        "MHT"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/magnetoferritin_science"
+    }
+  },
+  {
+    "rkey": "tr-mpi-kimura",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Development of Magnetic Particle Distribution Imaging Using Magnetic Field Reconstruction for Biopsy of the Sentinel Lymph Node",
+      "status": "to-read",
+      "paperUrl": "https://www.nature.com/articles/s41428-021-00494-y",
+      "venue": "MDPI",
+      "year": "2021",
+      "tags": [
+        "MPI",
+        "KimuraKenjiro"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/MPI_kimura"
+    }
+  },
+  {
+    "rkey": "tr-proteomics",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "Protein corona formed on lipid nanoparticles compromises delivery efficiency of mRNA cargo",
+      "status": "to-read",
+      "paperUrl": "https://www.nature.com/articles/s41467-025-63726-2",
+      "venue": "nature",
+      "year": "2025",
+      "tags": [
+        "Proteomics",
+        "LNPs"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/proteomics"
+    }
+  },
+  {
+    "rkey": "tr-resovist-atrp",
+    "value": {
+      "$type": "dev.takeruf.paper",
+      "title": "pH- and thermoresponsive aggregation behavior of polymer-grafted magnetic nanoparticles",
+      "status": "to-read",
+      "paperUrl": "https://www.nature.com/articles/s41428-021-00494-y",
+      "venue": "nature",
+      "year": "2021",
+      "tags": [
+        "Resovist",
+        "ATRP"
+      ],
+      "sourceUrl": "https://takeruhukushima.github.io/blog/research/paper-list/resovist_atrp"
+    }
+  }
+]

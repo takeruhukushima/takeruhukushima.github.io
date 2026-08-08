@@ -1,6 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Badge from '../components/Badge.astro';
+// MAGI
+// トップの Publications / 学会発表 / 講演 は atproto/data/cv.json を原本として描画する。
+// (cv.json は AT Protocol lexicon dev.takeruf.cv 準拠。編集はこのJSON側で行う)
+import cv from '../../atproto/data/cv.json';
+
+const monthsEn = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
+function fmtDateJa(d) {
+  if (!d) return '';
+  const [y, m, day] = d.split('-');
+  if (!m) return `${+y}年`;
+  return day ? `${+y}年${+m}月${+day}日` : `${+y}年${+m}月`;
+}
+function fmtDateEn(d) {
+  if (!d) return '';
+  const [y, m, day] = d.split('-');
+  if (!m) return y;
+  return day ? `${monthsEn[+m - 1]} ${+day}, ${y}` : `${monthsEn[+m - 1]} ${y}`;
+}
+const presTypeJa = { oral: '口頭発表', poster: 'ポスター発表', invited: '招待講演' };
+const presTypeEn = { oral: 'Oral Presentation', poster: 'Poster Presentation', invited: 'Invited Talk' };
+const publications = cv.publications ?? [];
+const presentations = cv.presentations ?? [];
+const talks = cv.talks ?? [];
+// /MAGI
 ---
 
 <Layout title="福島武 / Takeru Fukushima">
@@ -67,11 +91,32 @@ import Badge from '../components/Badge.astro';
       <h2 class="lang-ja">論文 / Publications</h2>
       <h2 class="lang-en">Publications</h2>
       <p class="pub-links"><a href="#" target="_blank">Google Scholar</a>, <a href="https://orcid.org/my-orcid?orcid=0009-0008-7394-8253" target="_blank">ORCID</a></p>
-      
-      <div class="no-publications">
-        <p class="lang-ja">Coming soon.</p>
-        <p class="lang-en">Coming soon.</p>
-      </div>
+
+      {publications.length === 0 ? (
+        <div class="no-publications">
+          <p class="lang-ja">Coming soon.</p>
+          <p class="lang-en">Coming soon.</p>
+        </div>
+      ) : (
+        <ul class="presentation-list">
+          {publications.map(p => (
+            <li>
+              <div class="lang-ja">
+                {p.authors?.join(', ')}{p.authors?.length ? '. ' : ''}「{p.title.ja ?? p.title.en}」
+                {p.venue && <> {p.venue.ja ?? p.venue.en},</>} {p.year}.
+                {p.url && <> <a href={p.url} target="_blank">[link]</a></>}
+                {p.doi && <> doi:{p.doi}</>}
+              </div>
+              <div class="lang-en">
+                {(p.authorsEn ?? p.authors)?.join(', ')}{p.authors?.length ? '. ' : ''}"{p.title.en ?? p.title.ja},"
+                {p.venue && <> {p.venue.en ?? p.venue.ja},</>} {p.year}.
+                {p.url && <> <a href={p.url} target="_blank">[link]</a></>}
+                {p.doi && <> doi:{p.doi}</>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
 
     <div class="section-divider"></div>
@@ -80,22 +125,68 @@ import Badge from '../components/Badge.astro';
       <h2 class="lang-ja">学会発表 / Presentations</h2>
       <h2 class="lang-en">Presentations</h2>
 
-      <ul class="presentation-list">
-        <li>
-          <div class="lang-ja">
-            福島武, 那波瑞基, 三城恵美, 金子真大, 井藤彰.
-            「腫瘍DDSに向けたリン脂質ポリマー被覆磁性ナノ粒子のプロテインコロナの解析」
-            <a href="http://chubu-hyperthermia.kenkyuukai.jp/event/event_detail.asp?id=77143" target="_blank">第39回中部ハイパーサーミア学会</a>,
-            口頭発表, 2026年7月25日.
-          </div>
-          <div class="lang-en">
-            T. Fukushima, M. Nawa, E. Sanjo, M. Kaneko, A. Ito.
-            "Analysis of the Protein Corona on Phospholipid Polymer-Coated Magnetic Nanoparticles for Tumor DDS,"
-            <a href="http://chubu-hyperthermia.kenkyuukai.jp/event/event_detail.asp?id=77143" target="_blank">The 39th Annual Meeting of the Chubu Hyperthermia Society</a>,
-            Oral Presentation, Jul. 25, 2026.
-          </div>
-        </li>
-      </ul>
+      {presentations.length === 0 ? (
+        <div class="no-publications">
+          <p class="lang-ja">Coming soon.</p>
+          <p class="lang-en">Coming soon.</p>
+        </div>
+      ) : (
+        <ul class="presentation-list">
+          {presentations.map(p => (
+            <li>
+              <div class="lang-ja">
+                {p.authors?.join(', ')}{p.authors?.length ? '. ' : ''}「{p.title.ja ?? p.title.en}」
+                {p.venue && (p.venueUrl
+                  ? <> <a href={p.venueUrl} target="_blank">{p.venue.ja ?? p.venue.en}</a>,</>
+                  : <> {p.venue.ja ?? p.venue.en},</>)}
+                {p.presentationType && <> {presTypeJa[p.presentationType]},</>} {fmtDateJa(p.date)}.
+              </div>
+              <div class="lang-en">
+                {(p.authorsEn ?? p.authors)?.join(', ')}{p.authors?.length ? '. ' : ''}"{p.title.en ?? p.title.ja},"
+                {p.venue && (p.venueUrl
+                  ? <> <a href={p.venueUrl} target="_blank">{p.venue.en ?? p.venue.ja}</a>,</>
+                  : <> {p.venue.en ?? p.venue.ja},</>)}
+                {p.presentationType && <> {presTypeEn[p.presentationType]},</>} {fmtDateEn(p.date)}.
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+    <div class="section-divider"></div>
+
+    <section class="talks" id="talks">
+      <h2 class="lang-ja">講演 / Invited Talks</h2>
+      <h2 class="lang-en">Invited Talks</h2>
+
+      {talks.length === 0 ? (
+        <div class="no-publications">
+          <p class="lang-ja">Coming soon.</p>
+          <p class="lang-en">Coming soon.</p>
+        </div>
+      ) : (
+        <ul class="presentation-list">
+          {talks.map(t => (
+            <li>
+              <div class="lang-ja">
+                「{t.title.ja ?? t.title.en}」
+                {t.event && (t.eventUrl
+                  ? <> <a href={t.eventUrl} target="_blank">{t.event.ja ?? t.event.en}</a>,</>
+                  : <> {t.event.ja ?? t.event.en},</>)}
+                {t.host && <> {t.host.ja ?? t.host.en},</>} {fmtDateJa(t.date)}.
+              </div>
+              <div class="lang-en">
+                "{t.title.en ?? t.title.ja},"
+                {t.event && (t.eventUrl
+                  ? <> <a href={t.eventUrl} target="_blank">{t.event.en ?? t.event.ja}</a>,</>
+                  : <> {t.event.en ?? t.event.ja},</>)}
+                {t.host && <> {t.host.en ?? t.host.ja},</>} {fmtDateEn(t.date)}.
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   </div>
 

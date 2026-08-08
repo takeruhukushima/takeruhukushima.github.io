@@ -1,0 +1,66 @@
+{
+  "lexicon": 1,
+  "id": "dev.takeruf.paper",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "description": "A research paper the owner is tracking: a reading-list entry ('to read') or a surveyed paper. This is NOT the owner's own publication — it is a bookmark/annotation of someone else's work.",
+      "record": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "knownValues": ["to-read", "reading", "surveyed"],
+            "description": "Reading status. 'to-read' corresponds to the reading list; 'surveyed' to papers with notes."
+          },
+          "paperUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "codeUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "venue": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Journal / preprint server / conference, e.g. 'Science', 'bioRxiv'."
+          },
+          "year": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "doi": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "tags": {
+            "type": "array",
+            "maxLength": 50,
+            "items": { "type": "string", "maxLength": 100 }
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 3000,
+            "description": "Optional short note (why it matters / status)."
+          },
+          "sourceUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the owner's own blog entry for this paper, if any."
+          },
+          "addedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

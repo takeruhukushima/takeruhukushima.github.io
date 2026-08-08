@@ -1,0 +1,269 @@
+---
+// MAGI
+// Leaflet (AT Protocol) のドキュメントをブラウザから直接 PDS 取得して表示する。
+// ビルド時ではなくクライアント側ライブ取得なので、あちら(leaflet.pub)で追記すると
+// このページを開くたびに最新が反映される。GitHub Pages(静的配信)でも成立する。
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="Leaflet / AT Protocol | Takeru Fukushima">
+  <!-- MAGI -->
+  <div class="leaflet-app">
+    <div class="leaflet-head">
+      <a href="/blog" class="back-link">← Blog</a>
+      <h1 class="leaflet-title">Leaflet</h1>
+      <p class="leaflet-sub">
+        AT Protocol 上の <a id="pub-link" href="https://takeruf.leaflet.pub" target="_blank" rel="noopener">leaflet.pub</a> から直接取得（ライブ同期）
+      </p>
+    </div>
+    <div id="leaflet-content" aria-live="polite">
+      <p class="leaflet-status">読み込み中… / Loading…</p>
+    </div>
+  </div>
+
+  <script is:inline>
+    // MAGI
+    (function () {
+      const DID = "did:plc:nmhfq335cddnwt4ovrq4gzsm";
+      const FALLBACK_PDS = "https://chaga.us-west.host.bsky.network";
+      const DOC_NSID = "site.standard.document";
+      const PUB_NSID = "site.standard.publication";
+
+      const elContent = document.getElementById("leaflet-content");
+      const elPubLink = document.getElementById("pub-link");
+
+      const esc = (s) =>
+        String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+
+      // DID から現在の PDS エンドポイントを解決（移行しても追従できるように）
+      async function resolvePds() {
+        try {
+          const res = await fetch("https://plc.directory/" + DID);
+          if (!res.ok) throw new Error("plc " + res.status);
+          const doc = await res.json();
+          const svc = (doc.service || []).find(
+            (s) => s.id === "#atproto_pds" || s.type === "AtprotoPersonalDataServer"
+          );
+          if (svc && svc.serviceEndpoint) return svc.serviceEndpoint;
+        } catch (e) {
+          /* フォールバックへ */
+        }
+        return FALLBACK_PDS;
+      }
+
+      async function listRecords(pds, collection) {
+        const out = [];
+        let cursor = "";
+        do {
+          const url =
+            pds +
+            "/xrpc/com.atproto.repo.listRecords?repo=" +
+            encodeURIComponent(DID) +
+            "&collection=" +
+            encodeURIComponent(collection) +
+            "&limit=100" +
+            (cursor ? "&cursor=" + encodeURIComponent(cursor) : "");
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(collection + " " + res.status);
+          const data = await res.json();
+          out.push(...(data.records || []));
+          cursor = data.cursor || "";
+        } while (cursor);
+        return out;
+      }
+
+      // ---- Leaflet ブロック → HTML ----------------------------------------
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      // facet(byteStart/byteEnd は UTF-8 バイトオフセット)を反映したテキストを返す
+      function renderText(block) {
+        const text = block.plaintext || "";
+        const facets = (block.facets || [])
+          .filter((f) => f.index && (f.features || []).some((x) => x["$type"] === "pub.leaflet.richtext.facet#link"))
+          .sort((a, b) => a.index.byteStart - b.index.byteStart);
+        if (!facets.length) return esc(text);
+
+        const bytes = encoder.encode(text);
+        const sliceStr = (s, e) => decoder.decode(bytes.slice(s, e));
+        let html = "";
+        let cursor = 0;
+        for (const f of facets) {
+          const { byteStart, byteEnd } = f.index;
+          if (byteStart > cursor) html += esc(sliceStr(cursor, byteStart));
+          const link = f.features.find((x) => x["$type"] === "pub.leaflet.richtext.facet#link");
+          const label = esc(sliceStr(byteStart, byteEnd));
+          html +=
+            '<a href="' + esc(link.uri) + '" target="_blank" rel="noopener">' + label + "</a>";
+          cursor = byteEnd;
+        }
+        if (cursor < bytes.length) html += esc(sliceStr(cursor, bytes.length));
+        return html;
+      }
+
+      function renderListItems(items) {
+        let html = "<ul>";
+        for (const it of items || []) {
+          html += "<li>";
+          if (it.content) html += renderText(it.content);
+          if (it.children && it.children.length) html += renderListItems(it.children);
+          html += "</li>";
+        }
+        return html + "</ul>";
+      }
+
+      function renderBlock(block) {
+        if (!block || !block["$type"]) return "";
+        switch (block["$type"]) {
+          case "pub.leaflet.blocks.header": {
+            const lvl = Math.min(Math.max(block.level || 2, 1), 6);
+            return "<h" + lvl + ">" + esc(block.plaintext || "") + "</h" + lvl + ">";
+          }
+          case "pub.leaflet.blocks.text":
+            return "<p>" + renderText(block) + "</p>";
+          case "pub.leaflet.blocks.unorderedList":
+            return renderListItems(block.children);
+          case "pub.leaflet.blocks.horizontalRule":
+            return "<hr>";
+          default:
+            // 未対応ブロックは静かにスキップ(plaintext があれば拾う)
+            return block.plaintext ? "<p>" + esc(block.plaintext) + "</p>" : "";
+        }
+      }
+
+      function renderDocument(value) {
+        const pages = (value.content && value.content.pages) || [];
+        let html = "";
+        for (const page of pages) {
+          for (const wrap of page.blocks || []) {
+            html += renderBlock(wrap.block);
+          }
+        }
+        return html;
+      }
+
+      // ---- ビュー ----------------------------------------------------------
+      const rkeyOf = (uri) => uri.split("/").pop();
+      const fmtDate = (iso) => {
+        if (!iso) return "";
+        const d = new Date(iso);
+        return isNaN(d) ? "" : d.toISOString().slice(0, 10);
+      };
+
+      let DOCS = []; // publishedAt 降順
+
+      function renderList() {
+        if (!DOCS.length) {
+          elContent.innerHTML = '<p class="leaflet-status">記事がまだありません。</p>';
+          return;
+        }
+        let html = '<ul class="leaflet-list">';
+        for (const r of DOCS) {
+          const v = r.value;
+          const rkey = rkeyOf(r.uri);
+          html +=
+            '<li><a href="#/' +
+            encodeURIComponent(rkey) +
+            '">' +
+            esc(v.title || "(無題)") +
+            "</a>" +
+            (v.publishedAt ? '<span class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</span>" : "") +
+            "</li>";
+        }
+        html += "</ul>";
+        elContent.innerHTML = html;
+      }
+
+      function renderDetail(rkey) {
+        const rec = DOCS.find((r) => rkeyOf(r.uri) === rkey);
+        if (!rec) {
+          elContent.innerHTML =
+            '<p class="leaflet-status">記事が見つかりません。<a href="#/">一覧へ戻る</a></p>';
+          return;
+        }
+        const v = rec.value;
+        const pubUrl = "https://takeruf.leaflet.pub" + (v.path || "");
+        elContent.innerHTML =
+          '<article class="leaflet-doc">' +
+          '<a class="back-link" href="#/">← 一覧 / Index</a>' +
+          "<h1>" + esc(v.title || "(無題)") + "</h1>" +
+          (v.publishedAt ? '<p class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</p>" : "") +
+          renderDocument(v) +
+          '<p class="leaflet-source"><a href="' + esc(pubUrl) + '" target="_blank" rel="noopener">leaflet.pub で開く ↗</a></p>' +
+          "</article>";
+        window.scrollTo(0, 0);
+      }
+
+      function route() {
+        const hash = location.hash.replace(/^#\/?/, "");
+        if (hash) renderDetail(decodeURIComponent(hash));
+        else renderList();
+      }
+
+      async function init() {
+        try {
+          const pds = await resolvePds();
+          const [docs, pubs] = await Promise.all([
+            listRecords(pds, DOC_NSID),
+            listRecords(pds, PUB_NSID).catch(() => []),
+          ]);
+          DOCS = docs.sort((a, b) =>
+            String(b.value.publishedAt || "").localeCompare(String(a.value.publishedAt || ""))
+          );
+          if (pubs[0] && pubs[0].value && pubs[0].value.url) {
+            elPubLink.href = pubs[0].value.url;
+            elPubLink.textContent = pubs[0].value.url.replace(/^https?:\/\//, "");
+          }
+          window.addEventListener("hashchange", route);
+          route();
+        } catch (e) {
+          elContent.innerHTML =
+            '<p class="leaflet-status">取得に失敗しました: ' + esc(e.message || e) + "</p>";
+        }
+      }
+
+      init();
+    })();
+    // /MAGI
+  </script>
+
+  <style is:global>
+    /* MAGI */
+    .leaflet-app { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    .leaflet-head { margin-bottom: 32px; }
+    .back-link { font-size: 14px; color: #3b82f6; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .leaflet-title { font-size: 32px; font-weight: 700; margin: 12px 0 4px; }
+    .leaflet-sub { font-size: 14px; color: #666; margin: 0; }
+    .leaflet-sub a { color: #3b82f6; }
+    .leaflet-status { color: #888; font-style: italic; }
+
+    .leaflet-list { list-style: none; padding: 0; margin: 0; }
+    .leaflet-list li {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid #eee;
+    }
+    .leaflet-list a { color: #1a1a1a; text-decoration: none; font-size: 17px; }
+    .leaflet-list a:hover { color: #3b82f6; }
+    .leaflet-date { color: #999; font-size: 13px; white-space: nowrap; }
+
+    .leaflet-doc { line-height: 1.8; }
+    .leaflet-doc h1 { font-size: 30px; font-weight: 700; margin: 16px 0 8px; }
+    .leaflet-doc h2 { font-size: 22px; font-weight: 700; margin: 40px 0 16px; }
+    .leaflet-doc h3 { font-size: 18px; font-weight: 700; margin: 32px 0 12px; }
+    .leaflet-doc p { font-size: 15px; margin: 0 0 1.2em; }
+    .leaflet-doc ul { padding-left: 24px; margin: 0 0 1.2em; }
+    .leaflet-doc li { font-size: 15px; margin-bottom: 8px; }
+    .leaflet-doc a { color: #3b82f6; text-decoration: none; border-bottom: 1px solid #dae7ff; word-break: break-word; }
+    .leaflet-doc a:hover { border-bottom-color: #3b82f6; }
+    .leaflet-doc hr { border: none; border-top: 1px solid #eee; margin: 32px 0; }
+    .leaflet-doc .back-link { display: inline-block; margin-bottom: 16px; }
+    .leaflet-source { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 14px; }
+    /* /MAGI */
+  </style>
+  <!-- /MAGI -->
+</Layout>

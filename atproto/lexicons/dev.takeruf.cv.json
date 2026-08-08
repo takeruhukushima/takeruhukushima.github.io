@@ -1,0 +1,126 @@
+{
+  "lexicon": 1,
+  "id": "dev.takeruf.cv",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "literal:self",
+      "description": "Machine-readable CV / academic profile for a single person, including their own publications, conference presentations, and invited talks. One record per repo (rkey = self).",
+      "record": {
+        "type": "object",
+        "required": ["name", "updatedAt"],
+        "properties": {
+          "name": { "type": "ref", "ref": "#localizedText", "description": "Full name." },
+          "affiliation": { "type": "ref", "ref": "#localizedText", "description": "Current primary affiliation." },
+          "role": { "type": "string", "maxLength": 300, "description": "Current role/position." },
+          "advisor": { "type": "ref", "ref": "#localizedText" },
+          "email": { "type": "string", "maxLength": 320 },
+          "researchInterests": {
+            "type": "array",
+            "maxLength": 30,
+            "items": { "type": "string", "maxLength": 200 }
+          },
+          "orcid": { "type": "string", "maxLength": 40, "description": "ORCID iD, digits and hyphens only." },
+          "links": { "type": "array", "maxLength": 50, "items": { "type": "ref", "ref": "#link" } },
+          "education": { "type": "array", "maxLength": 50, "items": { "type": "ref", "ref": "#educationItem" } },
+          "publications": {
+            "type": "array",
+            "maxLength": 500,
+            "description": "The person's own publications (journal/conference papers, preprints).",
+            "items": { "type": "ref", "ref": "#publication" }
+          },
+          "presentations": {
+            "type": "array",
+            "maxLength": 500,
+            "description": "The person's own conference presentations (oral/slides and posters).",
+            "items": { "type": "ref", "ref": "#presentation" }
+          },
+          "talks": {
+            "type": "array",
+            "maxLength": 500,
+            "description": "Invited talks and lectures (講演).",
+            "items": { "type": "ref", "ref": "#talk" }
+          },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    },
+    "localizedText": {
+      "type": "object",
+      "description": "A string with an English form and an optional Japanese form.",
+      "required": ["en"],
+      "properties": {
+        "en": { "type": "string", "maxLength": 3000 },
+        "ja": { "type": "string", "maxLength": 3000 }
+      }
+    },
+    "link": {
+      "type": "object",
+      "required": ["name", "url"],
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "educationItem": {
+      "type": "object",
+      "properties": {
+        "degree": { "type": "ref", "ref": "#localizedText" },
+        "institution": { "type": "ref", "ref": "#localizedText" },
+        "startDate": { "type": "string", "description": "ISO date or year." },
+        "endDate": { "type": "string", "description": "ISO date or year; omit if ongoing." }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "description": "One of the person's own publications.",
+      "required": ["title"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "knownValues": ["journal", "conference-paper", "preprint", "thesis", "book-chapter"]
+        },
+        "title": { "type": "ref", "ref": "#localizedText" },
+        "authors": { "type": "array", "maxLength": 100, "items": { "type": "string", "maxLength": 200 } },
+        "authorsEn": { "type": "array", "maxLength": 100, "description": "Romanized author names for English display; falls back to authors.", "items": { "type": "string", "maxLength": 200 } },
+        "venue": { "type": "ref", "ref": "#localizedText", "description": "Journal / conference / publisher." },
+        "year": { "type": "string", "maxLength": 10 },
+        "doi": { "type": "string", "maxLength": 200 },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "description": "One of the person's own conference presentations.",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "ref", "ref": "#localizedText" },
+        "authors": { "type": "array", "maxLength": 100, "items": { "type": "string", "maxLength": 200 } },
+        "authorsEn": { "type": "array", "maxLength": 100, "description": "Romanized author names for English display; falls back to authors.", "items": { "type": "string", "maxLength": 200 } },
+        "venue": { "type": "ref", "ref": "#localizedText", "description": "Meeting / conference name." },
+        "venueUrl": { "type": "string", "format": "uri" },
+        "presentationType": {
+          "type": "string",
+          "knownValues": ["oral", "poster", "invited"],
+          "description": "oral = slides; poster = poster."
+        },
+        "date": { "type": "string", "description": "ISO date (YYYY-MM-DD)." },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "talk": {
+      "type": "object",
+      "description": "An invited talk or lecture (講演).",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "ref", "ref": "#localizedText" },
+        "event": { "type": "ref", "ref": "#localizedText", "description": "Event / seminar / lecture series name." },
+        "eventUrl": { "type": "string", "format": "uri" },
+        "host": { "type": "ref", "ref": "#localizedText", "description": "Inviting organization." },
+        "date": { "type": "string", "description": "ISO date (YYYY-MM-DD)." },
+        "invited": { "type": "boolean" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    }
+  }
+}

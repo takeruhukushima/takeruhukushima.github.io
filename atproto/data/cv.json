@@ -1,0 +1,50 @@
+{
+  "$type": "dev.takeruf.cv",
+  "name": { "en": "Takeru Fukushima", "ja": "福島 武" },
+  "affiliation": {
+    "en": "Graduate School of Engineering, Nagoya University",
+    "ja": "名古屋大学 大学院工学研究科"
+  },
+  "role": "M.1 (Master's student, since 2026)",
+  "advisor": { "en": "Prof. Akira Ito", "ja": "井藤 彰 教授" },
+  "email": "fukushima.takeru.u8 [at] s.mail.nagoya-u.ac.jp",
+  "researchInterests": [
+    "Magnetic hyperthermia therapy",
+    "Magnetic nanoparticles",
+    "Protein corona",
+    "Drug delivery systems (DDS)"
+  ],
+  "orcid": "0009-0008-7394-8253",
+  "links": [
+    { "name": "X", "url": "https://x.com/takerufukushima" },
+    { "name": "GitHub", "url": "https://github.com/takeruhukushima" },
+    { "name": "LinkedIn", "url": "https://www.linkedin.com/in/takeru-fukushima-0078ba372/" },
+    { "name": "ORCID", "url": "https://orcid.org/0009-0008-7394-8253" }
+  ],
+  "education": [
+    {
+      "degree": { "en": "M.S. (in progress)", "ja": "修士課程" },
+      "institution": { "en": "Nagoya University", "ja": "名古屋大学" },
+      "startDate": "2026"
+    }
+  ],
+  "publications": [],
+  "presentations": [
+    {
+      "title": {
+        "ja": "腫瘍DDSに向けたリン脂質ポリマー被覆磁性ナノ粒子のプロテインコロナの解析",
+        "en": "Analysis of the Protein Corona on Phospholipid Polymer-Coated Magnetic Nanoparticles for Tumor DDS"
+      },
+      "authors": ["福島武", "那波瑞基", "三城恵美", "金子真大", "井藤彰"],
+      "authorsEn": ["T. Fukushima", "M. Nawa", "E. Sanjo", "M. Kaneko", "A. Ito"],
+      "venue": {
+        "ja": "第39回中部ハイパーサーミア学会",
+        "en": "The 39th Annual Meeting of the Chubu Hyperthermia Society"
+      },
+      "venueUrl": "http://chubu-hyperthermia.kenkyuukai.jp/event/event_detail.asp?id=77143",
+      "presentationType": "oral",
+      "date": "2026-07-25"
+    }
+  ],
+  "talks": []
+}
