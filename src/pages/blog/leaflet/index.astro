@@ -166,13 +166,16 @@ import Layout from '../../../layouts/Layout.astro';
           const v = r.value;
           const rkey = rkeyOf(r.uri);
           html +=
-            '<li><a href="#/' +
+            "<li>" +
+            '<a class="leaflet-item-title" href="#/' +
             encodeURIComponent(rkey) +
             '">' +
             esc(v.title || "(無題)") +
             "</a>" +
+            '<div class="leaflet-item-meta">' +
+            (v.description ? '<span class="leaflet-desc">' + esc(v.description) + "</span>" : "") +
             (v.publishedAt ? '<span class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</span>" : "") +
-            "</li>";
+            "</div></li>";
         }
         html += "</ul>";
         elContent.innerHTML = html;
@@ -191,6 +194,7 @@ import Layout from '../../../layouts/Layout.astro';
           '<article class="leaflet-doc">' +
           '<a class="back-link" href="#/">← 一覧 / Index</a>' +
           "<h1>" + esc(v.title || "(無題)") + "</h1>" +
+          (v.description ? '<p class="leaflet-subtitle">' + esc(v.description) + "</p>" : "") +
           (v.publishedAt ? '<p class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</p>" : "") +
           renderDocument(v) +
           '<p class="leaflet-source"><a href="' + esc(pubUrl) + '" target="_blank" rel="noopener">leaflet.pub で開く ↗</a></p>' +
@@ -244,15 +248,18 @@ import Layout from '../../../layouts/Layout.astro';
 
     .leaflet-list { list-style: none; padding: 0; margin: 0; }
     .leaflet-list li {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+      display: flex; flex-direction: column; gap: 4px;
       padding: 14px 0; border-bottom: 1px solid #eee;
     }
-    .leaflet-list a { color: #1a1a1a; text-decoration: none; font-size: 17px; }
-    .leaflet-list a:hover { color: #3b82f6; }
+    .leaflet-item-title { color: #1a1a1a; text-decoration: none; font-size: 17px; }
+    .leaflet-item-title:hover { color: #3b82f6; }
+    .leaflet-item-meta { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .leaflet-desc { color: #666; font-size: 13px; }
     .leaflet-date { color: #999; font-size: 13px; white-space: nowrap; }
 
     .leaflet-doc { line-height: 1.8; }
-    .leaflet-doc h1 { font-size: 30px; font-weight: 700; margin: 16px 0 8px; }
+    .leaflet-doc h1 { font-size: 30px; font-weight: 700; margin: 16px 0 6px; }
+    .leaflet-subtitle { color: #666; font-size: 17px; font-style: italic; margin: 0 0 8px; }
     .leaflet-doc h2 { font-size: 22px; font-weight: 700; margin: 40px 0 16px; }
     .leaflet-doc h3 { font-size: 18px; font-weight: 700; margin: 32px 0 12px; }
     .leaflet-doc p { font-size: 15px; margin: 0 0 1.2em; }
