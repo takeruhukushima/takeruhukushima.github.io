@@ -1,0 +1,180 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+---
+
+<Layout title="Paper List | Takeru Fukushima">
+  <main class="paper-page">
+    <h1>今読まなきゃと思ってる Paper List</h1>
+    <p class="subtitle">AT Protocol上の論文コレクションからライブ取得しています。</p>
+    <div id="paper-collections" aria-live="polite">
+      <p class="status">読み込み中… / Loading…</p>
+    </div>
+  </main>
+
+  <script is:inline>
+    (function () {
+      const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
+      const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
+      const host = document.getElementById('paper-collections');
+
+      async function resolvePds() {
+        try {
+          const response = await fetch(`https://plc.directory/${DID}`);
+          if (!response.ok) throw new Error(`DID resolution failed: ${response.status}`);
+          const document = await response.json();
+          return document.service?.find((service) =>
+            service.id === '#atproto_pds' || service.type === 'AtprotoPersonalDataServer'
+          )?.serviceEndpoint || FALLBACK_PDS;
+        } catch {
+          return FALLBACK_PDS;
+        }
+      }
+
+      async function listRecords(pds, collection) {
+        const records = [];
+        let cursor = '';
+        do {
+          const query = new URLSearchParams({ repo: DID, collection, limit: '100' });
+          if (cursor) query.set('cursor', cursor);
+          const response = await fetch(`${pds}/xrpc/com.atproto.repo.listRecords?${query}`);
+          if (!response.ok) throw new Error(`${collection}: ${response.status}`);
+          const page = await response.json();
+          records.push(...(page.records || []));
+          cursor = page.cursor || '';
+        } while (cursor);
+        return records;
+      }
+
+      const uriKey = (uri) => uri?.split('/').pop() || '';
+      const addText = (parent, text, className) => {
+        if (!text) return;
+        const node = document.createElement('span');
+        if (className) node.className = className;
+        node.textContent = text;
+        parent.append(node);
+      };
+
+      function renderPaper(reference, addedAt, readingStatus) {
+        const paper = reference.value;
+        const li = document.createElement('li');
+        li.className = 'paper-item';
+        const title = document.createElement('a');
+        title.className = 'paper-title';
+        title.href = paper.url || (paper.doi ? `https://doi.org/${paper.doi}` : '#');
+        title.target = '_blank';
+        title.rel = 'noopener';
+        title.textContent = paper.title || '(untitled)';
+        li.append(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'paper-meta';
+        const authors = (paper.contributors || [])
+          .filter((person) => !person.role || person.role === 'author')
+          .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+          .map((person) => person.literal)
+          .filter(Boolean);
+        addText(meta, authors.join(', '), 'authors');
+        addText(meta, paper.containerTitle, 'venue');
+        addText(meta, paper.issued?.year ? String(paper.issued.year) : '', 'year');
+        if (paper.doi) addText(meta, `doi:${paper.doi}`, 'doi');
+        if (readingStatus) {
+          addText(
+            meta,
+            readingStatus.status || readingStatus.readingStatus || readingStatus.state || 'reading status',
+            'reading-status'
+          );
+          if (readingStatus.note || readingStatus.notes) {
+            addText(meta, readingStatus.note || readingStatus.notes, 'reading-note');
+          }
+        }
+        li.append(meta);
+        if (addedAt) li.dataset.addedAt = addedAt;
+        return li;
+      }
+
+      async function loadPapers() {
+        try {
+          const pds = await resolvePds();
+          const [collections, items, references, readingStatuses] = await Promise.all([
+            listRecords(pds, 'pub.paper.collection'),
+            listRecords(pds, 'pub.paper.collectionItem'),
+            listRecords(pds, 'pub.paper.reference'),
+            listRecords(pds, 'pub.paper.readingStatus')
+          ]);
+          const referenceByUri = new Map(references.map((record) => [record.uri, record]));
+          const statusByReferenceUri = new Map(
+            readingStatuses
+              .filter((record) => record.value.reference?.uri || record.value.referenceUri)
+              .map((record) => [record.value.reference?.uri || record.value.referenceUri, record.value])
+          );
+          host.replaceChildren();
+
+          collections.forEach((collectionRecord) => {
+            const collection = collectionRecord.value;
+            const section = document.createElement('section');
+            section.className = 'paper-collection';
+            const heading = document.createElement('h2');
+            heading.textContent = collection.name || uriKey(collectionRecord.uri);
+            section.append(heading);
+            if (collection.description) {
+              const description = document.createElement('p');
+              description.className = 'collection-description';
+              description.textContent = collection.description;
+              section.append(description);
+            }
+            const matching = items
+              .filter((record) => record.value.collection?.uri === collectionRecord.uri)
+              .sort((a, b) => String(b.value.addedAt).localeCompare(String(a.value.addedAt)));
+            const list = document.createElement('ol');
+            list.className = 'paper-list';
+            matching.forEach((record) => {
+              const reference = referenceByUri.get(record.value.reference?.uri);
+              if (reference) {
+                list.append(renderPaper(
+                  reference,
+                  record.value.addedAt,
+                  statusByReferenceUri.get(reference.uri)
+                ));
+              }
+            });
+            if (!list.children.length) {
+              const empty = document.createElement('p');
+              empty.className = 'status';
+              empty.textContent = '論文はまだありません。';
+              section.append(empty);
+            } else {
+              section.append(list);
+            }
+            host.append(section);
+          });
+
+          if (!collections.length) {
+            host.innerHTML = '<p class="status">コレクションはまだありません。</p>';
+          }
+        } catch (error) {
+          host.innerHTML = '<p class="status error">論文リストを取得できませんでした。 / Could not load papers.</p>';
+          console.error(error);
+        }
+      }
+
+      loadPapers();
+    })();
+  </script>
+</Layout>
+
+<style>
+  .paper-page { max-width: 900px; margin: 0 auto; padding: 40px 20px 70px; color: rgb(55, 53, 47); }
+  h1 { margin: 0 0 8px; font-size: 32px; border-bottom: 1px solid rgba(55, 53, 47, .09); padding-bottom: 8px; }
+  .subtitle, .collection-description, .status { color: #666; }
+  .paper-collection { margin-top: 36px; }
+  .paper-collection h2 { margin-bottom: 6px; font-size: 24px; }
+  .paper-list { margin: 22px 0 0; padding-left: 28px; }
+  .paper-item { margin-bottom: 22px; padding-left: 5px; }
+  .paper-title { color: rgb(35, 131, 226); font-weight: 600; text-underline-offset: .14em; }
+  .paper-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; color: #666; font-size: 13px; line-height: 1.55; }
+  .authors { flex-basis: 100%; color: #444; }
+  .venue { font-style: italic; }
+  .reading-status { padding: 1px 7px; border-radius: 999px; background: #e8f2ff; color: #285f91; }
+  .reading-note { flex-basis: 100%; }
+  .error { color: #a33; }
+</style>

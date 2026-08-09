@@ -21,7 +21,9 @@ export async function getStaticPaths() {
     }
   });
 
-  const categoryPaths = Array.from(categoryMap.entries()).map(([catSlug, posts]) => {
+  const categoryPaths = Array.from(categoryMap.entries())
+    .filter(([catSlug]) => catSlug !== 'research/paper-list')
+    .map(([catSlug, posts]) => {
     // Sort posts by title using natural sort
     const collator = new Intl.Collator('ja', { numeric: true, sensitivity: 'base' });
     const sortedPosts = [...posts].sort((a, b) => collator.compare(a.data.title, b.data.title));
@@ -30,7 +32,7 @@ export async function getStaticPaths() {
       params: { slug: catSlug },
       props: { type: 'list', title: catSlug.split('/').pop(), posts: sortedPosts },
     };
-  });
+    });
 
   return [...postPaths, ...categoryPaths];
 }

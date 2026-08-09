@@ -1,36 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Badge from '../components/Badge.astro';
-// MAGI
-// トップの Publications / 学会発表 / 講演 は atproto/data/cv.json を原本として描画する。
-// (cv.json は AT Protocol lexicon dev.takeruf.cv 準拠。編集はこのJSON側で行う)
-import cv from '../../atproto/data/cv.json';
-
-const monthsEn = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
-function fmtDateJa(d) {
-  if (!d) return '';
-  const [y, m, day] = d.split('-');
-  if (!m) return `${+y}年`;
-  return day ? `${+y}年${+m}月${+day}日` : `${+y}年${+m}月`;
-}
-function fmtDateEn(d) {
-  if (!d) return '';
-  const [y, m, day] = d.split('-');
-  if (!m) return y;
-  return day ? `${monthsEn[+m - 1]} ${+day}, ${y}` : `${monthsEn[+m - 1]} ${y}`;
-}
-const presTypeJa = { oral: '口頭発表', poster: 'ポスター発表', invited: '招待講演' };
-const presTypeEn = { oral: 'Oral Presentation', poster: 'Poster Presentation', invited: 'Invited Talk' };
-const publications = cv.publications ?? [];
-const presentations = cv.presentations ?? [];
-const talks = cv.talks ?? [];
-// /MAGI
 ---
 
 <Layout title="福島武 / Takeru Fukushima">
   <div class="profile-section">
     <div class="lang-nav">
       <button id="lang-en" class="lang-btn">En</button> / <button id="lang-ja" class="lang-btn">Ja</button>
+    </div>
+    <div class="export-actions" aria-label="CV export">
+      <button id="export-cv-json" class="export-btn" type="button" disabled>JSON</button>
+      <button id="export-cv-pdf" class="export-btn" type="button" disabled>PDF</button>
     </div>
     
     <div class="profile-main">
@@ -42,11 +21,20 @@ const talks = cv.talks ?? [];
       
       <div class="profile-details">
         <h1 class="name-title">
-          <span class="lang-ja">福島 武 / Takeru Fukushima</span>
-          <span class="lang-en">Takeru Fukushima</span>
+          <a
+            id="profile-atproto-link"
+            class="profile-name-link"
+            href="https://pdsls.dev/at://did:plc:nmhfq335cddnwt4ovrq4gzsm/id.career.profile/self"
+            target="_blank"
+            rel="noopener"
+            title="AT Protocol profile"
+          >
+            <span class="lang-ja" id="profile-name-ja">福島 武 / Takeru Fukushima</span>
+            <span class="lang-en" id="profile-name-en">Takeru Fukushima</span>
+          </a>
         </h1>
         
-        <p class="affiliation">M.1. Nagoya University</p>
+        <p class="affiliation" id="profile-affiliation">読み込み中… / Loading…</p>
         
         <p class="email-text">
           fukushima.takeru.u8 [at] s.mail.nagoya-u.ac.jp
@@ -69,54 +57,16 @@ const talks = cv.talks ?? [];
       </div>
     </div>
     
-    <div class="bio-text">
-      <div class="lang-ja">
-        <p>
-          2026年より <a href="https://www.nagoya-u.ac.jp/">名古屋大学</a> 工学部 <a href="https://www.engg.nagoya-u.ac.jp/">大学院工学研究科</a> の修士になりました（指導教官: <a href="https://www.material.nagoya-u.ac.jp/ItoLab/index.html">井藤彰</a> 教授）。
-        </p>
-        <p>
-        個人的に様々なweb appやweb siteを作ったりしたり、OSSプロジェクトに(微力ながら)contributeしたりしている。個人的に作ったweb site→<a href="https://magthermia.github.io/">magthermia<a>
-        </p>
-      </div>
-      <div class="lang-en">
-        <p>
-          I became a Master's student at the <a href="https://www.nagoya-u.ac.jp/">Nagoya University</a>, School of Engineering, <a href="https://www.engg.nagoya-u.ac.jp/">Graduate School of Engineering</a> in 2026 (Advisor: Prof. <a href="https://www.material.nagoya-u.ac.jp/ItoLab/index.html">Akira Ito</a>).
-        </p>
-      </div>
+    <div class="bio-text" id="profile-bio">
+      <p>読み込み中… / Loading…</p>
     </div>
 
     <div class="section-divider"></div>
 
-    <section class="publications" id="publications">
-      <h2 class="lang-ja">論文 / Publications</h2>
-      <h2 class="lang-en">Publications</h2>
-      <p class="pub-links"><a href="#" target="_blank">Google Scholar</a>, <a href="https://orcid.org/my-orcid?orcid=0009-0008-7394-8253" target="_blank">ORCID</a></p>
-
-      {publications.length === 0 ? (
-        <div class="no-publications">
-          <p class="lang-ja">Coming soon.</p>
-          <p class="lang-en">Coming soon.</p>
-        </div>
-      ) : (
-        <ul class="presentation-list">
-          {publications.map(p => (
-            <li>
-              <div class="lang-ja">
-                {p.authors?.join(', ')}{p.authors?.length ? '. ' : ''}「{p.title.ja ?? p.title.en}」
-                {p.venue && <> {p.venue.ja ?? p.venue.en},</>} {p.year}.
-                {p.url && <> <a href={p.url} target="_blank">[link]</a></>}
-                {p.doi && <> doi:{p.doi}</>}
-              </div>
-              <div class="lang-en">
-                {(p.authorsEn ?? p.authors)?.join(', ')}{p.authors?.length ? '. ' : ''}"{p.title.en ?? p.title.ja},"
-                {p.venue && <> {p.venue.en ?? p.venue.ja},</>} {p.year}.
-                {p.url && <> <a href={p.url} target="_blank">[link]</a></>}
-                {p.doi && <> doi:{p.doi}</>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+    <section id="education">
+      <h2 class="lang-ja">学歴 / Education</h2>
+      <h2 class="lang-en">Education</h2>
+      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
     </section>
 
     <div class="section-divider"></div>
@@ -125,70 +75,39 @@ const talks = cv.talks ?? [];
       <h2 class="lang-ja">学会発表 / Presentations</h2>
       <h2 class="lang-en">Presentations</h2>
 
-      {presentations.length === 0 ? (
-        <div class="no-publications">
-          <p class="lang-ja">Coming soon.</p>
-          <p class="lang-en">Coming soon.</p>
-        </div>
-      ) : (
-        <ul class="presentation-list">
-          {presentations.map(p => (
-            <li>
-              <div class="lang-ja">
-                {p.authors?.join(', ')}{p.authors?.length ? '. ' : ''}「{p.title.ja ?? p.title.en}」
-                {p.venue && (p.venueUrl
-                  ? <> <a href={p.venueUrl} target="_blank">{p.venue.ja ?? p.venue.en}</a>,</>
-                  : <> {p.venue.ja ?? p.venue.en},</>)}
-                {p.presentationType && <> {presTypeJa[p.presentationType]},</>} {fmtDateJa(p.date)}.
-              </div>
-              <div class="lang-en">
-                {(p.authorsEn ?? p.authors)?.join(', ')}{p.authors?.length ? '. ' : ''}"{p.title.en ?? p.title.ja},"
-                {p.venue && (p.venueUrl
-                  ? <> <a href={p.venueUrl} target="_blank">{p.venue.en ?? p.venue.ja}</a>,</>
-                  : <> {p.venue.en ?? p.venue.ja},</>)}
-                {p.presentationType && <> {presTypeEn[p.presentationType]},</>} {fmtDateEn(p.date)}.
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
-    <section class="talks" id="talks">
-      <h2 class="lang-ja">講演 / Invited Talks</h2>
-      <h2 class="lang-en">Invited Talks</h2>
-
-      {talks.length === 0 ? (
-        <div class="no-publications">
-          <p class="lang-ja">Coming soon.</p>
-          <p class="lang-en">Coming soon.</p>
-        </div>
-      ) : (
-        <ul class="presentation-list">
-          {talks.map(t => (
-            <li>
-              <div class="lang-ja">
-                「{t.title.ja ?? t.title.en}」
-                {t.event && (t.eventUrl
-                  ? <> <a href={t.eventUrl} target="_blank">{t.event.ja ?? t.event.en}</a>,</>
-                  : <> {t.event.ja ?? t.event.en},</>)}
-                {t.host && <> {t.host.ja ?? t.host.en},</>} {fmtDateJa(t.date)}.
-              </div>
-              <div class="lang-en">
-                "{t.title.en ?? t.title.ja},"
-                {t.event && (t.eventUrl
-                  ? <> <a href={t.eventUrl} target="_blank">{t.event.en ?? t.event.ja}</a>,</>
-                  : <> {t.event.en ?? t.event.ja},</>)}
-                {t.host && <> {t.host.en ?? t.host.ja},</>} {fmtDateEn(t.date)}.
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+    <section id="positions">
+      <h2 class="lang-ja">職歴 / Positions</h2>
+      <h2 class="lang-en">Positions</h2>
+      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
     </section>
+
+    <div class="section-divider"></div>
+
+    <section id="open-source">
+      <h2 class="lang-ja">オープンソース活動 / Open Source</h2>
+      <h2 class="lang-en">Open Source</h2>
+      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
+    </section>
+
+    <div id="career-extra"></div>
   </div>
+
+  <dialog id="cv-export-dialog" class="export-dialog">
+    <div class="export-dialog-head">
+      <h2 id="export-preview-title">CV Preview</h2>
+      <button id="close-export-preview" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div id="export-preview" class="export-preview"></div>
+    <div class="export-dialog-actions">
+      <button id="cancel-export" class="export-btn" type="button">キャンセル</button>
+      <button id="confirm-export" class="export-btn export-btn-primary" type="button">ダウンロード</button>
+    </div>
+  </dialog>
 
   <script is:inline>
     // 言語切り替えのロジック
@@ -216,6 +135,282 @@ const talks = cv.talks ?? [];
     // 初期言語の設定（保存された設定があればそれを使う、なければja）
     const savedLang = localStorage.getItem('preferred-lang') || 'ja';
     setLang(savedLang);
+
+    const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
+    const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
+    const jsonButton = document.getElementById('export-cv-json');
+    const pdfButton = document.getElementById('export-cv-pdf');
+    const exportDialog = document.getElementById('cv-export-dialog');
+    const exportPreview = document.getElementById('export-preview');
+    const exportPreviewTitle = document.getElementById('export-preview-title');
+    const confirmExport = document.getElementById('confirm-export');
+    const closeExportPreview = document.getElementById('close-export-preview');
+    const cancelExport = document.getElementById('cancel-export');
+    let cvExport = null;
+    let exportFormat = null;
+
+    async function resolvePds() {
+      try {
+        const response = await fetch(`https://plc.directory/${DID}`);
+        if (!response.ok) throw new Error(`DID resolution failed: ${response.status}`);
+        const document = await response.json();
+        return document.service?.find((service) =>
+          service.id === '#atproto_pds' || service.type === 'AtprotoPersonalDataServer'
+        )?.serviceEndpoint || FALLBACK_PDS;
+      } catch {
+        return FALLBACK_PDS;
+      }
+    }
+
+    async function listRecords(pds, collection) {
+      const records = [];
+      let cursor = '';
+      do {
+        const query = new URLSearchParams({ repo: DID, collection, limit: '100' });
+        if (cursor) query.set('cursor', cursor);
+        const response = await fetch(`${pds}/xrpc/com.atproto.repo.listRecords?${query}`);
+        if (!response.ok) throw new Error(`${collection}: ${response.status}`);
+        const page = await response.json();
+        records.push(...(page.records || []));
+        cursor = page.cursor || '';
+      } while (cursor);
+      return records.map((record) => record.value);
+    }
+
+    const formatPeriod = (start, end) => [start, end || 'present'].filter(Boolean).join(' – ');
+    const showList = (id, values, render) => {
+      const host = document.querySelector(`#${id} .atproto-list`);
+      host.replaceChildren();
+      if (!values.length) {
+        const empty = document.createElement('p');
+        empty.className = 'no-publications';
+        empty.textContent = 'Coming soon.';
+        host.append(empty);
+        return;
+      }
+      const list = document.createElement('ul');
+      list.className = 'presentation-list';
+      values.forEach((value) => list.append(render(value)));
+      host.append(list);
+    };
+    const item = (...parts) => {
+      const li = document.createElement('li');
+      parts.filter(Boolean).forEach((part) => {
+        if (part instanceof Node) li.append(part);
+        else li.append(document.createTextNode(String(part)));
+      });
+      return li;
+    };
+    const externalLink = (label, url) => {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = label;
+      return link;
+    };
+
+    const extraCareerCollections = [
+      ['id.career.authorship', '著作・論文 / Authorship'],
+      ['id.career.award', '受賞 / Awards'],
+      ['id.career.grant', '研究資金 / Grants'],
+      ['id.career.membership', '所属学会・団体 / Memberships'],
+      ['id.career.service', '委員・査読歴 / Service'],
+      ['id.career.teaching', '教育 / Teaching'],
+      ['id.career.supervision', '研究指導 / Supervision'],
+      ['id.career.patent', '特許 / Patents'],
+      ['id.career.outreach', 'アウトリーチ / Outreach'],
+      ['id.career.work', '職歴・プロジェクト / Work'],
+      ['id.career.attestation', '証明・推薦 / Attestations'],
+      ['id.career.dossier', 'Dossier']
+    ];
+
+    const valueText = (value) => {
+      if (value == null || value === '') return '';
+      if (typeof value === 'string' || typeof value === 'number') return String(value);
+      if (typeof value === 'boolean') return value ? 'yes' : 'no';
+      if (Array.isArray(value)) return value.map(valueText).filter(Boolean).join(', ');
+      return value.name || value.literal || value.title || value.uri ||
+        Object.entries(value).map(([key, child]) => `${key}: ${valueText(child)}`).join(', ');
+    };
+
+    function renderGenericRecord(record) {
+      const li = document.createElement('li');
+      const primaryKeys = ['title', 'name', 'role', 'courseTitle', 'patentTitle', 'activity'];
+      const primaryKey = primaryKeys.find((key) => record[key]);
+      const primary = primaryKey ? valueText(record[primaryKey]) : 'Record';
+      const url = record.url || record.repoUrl || record.projectUrl;
+      li.append(url ? externalLink(primary, url) : document.createTextNode(primary));
+      const ignored = new Set(['$type', 'createdAt', 'updatedAt', primaryKey, 'url', 'repoUrl', 'projectUrl']);
+      const details = Object.entries(record)
+        .filter(([key, value]) => !ignored.has(key) && value != null && value !== '')
+        .map(([key, value]) => `${key}: ${valueText(value)}`)
+        .filter((value) => value && !value.endsWith(': '));
+      if (details.length) li.append(document.createTextNode(` — ${details.join(' · ')}`));
+      return li;
+    }
+
+    function renderExtraSections(results) {
+      const container = document.getElementById('career-extra');
+      container.replaceChildren();
+      results.forEach(({ label, records }) => {
+        const divider = document.createElement('div');
+        divider.className = 'section-divider';
+        const section = document.createElement('section');
+        const heading = document.createElement('h2');
+        heading.textContent = label;
+        section.append(heading);
+        if (records.length) {
+          const list = document.createElement('ul');
+          list.className = 'presentation-list';
+          records.forEach((record) => list.append(renderGenericRecord(record)));
+          section.append(list);
+        } else {
+          const empty = document.createElement('p');
+          empty.className = 'no-publications';
+          empty.textContent = 'Coming soon.';
+          section.append(empty);
+        }
+        container.append(divider, section);
+      });
+    }
+
+    async function loadCareer() {
+      try {
+        const pds = await resolvePds();
+        const [profiles, education, presentations, positions, contributions] = await Promise.all([
+          listRecords(pds, 'id.career.profile'),
+          listRecords(pds, 'id.career.education'),
+          listRecords(pds, 'id.career.presentation'),
+          listRecords(pds, 'id.sifa.profile.position'),
+          listRecords(pds, 'id.career.openSourceContribution')
+        ]);
+        const extraResults = await Promise.all(extraCareerCollections.map(async ([collection, label]) => ({
+          collection,
+          label,
+          records: await listRecords(pds, collection)
+        })));
+
+        cvExport = {
+          $schema: 'https://minori.takeruf.workers.dev/',
+          did: DID,
+          exportedAt: new Date().toISOString(),
+          records: {
+            'id.career.profile': profiles,
+            'id.career.education': education,
+            'id.career.presentation': presentations,
+            'id.sifa.profile.position': positions,
+            'id.career.openSourceContribution': contributions,
+            ...Object.fromEntries(extraResults.map(({ collection, records }) => [collection, records]))
+          }
+        };
+
+        const profile = profiles[0];
+        if (profile) {
+          document.getElementById('profile-name-ja').textContent =
+            [profile.nativeName, profile.displayName].filter(Boolean).join(' / ');
+          document.getElementById('profile-name-en').textContent = profile.displayName || profile.nativeName;
+          const affiliation = profile.primaryAffiliation;
+          document.getElementById('profile-affiliation').textContent =
+            [profile.headline, affiliation?.department, affiliation?.name].filter(Boolean).join(' · ');
+          const bio = document.createElement('p');
+          bio.textContent = profile.bio || '';
+          document.getElementById('profile-bio').replaceChildren(bio);
+          const websites = document.querySelector('.social-icons');
+          websites.replaceChildren();
+          (profile.websites || []).forEach((website) => {
+            if (!website?.url) return;
+            const link = externalLink(website.label || website.url, website.url);
+            link.className = 'website-link';
+            link.title = website.label || website.url;
+            websites.append(link);
+          });
+        }
+
+        showList('education', education, (entry) => item(
+          `${entry.institution?.name || ''}${entry.institution?.department ? `, ${entry.institution.department}` : ''}`,
+          entry.degreeName ? ` — ${entry.degreeName}` : '',
+          entry.fieldOfStudy ? ` (${entry.fieldOfStudy})` : '',
+          `, ${formatPeriod(entry.startedAt, entry.endedAt)}`
+        ));
+        showList('presentations', presentations, (entry) => item(
+          `“${entry.title},” ${entry.eventName || entry.eventSeries || ''}`,
+          entry.place ? `, ${entry.place}` : '',
+          entry.type ? `, ${entry.type}` : '',
+          entry.date ? `, ${entry.date}` : ''
+        ));
+        showList('positions', positions, (entry) => item(
+          entry.entityRef ? externalLink(entry.company || 'Organization', entry.entityRef) : entry.company,
+          ` — ${entry.title || ''}`,
+          entry.description ? `. ${entry.description}` : '',
+          ` (${formatPeriod(entry.startedAt, entry.endedAt)})`
+        ));
+        showList('open-source', contributions, (entry) => item(
+          entry.repoUrl ? externalLink(entry.name, entry.repoUrl) : entry.name,
+          entry.role ? ` — ${entry.role}` : '',
+          entry.description ? `. ${entry.description}` : '',
+          entry.startedAt ? ` (${entry.startedAt}–)` : ''
+        ));
+        renderExtraSections(extraResults);
+        jsonButton.disabled = false;
+        pdfButton.disabled = false;
+      } catch (error) {
+        document.querySelectorAll('.atproto-list').forEach((host) => {
+          const message = document.createElement('p');
+          message.className = 'no-publications';
+          message.textContent = 'CVを取得できませんでした。 / Could not load CV.';
+          host.replaceChildren(message);
+        });
+        console.error(error);
+      }
+    }
+
+    function downloadJson() {
+      cvExport.exportedAt = new Date().toISOString();
+      const blob = new Blob([`${JSON.stringify(cvExport, null, 2)}\n`], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const download = document.createElement('a');
+      download.href = url;
+      download.download = `takeru-fukushima-cv-${new Date().toISOString().slice(0, 10)}.json`;
+      download.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function openExportPreview(format) {
+      if (!cvExport) return;
+      exportFormat = format;
+      exportPreview.replaceChildren();
+      if (format === 'json') {
+        exportPreviewTitle.textContent = 'JSON Preview';
+        const code = document.createElement('pre');
+        code.textContent = JSON.stringify(cvExport, null, 2);
+        exportPreview.append(code);
+      } else {
+        exportPreviewTitle.textContent = 'PDF Preview';
+        const clone = document.querySelector('.profile-section').cloneNode(true);
+        clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+        clone.querySelector('.export-actions')?.remove();
+        exportPreview.append(clone);
+      }
+      confirmExport.textContent = format === 'json' ? 'JSONをダウンロード' : 'PDFとして保存';
+      exportDialog.showModal();
+    }
+
+    const closeDialog = () => exportDialog.close();
+    jsonButton.addEventListener('click', () => openExportPreview('json'));
+    pdfButton.addEventListener('click', () => openExportPreview('pdf'));
+    closeExportPreview.addEventListener('click', closeDialog);
+    cancelExport.addEventListener('click', closeDialog);
+    exportDialog.addEventListener('click', (event) => {
+      if (event.target === exportDialog) closeDialog();
+    });
+    confirmExport.addEventListener('click', () => {
+      exportDialog.close();
+      if (exportFormat === 'json') downloadJson();
+      if (exportFormat === 'pdf') window.print();
+    });
+
+    loadCareer();
   </script>
 </Layout>
 
@@ -233,6 +428,57 @@ const talks = cv.talks ?? [];
     color: #666;
     letter-spacing: 0.05em;
   }
+
+  .export-actions {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    display: flex;
+    gap: 7px;
+  }
+
+  .export-btn {
+    border: 1px solid #b9c7d5;
+    border-radius: 4px;
+    background: #fff;
+    color: #326b9f;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    padding: 4px 9px;
+  }
+
+  .export-btn:hover:not(:disabled) { background: #f1f6fb; }
+  .export-btn:disabled { cursor: wait; opacity: .45; }
+
+  .export-btn-primary { background: #326b9f; color: #fff; }
+  .export-btn-primary:hover:not(:disabled) { background: #28577f; }
+
+  .export-dialog {
+    width: min(900px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .25);
+    padding: 0;
+  }
+
+  .export-dialog::backdrop { background: rgba(20, 28, 36, .55); }
+  .export-dialog-head, .export-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #fff;
+  }
+  .export-dialog-head { position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #ddd; }
+  .export-dialog-head h2 { margin: 0; font-size: 18px; }
+  .export-dialog-actions { position: sticky; bottom: 0; justify-content: flex-end; border-top: 1px solid #ddd; }
+  .dialog-close { border: 0; background: none; cursor: pointer; font-size: 26px; line-height: 1; }
+  .export-preview { padding: 24px; overflow: auto; background: #f5f6f7; }
+  .export-preview pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+  .export-preview :global(.profile-section) { margin: 0; padding: 28px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
 
   .lang-btn {
     background: none;
@@ -291,6 +537,13 @@ const talks = cv.talks ?? [];
     line-height: 1.2;
   }
 
+  .profile-name-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .profile-name-link:hover { color: #326b9f; }
+
   .affiliation {
     font-size: 16px;
     margin: 0 0 8px 0;
@@ -307,6 +560,7 @@ const talks = cv.talks ?? [];
 
   .social-icons {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     margin-top: 8px;
   }
@@ -322,6 +576,13 @@ const talks = cv.talks ?? [];
 
   .social-icons a:hover {
     color: #333;
+  }
+
+  .social-icons .website-link {
+    border: 1px solid #c9d7e4 !important;
+    border-radius: 999px;
+    font-size: 12px;
+    padding: 3px 9px;
   }
 
   .bio-text {
@@ -374,5 +635,19 @@ const talks = cv.talks ?? [];
       margin-bottom: 20px;
       text-align: right;
     }
+    .export-actions {
+      position: static;
+      justify-content: flex-end;
+      margin: -12px 0 16px;
+    }
+  }
+
+  @media print {
+    .lang-nav, .export-actions, .social-icons, .export-dialog { display: none !important; }
+    .profile-section { margin: 0; }
+    .profile-main { margin-top: 0; }
+    .section-divider { margin: 22px 0; }
+    section { break-inside: avoid; }
+    a { color: inherit !important; text-decoration: none !important; }
   }
 </style>
