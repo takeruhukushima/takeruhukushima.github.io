@@ -1,5 +1,5 @@
 ---
-const { title = "Takeru Fukushima" } = Astro.props;
+const { title = "" } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -7,7 +7,10 @@ const { title = "Takeru Fukushima" } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title data-page-title={title}>{title || 'Profile'}</title>
+    <meta name="description" content="AT Protocol profile" />
+    <meta property="og:title" content={title || 'Profile'} />
+    <meta property="og:description" content="AT Protocol profile" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -80,6 +83,47 @@ const { title = "Takeru Fukushima" } = Astro.props;
       </div>
 
     </div>
+    <script is:inline>
+      (async function syncProfileMetadata() {
+        const did = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
+        const fallbackPds = 'https://chaga.us-west.host.bsky.network';
+        try {
+          let pds = fallbackPds;
+          try {
+            const didResponse = await fetch(`https://plc.directory/${did}`);
+            if (didResponse.ok) {
+              const didDocument = await didResponse.json();
+              pds = didDocument.service?.find((service) =>
+                service.id === '#atproto_pds' || service.type === 'AtprotoPersonalDataServer'
+              )?.serviceEndpoint || fallbackPds;
+            }
+          } catch { /* fallback PDSを使う */ }
+
+          const query = new URLSearchParams({
+            repo: did,
+            collection: 'id.career.profile',
+            rkey: 'self'
+          });
+          const response = await fetch(`${pds}/xrpc/com.atproto.repo.getRecord?${query}`);
+          if (!response.ok) throw new Error(`profile: ${response.status}`);
+          const { value: profile } = await response.json();
+          const displayName = profile.displayName || profile.nativeName;
+          const titleElement = document.querySelector('title');
+          const pageTitle = titleElement?.dataset.pageTitle || '';
+          if (displayName) {
+            document.title = pageTitle ? `${pageTitle} | ${displayName}` : displayName;
+            document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
+          }
+          const description = document.querySelector('meta[name="description"]');
+          if (profile.bio) {
+            description?.setAttribute('content', profile.bio);
+            document.querySelector('meta[property="og:description"]')?.setAttribute('content', profile.bio);
+          }
+        } catch (error) {
+          console.error('Could not sync AT Protocol profile metadata.', error);
+        }
+      })();
+    </script>
   </body>
 </html>
 

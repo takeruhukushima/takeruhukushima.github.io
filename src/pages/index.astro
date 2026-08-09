@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="福島武 / Takeru Fukushima">
+<Layout title="">
   <div class="profile-section">
     <div class="lang-nav">
       <button id="lang-en" class="lang-btn">En</button> / <button id="lang-ja" class="lang-btn">Ja</button>
@@ -15,23 +15,14 @@ import Layout from '../layouts/Layout.astro';
     <div class="profile-main">
       <div class="profile-photo">
         <div class="photo-box">
-          <img src="https://via.placeholder.com/140" alt="Takeru Fukushima" />
+          <img src="https://via.placeholder.com/140" alt="Profile photo" />
         </div>
       </div>
       
       <div class="profile-details">
         <h1 class="name-title">
-          <a
-            id="profile-atproto-link"
-            class="profile-name-link"
-            href="https://pdsls.dev/at://did:plc:nmhfq335cddnwt4ovrq4gzsm/id.career.profile/self"
-            target="_blank"
-            rel="noopener"
-            title="AT Protocol profile"
-          >
-            <span class="lang-ja" id="profile-name-ja">福島 武 / Takeru Fukushima</span>
-            <span class="lang-en" id="profile-name-en">Takeru Fukushima</span>
-          </a>
+          <span class="lang-ja" id="profile-name-ja">読み込み中…</span>
+          <span class="lang-en" id="profile-name-en">Loading…</span>
         </h1>
         
         <p class="affiliation" id="profile-affiliation">読み込み中… / Loading…</p>
@@ -325,6 +316,9 @@ import Layout from '../layouts/Layout.astro';
             link.title = website.label || website.url;
             websites.append(link);
           });
+        } else {
+          document.getElementById('profile-name-ja').textContent = 'Coming soon.';
+          document.getElementById('profile-name-en').textContent = 'Coming soon.';
         }
 
         showList('education', education, (entry) => item(
@@ -355,6 +349,8 @@ import Layout from '../layouts/Layout.astro';
         jsonButton.disabled = false;
         pdfButton.disabled = false;
       } catch (error) {
+        document.getElementById('profile-name-ja').textContent = 'プロフィールを取得できませんでした';
+        document.getElementById('profile-name-en').textContent = 'Could not load profile';
         document.querySelectorAll('.atproto-list').forEach((host) => {
           const message = document.createElement('p');
           message.className = 'no-publications';
@@ -371,7 +367,7 @@ import Layout from '../layouts/Layout.astro';
       const url = URL.createObjectURL(blob);
       const download = document.createElement('a');
       download.href = url;
-      download.download = `takeru-fukushima-cv-${new Date().toISOString().slice(0, 10)}.json`;
+      download.download = `cv-${new Date().toISOString().slice(0, 10)}.json`;
       download.click();
       URL.revokeObjectURL(url);
     }
@@ -536,13 +532,6 @@ import Layout from '../layouts/Layout.astro';
     color: #1a1a1a;
     line-height: 1.2;
   }
-
-  .profile-name-link {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .profile-name-link:hover { color: #326b9f; }
 
   .affiliation {
     font-size: 16px;

@@ -24,7 +24,7 @@ const { tag } = Astro.params;
 const { posts } = Astro.props;
 ---
 
-<Layout title={`Tag: ${tag} | Hiroki Naganuma`}>
+<Layout title={`Tag: ${tag}`}>
   <div class="notion-blog">
     <main class="blog-content">
       <h2 class="contents-title">Tag: <Badge label={tag} color="blue" /></h2>
