@@ -20,7 +20,10 @@ import Layout from '../../../layouts/Layout.astro';
     </div>
   </div>
 
-  <script is:inline>
+  <script>
+    import katex from 'katex';
+    import 'katex/dist/katex.min.css';
+
     // MAGI
     (function () {
       const DID = "did:plc:nmhfq335cddnwt4ovrq4gzsm";
@@ -89,29 +92,92 @@ import Layout from '../../../layouts/Layout.astro';
         return records;
       }
 
-      function linkText(text) {
-        return esc(text).replace(
-          /(https?:\/\/[^\s&lt;]+)/g,
-          '<a href="$1" target="_blank" rel="noopener">$1</a>'
-        );
+      function blobUrl(image) {
+        const cid = image?.blob?.ref?.["$link"];
+        if (!cid || !state?.pds) return "";
+        const params = new URLSearchParams({ did: DID, cid });
+        return state.pds + "/xrpc/com.atproto.sync.getBlob?" + params;
       }
 
-      function renderMarkdownish(text) {
+      function renderMath(source, displayMode) {
+        try {
+          return katex.renderToString(source, {
+            displayMode,
+            throwOnError: false,
+            strict: "warn",
+          });
+        } catch (_) {
+          return '<code class="math-error">' + esc(source) + "</code>";
+        }
+      }
+
+      function citationContext(value) {
+        const byKey = new Map(
+          (value.bibliography || []).map((entry) => [entry.key, entry])
+        );
+        const order = [];
+        for (const block of value.blocks || []) {
+          const text = String(block.content || "");
+          for (const match of text.matchAll(/\\cite\{([^}]+)\}/g)) {
+            for (const key of match[1].split(",").map((item) => item.trim()).filter(Boolean)) {
+              if (!order.includes(key)) order.push(key);
+            }
+          }
+        }
+        return { byKey, order };
+      }
+
+      function renderInline(text, value, citations) {
+        const images = new Map((value.images || []).map((image) => [image.path, image]));
+        const pattern = /!\[([^\]]*)\]\(([^)]+)\)(?:\{[^}]*\})?|\\cite\{([^}]+)\}|\$([^$\n]+)\$|https?:\/\/[^\s<>]+/g;
+        let html = "";
+        let cursor = 0;
+        for (const match of String(text || "").matchAll(pattern)) {
+          html += esc(text.slice(cursor, match.index));
+          if (match[1] != null) {
+            const image = images.get(match[2]);
+            const src = image ? blobUrl(image) : match[2];
+            html += src
+              ? '<figure><img src="' + esc(src) + '" alt="' + esc(match[1] || image?.alt || "") + '" loading="lazy"><figcaption>' + esc(match[1] || image?.alt || "") + "</figcaption></figure>"
+              : esc(match[0]);
+          } else if (match[3] != null) {
+            const keys = match[3].split(",").map((item) => item.trim()).filter(Boolean);
+            html += '<span class="citation">' + keys.map((key) => {
+              const number = citations.order.indexOf(key) + 1;
+              return number
+                ? '<a href="#ref-' + encodeURIComponent(key) + '">[' + number + "]</a>"
+                : "[?]";
+            }).join("") + "</span>";
+          } else if (match[4] != null) {
+            html += renderMath(match[4], false);
+          } else {
+            html += '<a href="' + esc(match[0]) + '" target="_blank" rel="noopener">' + esc(match[0]) + "</a>";
+          }
+          cursor = match.index + match[0].length;
+        }
+        return html + esc(String(text || "").slice(cursor));
+      }
+
+      function renderMarkdownish(text, value, citations) {
         return String(text || "")
           .trim()
           .split(/\n{2,}/)
           .map((part) => {
+            const displayMath = part.match(/^\s*(?:\$\$([\s\S]+)\$\$|\\\[([\s\S]+)\\\])\s*$/);
+            if (displayMath) {
+              return '<div class="math-display">' + renderMath(displayMath[1] || displayMath[2], true) + "</div>";
+            }
             const lines = part.split("\n");
             if (lines.every((line) => /^\s*[-*]\s+/.test(line))) {
               return (
                 "<ul>" +
                 lines
-                  .map((line) => "<li>" + linkText(line.replace(/^\s*[-*]\s+/, "")) + "</li>")
+                  .map((line) => "<li>" + renderInline(line.replace(/^\s*[-*]\s+/, ""), value, citations) + "</li>")
                   .join("") +
                 "</ul>"
               );
             }
-            return "<p>" + lines.map(linkText).join("<br>") + "</p>";
+            return "<p>" + lines.map((line) => renderInline(line, value, citations)).join("<br>") + "</p>";
           })
           .join("");
       }
@@ -205,6 +271,7 @@ import Layout from '../../../layouts/Layout.astro';
         const project = projectFor(record.uri);
         const collection = collectionFor(project);
         const references = referencesFor(collection);
+        const citations = citationContext(value);
         const authors = (value.authors || [])
           .map((author) => author.name || author.did || "")
           .filter(Boolean);
@@ -214,13 +281,21 @@ import Layout from '../../../layouts/Layout.astro';
             return (
               (block.heading
                 ? "<h" + level + ">" + esc(block.heading) + "</h" + level + ">"
-                : "") + renderMarkdownish(block.content)
+                : "") + renderMarkdownish(block.content, value, citations)
             );
           })
           .join("");
 
         let bibliography = "";
-        if (references.length) {
+        if (citations.order.length) {
+          bibliography =
+            '<section class="scholar-bibliography"><h2>References</h2><ol>' +
+            citations.order.map((key) => {
+              const entry = citations.byKey.get(key);
+              return '<li id="ref-' + encodeURIComponent(key) + '"><code>' + esc(key) + "</code>" +
+                (entry?.rawBibtex ? '<pre>' + esc(entry.rawBibtex) + "</pre>" : "") + "</li>";
+            }).join("") + "</ol></section>";
+        } else if (references.length) {
           bibliography =
             '<section class="scholar-bibliography"><h2>Project references</h2><ol>' +
             references
@@ -270,6 +345,7 @@ import Layout from '../../../layouts/Layout.astro';
             keys.map((key) => listRecords(pds, COLLECTIONS[key]).catch(() => []))
           );
           state = Object.fromEntries(keys.map((key, index) => [key, results[index]]));
+          state.pds = pds;
           state.articles.sort((a, b) =>
             String(b.value.createdAt || "").localeCompare(String(a.value.createdAt || ""))
           );
@@ -313,12 +389,18 @@ import Layout from '../../../layouts/Layout.astro';
     .scholar-body p { font-size: 15px; margin: 0 0 1.25em; }
     .scholar-body ul { margin: 0 0 1.25em; padding-left: 24px; }
     .scholar-body a, .scholar-source a { color: #3b82f6; overflow-wrap: anywhere; }
+    .scholar-body figure { margin: 28px auto; text-align: center; }
+    .scholar-body img { border-radius: 4px; height: auto; max-width: 100%; }
+    .scholar-body figcaption { color: #777; font-size: 13px; margin-top: 6px; }
+    .math-display { margin: 24px 0; max-width: 100%; overflow-x: auto; padding: 4px 0; }
+    .citation { font-size: 0.82em; margin-left: 0.12em; vertical-align: super; }
+    .citation a { text-decoration: none; }
     .scholar-bibliography { border-top: 1px solid #eee; margin-top: 42px; padding-top: 18px; }
     .scholar-bibliography h2 { font-size: 20px; }
     .scholar-bibliography li { font-size: 14px; margin-bottom: 8px; }
+    .scholar-bibliography pre { background: #f7f7f7; border-radius: 4px; font-size: 11px; margin: 6px 0 14px; overflow-x: auto; padding: 10px; white-space: pre-wrap; }
     .scholar-source { border-top: 1px solid #eee; font-size: 14px; margin-top: 38px; padding-top: 16px; }
     /* /MAGI */
   </style>
   <!-- /MAGI -->
 </Layout>
-
