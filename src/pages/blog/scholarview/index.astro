@@ -127,6 +127,105 @@ import Layout from '../../../layouts/Layout.astro';
         return { byKey, order };
       }
 
+      function parseBibtex(raw) {
+        const source = String(raw || "");
+        const open = source.indexOf("{");
+        const firstComma = source.indexOf(",", open + 1);
+        if (open < 0 || firstComma < 0) return {};
+        const fields = {};
+        let cursor = firstComma + 1;
+        while (cursor < source.length) {
+          while (/[\s,]/.test(source[cursor] || "")) cursor++;
+          const keyMatch = source.slice(cursor).match(/^([A-Za-z][\w-]*)\s*=\s*/);
+          if (!keyMatch) break;
+          const key = keyMatch[1].toLowerCase();
+          cursor += keyMatch[0].length;
+          let value = "";
+          if (source[cursor] === "{") {
+            let depth = 1;
+            cursor++;
+            const start = cursor;
+            while (cursor < source.length && depth) {
+              if (source[cursor] === "{" && source[cursor - 1] !== "\\") depth++;
+              if (source[cursor] === "}" && source[cursor - 1] !== "\\") depth--;
+              cursor++;
+            }
+            value = source.slice(start, cursor - 1);
+          } else if (source[cursor] === '"') {
+            cursor++;
+            const start = cursor;
+            while (cursor < source.length && (source[cursor] !== '"' || source[cursor - 1] === "\\")) cursor++;
+            value = source.slice(start, cursor++);
+          } else {
+            const end = source.indexOf(",", cursor);
+            value = source.slice(cursor, end < 0 ? source.length : end);
+            cursor = end < 0 ? source.length : end;
+          }
+          fields[key] = value.trim();
+        }
+        return fields;
+      }
+
+      function cleanTex(value) {
+        return String(value || "")
+          .replace(/\\&/g, "&")
+          .replace(/\\textit\{([^}]*)\}/g, "$1")
+          .replace(/\\emph\{([^}]*)\}/g, "$1")
+          .replace(/[{}]/g, "")
+          .replace(/\\([#$%_])/g, "$1")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function formatAuthors(authorField) {
+        return String(authorField || "")
+          .split(/\s+and\s+/i)
+          .map((author) => {
+            const name = cleanTex(author);
+            const parts = name.split(",").map((part) => part.trim());
+            return parts.length > 1 ? parts.slice(1).join(" ") + " " + parts[0] : name;
+          })
+          .filter(Boolean)
+          .join(", ");
+      }
+
+      function safeExternalUrl(value) {
+        const candidate = cleanTex(value).trim();
+        try {
+          const url = new URL(candidate);
+          return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+        } catch (_) {
+          return "";
+        }
+      }
+
+      function renderBibEntry(entry, key) {
+        if (!entry?.rawBibtex) return '<span class="reference-missing">' + esc(key) + "</span>";
+        const fields = parseBibtex(entry.rawBibtex);
+        const authors = formatAuthors(fields.author);
+        const title = cleanTex(fields.title);
+        const journal = cleanTex(fields.journal || fields.booktitle || fields.publisher);
+        const year = cleanTex(fields.year);
+        const volume = cleanTex(fields.volume);
+        const number = cleanTex(fields.number);
+        const pages = cleanTex(fields.pages).replace(/--/g, "–");
+        const doi = cleanTex(fields.doi).replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "");
+        const url = doi ? "https://doi.org/" + encodeURI(doi) : safeExternalUrl(fields.url || fields.href);
+        const publication = [
+          journal ? "<em>" + esc(journal) + "</em>" : "",
+          volume ? "<strong>" + esc(volume) + "</strong>" : "",
+          number ? "(" + esc(number) + ")" : "",
+          pages ? esc(pages) : "",
+        ].filter(Boolean).join(", ");
+        return (
+          (authors ? '<span class="reference-authors">' + esc(authors) + ".</span> " : "") +
+          (title ? '<span class="reference-title">“' + esc(title) + '.”</span> ' : "") +
+          publication +
+          (year ? " (" + esc(year) + ")." : ".") +
+          (url ? ' <a href="' + esc(url) + '" target="_blank" rel="noopener">' + (doi ? "doi:" + esc(doi) : "Link") + "</a>" : "")
+        );
+      }
+
       function renderInline(text, value, citations) {
         const images = new Map((value.images || []).map((image) => [image.path, image]));
         const pattern = /!\[([^\]]*)\]\(([^)]+)\)(?:\{[^}]*\})?|\\cite\{([^}]+)\}|\$([^$\n]+)\$|https?:\/\/[^\s<>]+/g;
@@ -292,8 +391,7 @@ import Layout from '../../../layouts/Layout.astro';
             '<section class="scholar-bibliography"><h2>References</h2><ol>' +
             citations.order.map((key) => {
               const entry = citations.byKey.get(key);
-              return '<li id="ref-' + encodeURIComponent(key) + '"><code>' + esc(key) + "</code>" +
-                (entry?.rawBibtex ? '<pre>' + esc(entry.rawBibtex) + "</pre>" : "") + "</li>";
+              return '<li id="ref-' + encodeURIComponent(key) + '">' + renderBibEntry(entry, key) + "</li>";
             }).join("") + "</ol></section>";
         } else if (references.length) {
           bibliography =
@@ -397,8 +495,11 @@ import Layout from '../../../layouts/Layout.astro';
     .citation a { text-decoration: none; }
     .scholar-bibliography { border-top: 1px solid #eee; margin-top: 42px; padding-top: 18px; }
     .scholar-bibliography h2 { font-size: 20px; }
-    .scholar-bibliography li { font-size: 14px; margin-bottom: 8px; }
-    .scholar-bibliography pre { background: #f7f7f7; border-radius: 4px; font-size: 11px; margin: 6px 0 14px; overflow-x: auto; padding: 10px; white-space: pre-wrap; }
+    .scholar-bibliography ol { padding-left: 28px; }
+    .scholar-bibliography li { font-size: 14px; line-height: 1.65; margin-bottom: 14px; padding-left: 4px; }
+    .scholar-bibliography .reference-authors { font-variant-numeric: tabular-nums; }
+    .scholar-bibliography .reference-title { color: #333; }
+    .scholar-bibliography .reference-missing { color: #777; font-family: ui-monospace, monospace; }
     .scholar-source { border-top: 1px solid #eee; font-size: 14px; margin-top: 38px; padding-top: 16px; }
     /* /MAGI */
   </style>
