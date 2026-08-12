@@ -1,0 +1,318 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="読書記録">
+  <main class="reading-page">
+    <header class="page-header">
+      <p class="eyebrow">READING LOG</p>
+      <h1>読書記録</h1>
+      <p class="subtitle">BookHiveに記録した読了本を、AT Protocolからライブ取得しています。</p>
+    </header>
+
+    <div id="reading-log" aria-live="polite">
+      <p class="status">読み込み中… / Loading…</p>
+    </div>
+  </main>
+
+  <script is:inline>
+    (function () {
+      const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
+      const COLLECTION = 'buzz.bookhive.book';
+      const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
+      const TIME_ZONE = 'Asia/Tokyo';
+      const host = document.getElementById('reading-log');
+
+      async function resolvePds() {
+        try {
+          const response = await fetch(`https://plc.directory/${DID}`);
+          if (!response.ok) throw new Error(`DID resolution failed: ${response.status}`);
+          const document = await response.json();
+          return document.service?.find((service) =>
+            service.id === '#atproto_pds' || service.type === 'AtprotoPersonalDataServer'
+          )?.serviceEndpoint || FALLBACK_PDS;
+        } catch {
+          return FALLBACK_PDS;
+        }
+      }
+
+      async function listRecords(pds) {
+        const records = [];
+        let cursor = '';
+        do {
+          const query = new URLSearchParams({ repo: DID, collection: COLLECTION, limit: '100' });
+          if (cursor) query.set('cursor', cursor);
+          const response = await fetch(`${pds}/xrpc/com.atproto.repo.listRecords?${query}`);
+          if (!response.ok) throw new Error(`${COLLECTION}: ${response.status}`);
+          const page = await response.json();
+          records.push(...(page.records || []));
+          cursor = page.cursor || '';
+        } while (cursor);
+        return records;
+      }
+
+      function dateParts(value) {
+        if (!value || Number.isNaN(Date.parse(value))) return null;
+        const parts = new Intl.DateTimeFormat('ja-JP', {
+          timeZone: TIME_ZONE,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(new Date(value));
+        return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+      }
+
+      function monthKey(value) {
+        const parts = dateParts(value);
+        return parts ? `${parts.year}-${parts.month}` : '';
+      }
+
+      function formatDate(value) {
+        if (!value || Number.isNaN(Date.parse(value))) return '';
+        return new Intl.DateTimeFormat('ja-JP', {
+          timeZone: TIME_ZONE,
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).format(new Date(value));
+      }
+
+      const monthLabel = (key) => {
+        const [year, month] = key.split('-').map(Number);
+        return `${year}年${month}月`;
+      };
+
+      function allMonths(first, last) {
+        const result = [];
+        const [firstYear, firstMonth] = first.split('-').map(Number);
+        const [lastYear, lastMonth] = last.split('-').map(Number);
+        const current = new Date(Date.UTC(firstYear, firstMonth - 1, 1));
+        const end = new Date(Date.UTC(lastYear, lastMonth - 1, 1));
+        while (current <= end) {
+          result.push(`${current.getUTCFullYear()}-${String(current.getUTCMonth() + 1).padStart(2, '0')}`);
+          current.setUTCMonth(current.getUTCMonth() + 1);
+        }
+        return result;
+      }
+
+      function makeElement(tag, className, text) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (text != null) element.textContent = text;
+        return element;
+      }
+
+      function renderSummary(records, monthlyCounts) {
+        const nowKey = monthKey(new Date().toISOString());
+        const currentYear = nowKey.slice(0, 4);
+        const thisYear = records.filter((record) => monthKey(record.value.finishedAt).startsWith(currentYear)).length;
+        const activeMonths = [...monthlyCounts.values()].filter(Boolean).length;
+        const summary = makeElement('section', 'summary-grid');
+        [
+          ['読了', `${records.length}冊`, '全期間'],
+          ['今年', `${thisYear}冊`, `${currentYear}年`],
+          ['記録期間', `${activeMonths}か月`, '読了記録のある月']
+        ].forEach(([label, value, note]) => {
+          const card = makeElement('div', 'summary-card');
+          card.append(
+            makeElement('span', 'summary-label', label),
+            makeElement('strong', 'summary-value', value),
+            makeElement('span', 'summary-note', note)
+          );
+          summary.append(card);
+        });
+        return summary;
+      }
+
+      function renderChart(monthlyCounts) {
+        const section = makeElement('section', 'chart-section');
+        const heading = makeElement('div', 'section-heading');
+        heading.append(makeElement('h2', '', '月別の読了冊数'));
+        heading.append(makeElement('p', '', 'Monthly completions'));
+        section.append(heading);
+
+        const keys = [...monthlyCounts.keys()].sort();
+        const months = allMonths(keys[0], keys[keys.length - 1]);
+        const maximum = Math.max(...monthlyCounts.values(), 1);
+        const chartScroll = makeElement('div', 'chart-scroll');
+        const chart = makeElement('div', 'chart');
+        chart.style.setProperty('--months', String(months.length));
+
+        months.forEach((key) => {
+          const count = monthlyCounts.get(key) || 0;
+          const column = makeElement('div', 'chart-column');
+          const value = makeElement('span', 'bar-value', count || '');
+          const track = makeElement('div', 'bar-track');
+          const bar = makeElement('div', 'bar');
+          bar.style.height = `${(count / maximum) * 100}%`;
+          bar.title = `${monthLabel(key)}: ${count}冊`;
+          track.append(bar);
+          const label = makeElement('span', 'month-label', monthLabel(key));
+          column.append(value, track, label);
+          chart.append(column);
+        });
+
+        chartScroll.append(chart);
+        section.append(chartScroll);
+        return section;
+      }
+
+      function coverUrl(pds, record) {
+        const cid = record.value.cover?.ref?.$link;
+        if (!cid) return '';
+        const query = new URLSearchParams({ did: DID, cid });
+        return `${pds}/xrpc/com.atproto.sync.getBlob?${query}`;
+      }
+
+      function bookUrl(book) {
+        const goodreadsId = book.identifiers?.goodreadsId;
+        return goodreadsId ? `https://www.goodreads.com/book/show/${goodreadsId}` : '';
+      }
+
+      function renderBook(record, pds) {
+        const book = record.value;
+        const item = makeElement('li', 'book-item');
+        const imageWrap = makeElement('div', 'cover-wrap');
+        const imageUrl = coverUrl(pds, record);
+        if (imageUrl) {
+          const image = document.createElement('img');
+          image.src = imageUrl;
+          image.alt = '';
+          image.loading = 'lazy';
+          image.width = 44;
+          image.height = 62;
+          imageWrap.append(image);
+        } else {
+          imageWrap.append(makeElement('span', 'cover-placeholder', '本'));
+        }
+
+        const details = makeElement('div', 'book-details');
+        const link = bookUrl(book);
+        const title = makeElement(link ? 'a' : 'span', 'book-title', book.title || '無題');
+        if (link) {
+          title.href = link;
+          title.target = '_blank';
+          title.rel = 'noopener';
+        }
+        details.append(title);
+        if (book.authors) details.append(makeElement('span', 'book-author', book.authors));
+
+        item.append(imageWrap, details, makeElement('time', 'finished-date', formatDate(book.finishedAt)));
+        return item;
+      }
+
+      function renderList(records, pds) {
+        const section = makeElement('section', 'books-section');
+        const heading = makeElement('div', 'section-heading');
+        heading.append(makeElement('h2', '', '読了した本'));
+        heading.append(makeElement('p', '', '新しい記録から表示'));
+        section.append(heading);
+
+        const grouped = new Map();
+        records.forEach((record) => {
+          const key = monthKey(record.value.finishedAt);
+          if (!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key).push(record);
+        });
+
+        [...grouped.entries()]
+          .sort(([a], [b]) => b.localeCompare(a))
+          .forEach(([key, books]) => {
+            const group = makeElement('section', 'month-group');
+            const groupHeading = makeElement('h3', 'month-heading');
+            groupHeading.append(
+              makeElement('span', 'month-caret', '▾'),
+              makeElement('span', '', monthLabel(key)),
+              makeElement('span', 'month-count', `${books.length}冊`)
+            );
+            const list = makeElement('ol', 'book-list');
+            books.forEach((book) => list.append(renderBook(book, pds)));
+            group.append(groupHeading, list);
+            section.append(group);
+          });
+        return section;
+      }
+
+      async function loadBooks() {
+        try {
+          const pds = await resolvePds();
+          const records = (await listRecords(pds))
+            .filter((record) => record.value.finishedAt && record.value.status === 'buzz.bookhive.defs#finished')
+            .sort((a, b) => Date.parse(b.value.finishedAt) - Date.parse(a.value.finishedAt));
+          if (!records.length) {
+            host.replaceChildren(makeElement('p', 'status', '読了記録はまだありません。'));
+            return;
+          }
+
+          const monthlyCounts = new Map();
+          records.forEach((record) => {
+            const key = monthKey(record.value.finishedAt);
+            monthlyCounts.set(key, (monthlyCounts.get(key) || 0) + 1);
+          });
+          host.replaceChildren(
+            renderSummary(records, monthlyCounts),
+            renderChart(monthlyCounts),
+            renderList(records, pds)
+          );
+        } catch (error) {
+          host.replaceChildren(makeElement('p', 'status error', '読書記録を取得できませんでした。 / Could not load books.'));
+          console.error(error);
+        }
+      }
+
+      loadBooks();
+    })();
+  </script>
+</Layout>
+
+<style is:global>
+  .reading-page { max-width: 980px; margin: 0 auto; padding: 32px 0 72px; color: #292722; }
+  .page-header { margin-bottom: 34px; }
+  .eyebrow { margin: 0 0 7px; color: #9a6e28; font: 700 11px/1.2 ui-sans-serif, sans-serif; letter-spacing: .18em; }
+  .reading-page h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 44px); letter-spacing: -.03em; }
+  .subtitle, .status { margin: 0; color: #777168; font-size: 14px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+  .summary-card { display: flex; flex-direction: column; min-width: 0; padding: 18px 20px; border: 1px solid #e7e1d8; border-radius: 5px; background: #fbfaf7; }
+  .summary-label, .summary-note { color: #7a746b; font: 12px/1.4 ui-sans-serif, sans-serif; }
+  .summary-value { margin: 4px 0 2px; font-size: 25px; line-height: 1.2; }
+  .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-bottom: 1px solid #ded8cf; }
+  .section-heading h2 { margin: 0 0 9px; font-size: 21px; }
+  .section-heading p { margin: 0 0 9px; color: #8a847b; font: 11px/1.4 ui-sans-serif, sans-serif; letter-spacing: .06em; }
+  .chart-section { margin-bottom: 48px; }
+  .chart-scroll { overflow-x: auto; padding: 8px 0 10px; scrollbar-color: #cabfAE transparent; }
+  .chart { --months: 1; display: grid; grid-template-columns: repeat(var(--months), 34px); gap: 9px; min-width: max-content; height: 280px; padding: 0 12px 0 4px; border-bottom: 1px solid #aaa298; background: repeating-linear-gradient(to bottom, transparent 0, transparent 59px, #ebe7e0 60px); }
+  .chart-column { display: grid; grid-template-rows: 20px 200px 60px; align-items: end; text-align: center; }
+  .bar-value { color: #645f57; font: 11px/1 ui-sans-serif, sans-serif; }
+  .bar-track { display: flex; height: 190px; align-items: flex-end; justify-content: center; }
+  .bar { width: 17px; min-height: 0; border-radius: 3px 3px 0 0; background: #c69645; transition: background .2s; }
+  .bar:hover { background: #9e7029; }
+  .month-label { align-self: start; margin-top: 10px; color: #6e6961; font: 10px/1.2 ui-sans-serif, sans-serif; white-space: nowrap; transform: rotate(-48deg); transform-origin: top center; }
+  .books-section { margin-top: 16px; }
+  .month-group { margin: 0 0 30px; }
+  .month-heading { display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px 2px; border-bottom: 1px solid #ece8e1; font-size: 18px; }
+  .month-caret { color: #8d877e; font: 12px ui-sans-serif, sans-serif; }
+  .month-count { color: #989188; font: 400 12px ui-sans-serif, sans-serif; }
+  .book-list { margin: 0; padding: 0; list-style: none; }
+  .book-item { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 15px; min-height: 78px; margin: 0; padding: 8px 4px; border-bottom: 1px solid #f0ede8; }
+  .cover-wrap { display: flex; width: 44px; height: 62px; align-items: center; justify-content: center; overflow: hidden; border-radius: 2px; background: #e8e2d8; box-shadow: 0 1px 3px rgb(40 35 28 / 18%); }
+  .cover-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-placeholder { color: #887d6e; font-size: 12px; }
+  .book-details { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  .book-title { width: fit-content; max-width: 100%; overflow: hidden; color: #292722 !important; font-weight: 600; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; border-bottom: 0 !important; }
+  a.book-title:hover { color: #9a6e28 !important; }
+  .book-author, .finished-date { color: #7e786f; font: 12px/1.4 ui-sans-serif, sans-serif; }
+  .finished-date { white-space: nowrap; }
+  .error { color: #9b3e32; }
+
+  @media (max-width: 680px) {
+    .reading-page { padding-top: 8px; }
+    .summary-grid { grid-template-columns: 1fr; gap: 8px; }
+    .summary-card { display: grid; grid-template-columns: 70px 1fr; align-items: baseline; padding: 13px 16px; }
+    .summary-value { margin: 0; font-size: 21px; }
+    .summary-note { grid-column: 2; }
+    .book-item { grid-template-columns: 38px minmax(0, 1fr); gap: 11px; }
+    .cover-wrap { width: 38px; height: 54px; }
+    .finished-date { grid-column: 2; }
+    .section-heading { align-items: flex-end; }
+  }
+</style>
