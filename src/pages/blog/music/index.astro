@@ -1,0 +1,19 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/music.css';
+---
+
+<Layout title="音楽 / Music">
+  <div class="music-page" data-music-page="home">
+    <header class="music-page-header">
+      <a class="music-back" href="/blog">← BLOG</a>
+      <p class="music-eyebrow">MUSIC ARCHIVE</p>
+      <h1>音楽</h1>
+      <p class="music-page-lead">AT Protocolに記録したリストと、その音楽を形づくるアルバム。</p>
+    </header>
+    <div id="music-content">
+      <p class="music-status" role="status">読み込み中… / Loading…</p>
+    </div>
+  </div>
+  <script src="../../../scripts/music.ts"></script>
+</Layout>
