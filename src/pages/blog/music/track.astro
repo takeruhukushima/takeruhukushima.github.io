@@ -1,0 +1,16 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/music.css';
+---
+
+<Layout title="Track | Music">
+  <div class="music-page" data-music-page="track">
+    <header class="music-page-header">
+      <a class="music-back" href="/blog/music">← MUSIC</a>
+    </header>
+    <div id="music-content">
+      <p class="music-status" role="status">読み込み中… / Loading…</p>
+    </div>
+  </div>
+  <script src="../../../scripts/music.ts"></script>
+</Layout>
