@@ -5,10 +5,14 @@ import { chromium } from 'playwright';
 
 const cvHtml = path.resolve('dist/cv/index.html');
 const cvPdf = path.resolve('dist/cv.pdf');
+const browserChannel = process.env.CV_BROWSER_CHANNEL;
 
 await access(cvHtml);
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({
+  headless: true,
+  ...(browserChannel ? { channel: browserChannel } : {})
+});
 
 try {
   const page = await browser.newPage();
