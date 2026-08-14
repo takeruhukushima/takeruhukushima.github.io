@@ -6,8 +6,8 @@ import { chromium } from 'playwright';
 const distDir = path.resolve('dist');
 const browserChannel = process.env.CV_BROWSER_CHANNEL;
 const exports = [
-  { route: '/cv/ja/', html: path.resolve('dist/cv/ja/index.html'), pdf: path.resolve('dist/cv-ja.pdf') },
-  { route: '/cv/en/', html: path.resolve('dist/cv/en/index.html'), pdf: path.resolve('dist/cv-en.pdf') }
+  { route: '/ja/', html: path.resolve('dist/ja/index.html'), pdf: path.resolve('dist/cv-ja.pdf') },
+  { route: '/en/', html: path.resolve('dist/en/index.html'), pdf: path.resolve('dist/cv-en.pdf') }
 ];
 
 await Promise.all(exports.map(({ html }) => access(html)));

@@ -4,8 +4,8 @@
 
 AT Protocolの公開レコードから、デプロイ時に日本語・英語のCVを生成する。
 
-- Web (JA): `https://takeruhukushima.github.io/cv/ja`
-- Web (EN): `https://takeruhukushima.github.io/cv/en`
+- Web (JA): `https://takeruhukushima.github.io/ja`
+- Web (EN): `https://takeruhukushima.github.io/en`
 - PDF (JA): `https://takeruhukushima.github.io/cv-ja.pdf`
 - PDF (EN): `https://takeruhukushima.github.io/cv-en.pdf`
 - JSON: `https://takeruhukushima.github.io/cv.json`

@@ -1,6 +1,6 @@
 ---
 import '@fontsource-variable/noto-sans-jp';
-import { getCvExport, localizedText, type CvLocale } from '../../lib/cv';
+import { getCvExport, localizedText, type CvLocale } from '../lib/cv';
 
 export function getStaticPaths() {
   return ['ja', 'en'].map((lang) => ({ params: { lang } }));
@@ -107,8 +107,8 @@ const keywords = (profile?.keywords || [])
     <nav class="document-actions" aria-label={text.menu}>
       <a href="/">{text.back}</a>
       <span class="language-switch" aria-label={text.languageMenu}>
-        <a href="/cv/ja" aria-current={locale === 'ja' ? 'page' : undefined}>JA</a>
-        <a href="/cv/en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
+        <a href="/ja" aria-current={locale === 'ja' ? 'page' : undefined}>JA</a>
+        <a href="/en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
       </span>
       <a href="/cv.json">JSON</a>
       <a class="primary-action" href={`/cv-${locale}.pdf`}>PDF</a>

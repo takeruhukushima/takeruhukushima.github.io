@@ -16,7 +16,7 @@ export default defineConfig({
     })
   ],
   redirects: {
-    '/cv': '/cv/ja',
+    '/cv': '/ja',
     '/cv.pdf': '/cv-ja.pdf',
     // 6章と7章を入れ替えた際にファイル名も変更したため、旧URLから新URLへ転送する
     '/blog/research/research-notes/circle_7_othertools': '/blog/research/research-notes/circle_6_tools',
