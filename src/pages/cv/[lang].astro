@@ -1,0 +1,337 @@
+---
+import '@fontsource-variable/noto-sans-jp';
+import { getCvExport, localizedText, type CvLocale } from '../../lib/cv';
+
+export function getStaticPaths() {
+  return ['ja', 'en'].map((lang) => ({ params: { lang } }));
+}
+
+const locale = Astro.params.lang as CvLocale;
+const cv = await getCvExport();
+const records = cv.records;
+const profile = records['id.career.profile'][0] as any;
+const education = records['id.career.education'] as any[];
+const presentations = records['id.career.presentation'] as any[];
+const positions = records['id.sifa.profile.position'] as any[];
+const contributions = records['id.career.openSourceContribution'] as any[];
+
+const copy = {
+  ja: {
+    menu: 'CVメニュー', back: 'プロフィールへ戻る', language: 'English', languageCode: 'en',
+    current: '現在', career: '職歴', education: '学歴', presentations: '学会発表',
+    contributions: 'オープンソース活動', interests: '研究分野', inProgress: '在学中',
+    field: '専攻', footer: 'AT Protocolの公開レコードから生成'
+  },
+  en: {
+    menu: 'CV menu', back: 'Back to profile', language: '日本語', languageCode: 'ja',
+    current: 'Present', career: 'Experience', education: 'Education', presentations: 'Presentations',
+    contributions: 'Open Source', interests: 'Research interests', inProgress: 'In progress',
+    field: 'Field', footer: 'Generated from public AT Protocol records'
+  }
+} as const;
+
+const text = copy[locale];
+const email = 'fukushima.takeru.u8 [at] s.mail.nagoya-u.ac.jp';
+const websites = (profile?.websites || []) as Array<{ label?: unknown; url?: string }>;
+const website = websites.find((link) => localizedText(link.label, 'en') === 'Website');
+const github = websites.find((link) => localizedText(link.label, 'en') === 'GitHub');
+const displayName = localizedText(profile?.displayName, locale) || 'Takeru Fukushima';
+const nativeName = localizedText(profile?.nativeName, locale) || displayName;
+const headingName = locale === 'ja' ? nativeName : displayName;
+const alternateName = locale === 'ja'
+  ? localizedText(profile?.displayName, 'en')
+  : localizedText(profile?.nativeName, 'ja');
+
+const formatDate = (date?: string) => {
+  if (!date) return '';
+  const [year, month, day] = date.split('-').map(Number);
+  if (locale === 'ja') return `${year}年${month ? `${month}月` : ''}${day ? `${day}日` : ''}`;
+  if (!month) return String(year);
+  const monthName = new Intl.DateTimeFormat('en', { month: 'short' }).format(new Date(2000, month - 1));
+  return day ? `${monthName} ${day}, ${year}` : `${monthName} ${year}`;
+};
+
+const formatPeriod = (start?: string, end?: string) =>
+  `${formatDate(start)} – ${end ? formatDate(end) : text.current}`;
+
+const positionLabels = {
+  ja: { intern: 'インターン', internship: 'インターン', engineer: 'エンジニア', researcher: '研究員' },
+  en: { intern: 'Intern', internship: 'Intern', engineer: 'Engineer', researcher: 'Researcher' }
+} as Record<CvLocale, Record<string, string>>;
+
+const workplaceLabels = {
+  ja: { 'id.sifa.defs#hybrid': 'ハイブリッド', 'id.sifa.defs#remote': 'リモート', 'id.sifa.defs#onsite': 'オンサイト' },
+  en: { 'id.sifa.defs#hybrid': 'Hybrid', 'id.sifa.defs#remote': 'Remote', 'id.sifa.defs#onsite': 'On-site' }
+} as Record<CvLocale, Record<string, string>>;
+
+const presentationLabels = {
+  ja: {
+    keynote: '基調講演', invited: '招待講演', contributed: '一般発表', poster: 'ポスター発表',
+    panel: 'パネル発表', tutorial: 'チュートリアル', seminar: 'セミナー',
+    lightning: 'ライトニングトーク', demo: 'デモ発表', publicLecture: '公開講演', thesisDefense: '学位審査発表'
+  },
+  en: {
+    keynote: 'Keynote', invited: 'Invited talk', contributed: 'Contributed talk', poster: 'Poster',
+    panel: 'Panel', tutorial: 'Tutorial', seminar: 'Seminar', lightning: 'Lightning talk',
+    demo: 'Demo', publicLecture: 'Public lecture', thesisDefense: 'Thesis defense'
+  }
+} as Record<CvLocale, Record<string, string>>;
+
+const contributionRoleLabels = {
+  ja: {
+    author: '開発者', maintainer: 'メンテナー', coreContributor: 'コアコントリビューター',
+    contributor: 'コントリビューター', reviewer: 'レビュアー', documentation: 'ドキュメント',
+    translator: '翻訳', communityOrganizer: 'コミュニティ運営'
+  },
+  en: {
+    author: 'Author', maintainer: 'Maintainer', coreContributor: 'Core contributor',
+    contributor: 'Contributor', reviewer: 'Reviewer', documentation: 'Documentation',
+    translator: 'Translator', communityOrganizer: 'Community organizer'
+  }
+} as Record<CvLocale, Record<string, string>>;
+
+const keywords = (profile?.keywords || [])
+  .map((keyword: { variants?: unknown }) => localizedText(keyword.variants, locale))
+  .filter(Boolean);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={`${headingName} CV`} />
+    <title>CV | {headingName}</title>
+  </head>
+  <body>
+    <nav class="document-actions" aria-label={text.menu}>
+      <a href="/">{text.back}</a>
+      <a href={`/cv/${text.languageCode}`}>{text.language}</a>
+      <a href="/cv.json">JSON</a>
+      <a class="primary-action" href={`/cv-${locale}.pdf`}>PDF</a>
+    </nav>
+
+    <main class="cv-page">
+      <header class="cv-header">
+        <h1>{headingName}</h1>
+        {alternateName && alternateName !== headingName && <p class="roman-name">{alternateName}</p>}
+
+        <div class="contact-list">
+          <span>{email}</span>
+          {website?.url && <a href={website.url}>Website</a>}
+          {github?.url && <a href={github.url}>GitHub</a>}
+          {profile?.orcid && <a href={`https://orcid.org/${profile.orcid}`}>ORCID</a>}
+        </div>
+
+        {localizedText(profile?.bio, locale) && <p class="summary">{localizedText(profile.bio, locale)}</p>}
+        {keywords.length > 0 && (
+          <p class="interests"><strong>{text.interests}</strong> {keywords.join(' / ')}</p>
+        )}
+      </header>
+
+      <div class="cv-columns">
+        {positions.length > 0 && (
+          <section>
+            <h2>{text.career}</h2>
+            {positions.map((entry) => (
+              <article class="entry">
+                <h3>{positionLabels[locale][entry.title] || entry.title}</h3>
+                <p class="organization">
+                  {entry.entityRef ? <a href={entry.entityRef}>{localizedText(entry.company, locale)}</a> : localizedText(entry.company, locale)}
+                </p>
+                <p class="meta">
+                  <span>{formatPeriod(entry.startedAt, entry.endedAt)}</span>
+                  {entry.workplaceType && <span>{workplaceLabels[locale][entry.workplaceType] || entry.workplaceType}</span>}
+                </p>
+                {localizedText(entry.description, locale) && <p class="description">{localizedText(entry.description, locale)}</p>}
+              </article>
+            ))}
+          </section>
+        )}
+
+        {education.length > 0 && (
+          <section>
+            <h2>{text.education}</h2>
+            {education.map((entry) => (
+              <article class="entry">
+                <h3>{localizedText(entry.degreeName, locale) || entry.degree}</h3>
+                <p class="organization">{localizedText(entry.institution?.name, locale)}</p>
+                {localizedText(entry.institution?.department, locale) && <p class="subline">{localizedText(entry.institution.department, locale)}</p>}
+                <p class="meta">
+                  <span>{formatPeriod(entry.startedAt, entry.endedAt)}</span>
+                  {entry.status === 'inProgress' && <span>{text.inProgress}</span>}
+                </p>
+                {localizedText(entry.fieldOfStudy, locale) && <p class="description">{text.field}: {localizedText(entry.fieldOfStudy, locale)}</p>}
+              </article>
+            ))}
+          </section>
+        )}
+
+        {presentations.length > 0 && (
+          <section>
+            <h2>{text.presentations}</h2>
+            {presentations.map((entry) => (
+              <article class="entry">
+                <h3>{localizedText(entry.title, locale)}</h3>
+                <p class="organization">{localizedText(entry.eventName, locale) || localizedText(entry.eventSeries, locale)}</p>
+                <p class="meta">
+                  <span>{formatDate(entry.date)}</span>
+                  {entry.type && <span>{presentationLabels[locale][entry.type] || entry.type}</span>}
+                </p>
+                {localizedText(entry.place, locale) && <p class="description">{localizedText(entry.place, locale)}</p>}
+              </article>
+            ))}
+          </section>
+        )}
+
+        {contributions.length > 0 && (
+          <section>
+            <h2>{text.contributions}</h2>
+            {contributions.map((entry) => (
+              <article class="entry project-entry">
+                <h3>
+                  {entry.repoUrl
+                    ? <a href={entry.repoUrl}>{localizedText(entry.name, locale)}</a>
+                    : localizedText(entry.name, locale)}
+                  {entry.role && <span class="role"> {contributionRoleLabels[locale][entry.role] || entry.role}</span>}
+                </h3>
+                {localizedText(entry.description, locale) && <p class="description">{localizedText(entry.description, locale)}</p>}
+                {entry.highlights?.length > 0 && (
+                  <ul>{entry.highlights.map((highlight: unknown) => <li>{localizedText(highlight, locale)}</li>)}</ul>
+                )}
+              </article>
+            ))}
+          </section>
+        )}
+      </div>
+
+      <footer>{text.footer} · {formatDate(cv.exportedAt.slice(0, 10))}</footer>
+    </main>
+  </body>
+</html>
+
+<style>
+  :root {
+    font-family: "Noto Sans JP Variable", Inter, "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+    color: #17151a;
+    background: #eeeaf2;
+    font-synthesis: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  body { margin: 0; padding: 28px 20px 48px; }
+
+  a { color: #432079; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .document-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    width: min(210mm, 100%);
+    margin: 0 auto 16px;
+  }
+
+  .document-actions a {
+    border: 1px solid #c9bed7;
+    border-radius: 4px;
+    background: #fff;
+    padding: 7px 12px;
+    color: #432079;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .document-actions .primary-action { border-color: #51228b; background: #51228b; color: #fff; }
+
+  .cv-page {
+    width: min(210mm, 100%);
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 13mm 12mm 10mm;
+    background: #fff;
+    box-shadow: 0 14px 45px rgba(36, 20, 53, .14);
+  }
+
+  .cv-header { margin-bottom: 5mm; }
+  h1 { margin: 0; font-size: 25pt; line-height: 1.05; letter-spacing: .02em; }
+  .roman-name { margin: 1mm 0 3mm; color: #584f60; font-size: 10pt; letter-spacing: .04em; }
+
+  .contact-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm 5mm;
+    align-items: center;
+    font-size: 9pt;
+  }
+
+  .summary { margin: 4mm 0 1.5mm; max-width: 175mm; font-size: 10pt; line-height: 1.55; }
+  .interests { margin: 0; color: #4d4652; font-size: 8.8pt; }
+  .interests strong { margin-right: 2mm; color: #17151a; }
+  .cv-columns { columns: 2; column-gap: 9mm; column-rule: 1px solid #e5dfeb; }
+  section { margin: 0 0 5mm; }
+
+  h2 {
+    break-after: avoid;
+    margin: 0 0 2.5mm;
+    border-bottom: 1.5pt solid #57228e;
+    padding-bottom: 1mm;
+    color: #57228e;
+    font-size: 14.5pt;
+    line-height: 1.15;
+  }
+
+  .entry { break-inside: avoid; margin: 0 0 4mm; }
+  h3 { margin: 0; font-size: 10pt; line-height: 1.35; }
+  h3 a { color: inherit; text-decoration: none; }
+  .organization { margin: .4mm 0; font-size: 9.2pt; font-style: italic; line-height: 1.35; }
+  .subline { margin: .4mm 0; color: #4d4652; font-size: 8.5pt; }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 3mm;
+    margin: 1mm 0;
+    color: #353039;
+    font-size: 8.3pt;
+    line-height: 1.35;
+  }
+
+  .description { margin: 1mm 0 0; font-size: 8.8pt; line-height: 1.48; }
+  .role { color: #57228e; font-size: 8pt; font-weight: 600; }
+  ul { margin: 1mm 0 0; padding-left: 4mm; font-size: 8.5pt; line-height: 1.45; }
+
+  footer {
+    margin-top: 3mm;
+    border-top: 1px solid #ded8e4;
+    padding-top: 2mm;
+    color: #736b78;
+    font-size: 6.8pt;
+    text-align: right;
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 0; }
+    .document-actions {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      margin: 0;
+      padding: 10px;
+      background: rgba(238, 234, 242, .95);
+    }
+    .cv-page { min-height: 0; padding: 24px 20px; box-shadow: none; }
+    .cv-columns { columns: 1; column-rule: 0; }
+    .contact-list { gap: 7px 16px; }
+  }
+
+  @page { size: A4; margin: 0; }
+
+  @media print {
+    :root { background: #fff; }
+    body { padding: 0; }
+    .document-actions { display: none; }
+    .cv-page { width: 210mm; min-height: 297mm; padding: 13mm 12mm 10mm; box-shadow: none; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>

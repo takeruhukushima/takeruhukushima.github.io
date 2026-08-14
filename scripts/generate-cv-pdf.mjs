@@ -4,11 +4,13 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 
 const distDir = path.resolve('dist');
-const cvHtml = path.resolve('dist/cv/index.html');
-const cvPdf = path.resolve('dist/cv.pdf');
 const browserChannel = process.env.CV_BROWSER_CHANNEL;
+const exports = [
+  { route: '/cv/ja/', html: path.resolve('dist/cv/ja/index.html'), pdf: path.resolve('dist/cv-ja.pdf') },
+  { route: '/cv/en/', html: path.resolve('dist/cv/en/index.html'), pdf: path.resolve('dist/cv-en.pdf') }
+];
 
-await access(cvHtml);
+await Promise.all(exports.map(({ html }) => access(html)));
 
 const contentTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -18,7 +20,9 @@ const contentTypes = {
 
 const server = createServer(async (request, response) => {
   const pathname = decodeURIComponent(new URL(request.url || '/', 'http://localhost').pathname);
-  const relativePath = pathname === '/cv/' ? 'cv/index.html' : pathname.replace(/^\/+/, '');
+  const relativePath = pathname.endsWith('/')
+    ? `${pathname.replace(/^\/+/, '')}index.html`
+    : pathname.replace(/^\/+/, '');
   const filePath = path.resolve(distDir, relativePath);
 
   if (!filePath.startsWith(`${distDir}${path.sep}`)) {
@@ -51,16 +55,18 @@ try {
     ...(browserChannel ? { channel: browserChannel } : {})
   });
   const page = await browser.newPage();
-  await page.goto(`http://127.0.0.1:${address.port}/cv/`, { waitUntil: 'networkidle' });
-  await page.evaluate(async () => { await document.fonts.ready; });
-  await page.emulateMedia({ media: 'print' });
-  await page.pdf({
-    path: cvPdf,
-    format: 'A4',
-    preferCSSPageSize: true,
-    printBackground: true
-  });
-  console.log(`Generated ${path.relative(process.cwd(), cvPdf)}`);
+  for (const cvExport of exports) {
+    await page.goto(`http://127.0.0.1:${address.port}${cvExport.route}`, { waitUntil: 'networkidle' });
+    await page.evaluate(async () => { await document.fonts.ready; });
+    await page.emulateMedia({ media: 'print' });
+    await page.pdf({
+      path: cvExport.pdf,
+      format: 'A4',
+      preferCSSPageSize: true,
+      printBackground: true
+    });
+    console.log(`Generated ${path.relative(process.cwd(), cvExport.pdf)}`);
+  }
 } finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));

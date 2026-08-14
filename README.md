@@ -2,10 +2,12 @@
 
 ## CV exports
 
-AT Protocolの公開レコードから、デプロイ時に日本語CVを生成する。
+AT Protocolの公開レコードから、デプロイ時に日本語・英語のCVを生成する。
 
-- Web: `https://takeruhukushima.github.io/cv`
-- PDF: `https://takeruhukushima.github.io/cv.pdf`
+- Web (JA): `https://takeruhukushima.github.io/cv/ja`
+- Web (EN): `https://takeruhukushima.github.io/cv/en`
+- PDF (JA): `https://takeruhukushima.github.io/cv-ja.pdf`
+- PDF (EN): `https://takeruhukushima.github.io/cv-en.pdf`
 - JSON: `https://takeruhukushima.github.io/cv.json`
 
 ローカルでPDFを含めてビルドする前に、Chromiumをインストールする。
