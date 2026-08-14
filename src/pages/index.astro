@@ -124,6 +124,23 @@ import Layout from '../layouts/Layout.astro';
     }
 
     const formatPeriod = (start, end) => [start, end || 'present'].filter(Boolean).join(' – ');
+    const localizedText = (value, locale = 'ja') => {
+      if (value == null || value === '') return '';
+      if (typeof value === 'string' || typeof value === 'number') return String(value);
+      if (!Array.isArray(value)) return '';
+
+      const localizedValues = value.filter((item) =>
+        item && typeof item === 'object' &&
+        typeof item.language === 'string' && typeof item.value === 'string'
+      );
+      if (localizedValues.length) {
+        return localizedValues.find((item) => item.language === locale)?.value
+          || localizedValues.find((item) => item.language === 'en')?.value
+          || localizedValues[0].value;
+      }
+
+      return value.map((item) => localizedText(item, locale)).filter(Boolean).join(', ');
+    };
     const showList = (id, values, render) => {
       const host = document.querySelector(`#${id} .atproto-list`);
       host.replaceChildren();
@@ -175,8 +192,12 @@ import Layout from '../layouts/Layout.astro';
       if (value == null || value === '') return '';
       if (typeof value === 'string' || typeof value === 'number') return String(value);
       if (typeof value === 'boolean') return value ? 'yes' : 'no';
+      if (Array.isArray(value) && value.some((item) => item?.language && item?.value)) {
+        return localizedText(value);
+      }
       if (Array.isArray(value)) return value.map(valueText).filter(Boolean).join(', ');
-      return value.name || value.literal || value.title || value.uri ||
+      if (value.variants) return localizedText(value.variants);
+      return localizedText(value.name) || value.literal || localizedText(value.title) || value.uri ||
         Object.entries(value).map(([key, child]) => `${key}: ${valueText(child)}`).join(', ');
     };
 
@@ -245,20 +266,22 @@ import Layout from '../layouts/Layout.astro';
         const profile = profiles[0];
         if (profile) {
           document.getElementById('profile-name').textContent =
-            [profile.nativeName, profile.displayName].filter(Boolean).join(' / ');
+            localizedText(profile.nativeName) || localizedText(profile.displayName);
           const affiliation = profile.primaryAffiliation;
           document.getElementById('profile-affiliation').textContent =
-            [profile.headline, affiliation?.department, affiliation?.name].filter(Boolean).join(' · ');
+            [localizedText(profile.headline), localizedText(affiliation?.department), localizedText(affiliation?.name)]
+              .filter(Boolean).join(' · ');
           const bio = document.createElement('p');
-          bio.textContent = profile.bio || '';
+          bio.textContent = localizedText(profile.bio);
           document.getElementById('profile-bio').replaceChildren(bio);
           const websites = document.querySelector('.social-icons');
           websites.replaceChildren();
           (profile.websites || []).forEach((website) => {
             if (!website?.url) return;
-            const link = externalLink(website.label || website.url, website.url);
+            const label = localizedText(website.label) || website.url;
+            const link = externalLink(label, website.url);
             link.className = 'website-link';
-            link.title = website.label || website.url;
+            link.title = label;
             websites.append(link);
           });
         } else {
@@ -266,14 +289,14 @@ import Layout from '../layouts/Layout.astro';
         }
 
         showList('education', education, (entry) => item(
-          `${entry.institution?.name || ''}${entry.institution?.department ? `, ${entry.institution.department}` : ''}`,
-          entry.degreeName ? ` — ${entry.degreeName}` : '',
-          entry.fieldOfStudy ? ` (${entry.fieldOfStudy})` : '',
+          `${localizedText(entry.institution?.name)}${localizedText(entry.institution?.department) ? `, ${localizedText(entry.institution.department)}` : ''}`,
+          localizedText(entry.degreeName) ? ` — ${localizedText(entry.degreeName)}` : '',
+          localizedText(entry.fieldOfStudy) ? ` (${localizedText(entry.fieldOfStudy)})` : '',
           `, ${formatPeriod(entry.startedAt, entry.endedAt)}`
         ));
         showList('presentations', presentations, (entry) => item(
-          `“${entry.title},” ${entry.eventName || entry.eventSeries || ''}`,
-          entry.place ? `, ${entry.place}` : '',
+          `“${localizedText(entry.title)},” ${localizedText(entry.eventName) || localizedText(entry.eventSeries)}`,
+          localizedText(entry.place) ? `, ${localizedText(entry.place)}` : '',
           entry.type ? `, ${entry.type}` : '',
           entry.date ? `, ${entry.date}` : ''
         ));
@@ -284,9 +307,9 @@ import Layout from '../layouts/Layout.astro';
           ` (${formatPeriod(entry.startedAt, entry.endedAt)})`
         ));
         showList('open-source', contributions, (entry) => item(
-          entry.repoUrl ? externalLink(entry.name, entry.repoUrl) : entry.name,
+          entry.repoUrl ? externalLink(localizedText(entry.name), entry.repoUrl) : localizedText(entry.name),
           entry.role ? ` — ${entry.role}` : '',
-          entry.description ? `. ${entry.description}` : '',
+          localizedText(entry.description) ? `. ${localizedText(entry.description)}` : '',
           entry.startedAt ? ` (${entry.startedAt}–)` : ''
         ));
         renderExtraSections(extraResults);
