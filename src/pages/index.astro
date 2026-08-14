@@ -5,8 +5,8 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="">
   <div class="profile-section">
     <div class="export-actions" aria-label="CV export">
-      <button id="export-cv-json" class="export-btn" type="button" disabled>JSON</button>
-      <button id="export-cv-pdf" class="export-btn" type="button" disabled>PDF</button>
+      <a class="export-btn" href="/cv.json">JSON</a>
+      <a class="export-btn export-btn-primary" href="/cv.pdf">PDF</a>
     </div>
     
     <div class="profile-main">
@@ -72,31 +72,9 @@ import Layout from '../layouts/Layout.astro';
     <div id="career-extra"></div>
   </div>
 
-  <dialog id="cv-export-dialog" class="export-dialog">
-    <div class="export-dialog-head">
-      <h2 id="export-preview-title">CV Preview</h2>
-      <button id="close-export-preview" class="dialog-close" type="button" aria-label="閉じる">×</button>
-    </div>
-    <div id="export-preview" class="export-preview"></div>
-    <div class="export-dialog-actions">
-      <button id="cancel-export" class="export-btn" type="button">キャンセル</button>
-      <button id="confirm-export" class="export-btn export-btn-primary" type="button">ダウンロード</button>
-    </div>
-  </dialog>
-
   <script is:inline>
     const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
     const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
-    const jsonButton = document.getElementById('export-cv-json');
-    const pdfButton = document.getElementById('export-cv-pdf');
-    const exportDialog = document.getElementById('cv-export-dialog');
-    const exportPreview = document.getElementById('export-preview');
-    const exportPreviewTitle = document.getElementById('export-preview-title');
-    const confirmExport = document.getElementById('confirm-export');
-    const closeExportPreview = document.getElementById('close-export-preview');
-    const cancelExport = document.getElementById('cancel-export');
-    let cvExport = null;
-    let exportFormat = null;
 
     async function resolvePds() {
       try {
@@ -264,20 +242,6 @@ import Layout from '../layouts/Layout.astro';
           records: await listRecords(pds, collection)
         })));
 
-        cvExport = {
-          $schema: 'https://minori.takeruf.workers.dev/',
-          did: DID,
-          exportedAt: new Date().toISOString(),
-          records: {
-            'id.career.profile': profiles,
-            'id.career.education': education,
-            'id.career.presentation': presentations,
-            'id.sifa.profile.position': positions,
-            'id.career.openSourceContribution': contributions,
-            ...Object.fromEntries(extraResults.map(({ collection, records }) => [collection, records]))
-          }
-        };
-
         const profile = profiles[0];
         if (profile) {
           document.getElementById('profile-name').textContent =
@@ -326,8 +290,6 @@ import Layout from '../layouts/Layout.astro';
           entry.startedAt ? ` (${entry.startedAt}–)` : ''
         ));
         renderExtraSections(extraResults);
-        jsonButton.disabled = false;
-        pdfButton.disabled = false;
       } catch (error) {
         document.getElementById('profile-name').textContent = 'プロフィールを取得できませんでした';
         document.querySelectorAll('.atproto-list').forEach((host) => {
@@ -339,51 +301,6 @@ import Layout from '../layouts/Layout.astro';
         console.error(error);
       }
     }
-
-    function downloadJson() {
-      cvExport.exportedAt = new Date().toISOString();
-      const blob = new Blob([`${JSON.stringify(cvExport, null, 2)}\n`], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const download = document.createElement('a');
-      download.href = url;
-      download.download = `cv-${new Date().toISOString().slice(0, 10)}.json`;
-      download.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function openExportPreview(format) {
-      if (!cvExport) return;
-      exportFormat = format;
-      exportPreview.replaceChildren();
-      if (format === 'json') {
-        exportPreviewTitle.textContent = 'JSON Preview';
-        const code = document.createElement('pre');
-        code.textContent = JSON.stringify(cvExport, null, 2);
-        exportPreview.append(code);
-      } else {
-        exportPreviewTitle.textContent = 'PDF Preview';
-        const clone = document.querySelector('.profile-section').cloneNode(true);
-        clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
-        clone.querySelector('.export-actions')?.remove();
-        exportPreview.append(clone);
-      }
-      confirmExport.textContent = format === 'json' ? 'JSONをダウンロード' : 'PDFとして保存';
-      exportDialog.showModal();
-    }
-
-    const closeDialog = () => exportDialog.close();
-    jsonButton.addEventListener('click', () => openExportPreview('json'));
-    pdfButton.addEventListener('click', () => openExportPreview('pdf'));
-    closeExportPreview.addEventListener('click', closeDialog);
-    cancelExport.addEventListener('click', closeDialog);
-    exportDialog.addEventListener('click', (event) => {
-      if (event.target === exportDialog) closeDialog();
-    });
-    confirmExport.addEventListener('click', () => {
-      exportDialog.close();
-      if (exportFormat === 'json') downloadJson();
-      if (exportFormat === 'pdf') window.print();
-    });
 
     loadBskyProfile();
     loadCareer();
@@ -405,6 +322,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .export-btn {
+    display: inline-block;
     border: 1px solid #b9c7d5;
     border-radius: 4px;
     background: #fff;
@@ -413,39 +331,12 @@ import Layout from '../layouts/Layout.astro';
     font: inherit;
     font-size: 12px;
     padding: 4px 9px;
+    text-decoration: none !important;
   }
 
   .export-btn:hover:not(:disabled) { background: #f1f6fb; }
-  .export-btn:disabled { cursor: wait; opacity: .45; }
-
   .export-btn-primary { background: #326b9f; color: #fff; }
   .export-btn-primary:hover:not(:disabled) { background: #28577f; }
-
-  .export-dialog {
-    width: min(900px, calc(100vw - 32px));
-    max-height: calc(100vh - 32px);
-    border: 0;
-    border-radius: 8px;
-    box-shadow: 0 18px 60px rgba(0, 0, 0, .25);
-    padding: 0;
-  }
-
-  .export-dialog::backdrop { background: rgba(20, 28, 36, .55); }
-  .export-dialog-head, .export-dialog-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 18px;
-    background: #fff;
-  }
-  .export-dialog-head { position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #ddd; }
-  .export-dialog-head h2 { margin: 0; font-size: 18px; }
-  .export-dialog-actions { position: sticky; bottom: 0; justify-content: flex-end; border-top: 1px solid #ddd; }
-  .dialog-close { border: 0; background: none; cursor: pointer; font-size: 26px; line-height: 1; }
-  .export-preview { padding: 24px; overflow: auto; background: #f5f6f7; }
-  .export-preview pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
-  .export-preview :global(.profile-section) { margin: 0; padding: 28px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
 
   .profile-main {
     display: flex;
@@ -580,7 +471,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   @media print {
-    .export-actions, .social-icons, .export-dialog { display: none !important; }
+    .export-actions, .social-icons { display: none !important; }
     .profile-section { margin: 0; }
     .profile-main { margin-top: 0; }
     .section-divider { margin: 22px 0; }
