@@ -70,7 +70,7 @@ const { title = "" } = Astro.props;
       <aside class="sidebar" id="site-navigation">
         <nav class="nav-menu" aria-label="メインナビゲーション">
           <a href="/">ホーム</a>
-          <a href="/blog/research/paper-list/">論文</a>
+          <a href="/#publications">論文</a>
           <a href="/#contact">連絡先</a>
           <a href="/blog">ブログ</a>
         </nav>
@@ -78,12 +78,12 @@ const { title = "" } = Astro.props;
       <button class="menu-backdrop" type="button" aria-label="メニューを閉じる" tabindex="-1"></button>
 
       <!-- ▼ 右側のメインコンテンツ + フッター -->
-      <div class="main-container" id="contact">
+      <div class="main-container">
         <main class="content">
           <slot />
         </main>
 
-        <footer class="footer">
+        <footer class="footer" id="contact">
           <div class="footer-content">
             <p class="footer-title">Contact</p>
             <p class="footer-email">

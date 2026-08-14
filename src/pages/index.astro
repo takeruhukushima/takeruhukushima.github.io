@@ -221,10 +221,11 @@ import Layout from '../layouts/Layout.astro';
     function renderExtraSections(results) {
       const container = document.getElementById('career-extra');
       container.replaceChildren();
-      results.forEach(({ label, records }) => {
+      results.forEach(({ collection, label, records }) => {
         const divider = document.createElement('div');
         divider.className = 'section-divider';
         const section = document.createElement('section');
+        if (collection === 'id.career.authorship') section.id = 'publications';
         const heading = document.createElement('h2');
         heading.textContent = label;
         section.append(heading);
@@ -241,6 +242,10 @@ import Layout from '../layouts/Layout.astro';
         }
         container.append(divider, section);
       });
+
+      if (window.location.hash === '#publications') {
+        requestAnimationFrame(() => document.getElementById('publications')?.scrollIntoView());
+      }
     }
 
     async function loadCareer() {
