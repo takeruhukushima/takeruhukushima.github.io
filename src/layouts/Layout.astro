@@ -103,9 +103,12 @@ const { title = "" } = Astro.props;
 
       function setMenu(open, restoreFocus = false) {
         const shouldOpen = mobileMenu.matches && open;
+        const english = document.documentElement.lang === 'en';
         document.body.classList.toggle('menu-open', shouldOpen);
         menuToggle.setAttribute('aria-expanded', String(shouldOpen));
-        menuToggle.setAttribute('aria-label', shouldOpen ? 'メニューを閉じる' : 'メニューを開く');
+        menuToggle.setAttribute('aria-label', shouldOpen
+          ? (english ? 'Close menu' : 'メニューを閉じる')
+          : (english ? 'Open menu' : 'メニューを開く'));
         sidebar.inert = mobileMenu.matches && !shouldOpen;
         mainContainer.inert = shouldOpen;
         menuBackdrop.tabIndex = shouldOpen ? 0 : -1;

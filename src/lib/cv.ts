@@ -24,6 +24,31 @@ export const CV_COLLECTIONS = [
 
 export type CvCollection = typeof CV_COLLECTIONS[number];
 export type CvRecord = Record<string, unknown>;
+export type CvLocale = 'ja' | 'en';
+
+interface LocalizedValue {
+  language: string;
+  value: string;
+}
+
+const isLocalizedValue = (value: unknown): value is LocalizedValue =>
+  typeof value === 'object' && value !== null &&
+  typeof (value as LocalizedValue).language === 'string' &&
+  typeof (value as LocalizedValue).value === 'string';
+
+export function localizedText(value: unknown, locale: CvLocale): string {
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (!Array.isArray(value)) return '';
+
+  const localizedValues = value.filter(isLocalizedValue);
+  if (localizedValues.length > 0) {
+    return localizedValues.find((item) => item.language === locale)?.value
+      || localizedValues.find((item) => item.language === 'en')?.value
+      || localizedValues[0].value;
+  }
+
+  return value.map((item) => localizedText(item, locale)).filter(Boolean).join(', ');
+}
 
 export interface CvExport {
   $schema: string;
