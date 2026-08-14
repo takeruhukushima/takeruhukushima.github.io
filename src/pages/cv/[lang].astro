@@ -17,13 +17,13 @@ const contributions = records['id.career.openSourceContribution'] as any[];
 
 const copy = {
   ja: {
-    menu: 'CVメニュー', back: 'プロフィールへ戻る', language: 'English', languageCode: 'en',
+    menu: 'CVメニュー', back: 'プロフィールへ戻る', languageMenu: '表示言語',
     current: '現在', career: '職歴', education: '学歴', presentations: '学会発表',
     contributions: 'オープンソース活動', interests: '研究分野', inProgress: '在学中',
     field: '専攻', footer: 'AT Protocolの公開レコードから生成'
   },
   en: {
-    menu: 'CV menu', back: 'Back to profile', language: '日本語', languageCode: 'ja',
+    menu: 'CV menu', back: 'Back to profile', languageMenu: 'Language',
     current: 'Present', career: 'Experience', education: 'Education', presentations: 'Presentations',
     contributions: 'Open Source', interests: 'Research interests', inProgress: 'In progress',
     field: 'Field', footer: 'Generated from public AT Protocol records'
@@ -106,7 +106,10 @@ const keywords = (profile?.keywords || [])
   <body>
     <nav class="document-actions" aria-label={text.menu}>
       <a href="/">{text.back}</a>
-      <a href={`/cv/${text.languageCode}`}>{text.language}</a>
+      <span class="language-switch" aria-label={text.languageMenu}>
+        <a href="/cv/ja" aria-current={locale === 'ja' ? 'page' : undefined}>JA</a>
+        <a href="/cv/en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
+      </span>
       <a href="/cv.json">JSON</a>
       <a class="primary-action" href={`/cv-${locale}.pdf`}>PDF</a>
     </nav>
@@ -226,6 +229,7 @@ const keywords = (profile?.keywords || [])
 
   .document-actions {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: 8px;
     width: min(210mm, 100%);
@@ -240,6 +244,31 @@ const keywords = (profile?.keywords || [])
     color: #432079;
     font-size: 13px;
     text-decoration: none;
+  }
+
+  .language-switch {
+    display: inline-flex;
+  }
+
+  .language-switch a {
+    border-radius: 0;
+  }
+
+  .language-switch a:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .language-switch a:last-child {
+    margin-left: -1px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .language-switch a[aria-current="page"] {
+    position: relative;
+    border-color: #51228b;
+    background: #ede3f7;
+    color: #35105f;
+    font-weight: 700;
   }
 
   .document-actions .primary-action { border-color: #51228b; background: #51228b; color: #fff; }
