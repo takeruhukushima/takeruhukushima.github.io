@@ -5,6 +5,10 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="">
   <div class="profile-section">
     <div class="export-actions" aria-label="CV export">
+      <span class="language-switch" aria-label="表示言語 / Language">
+        <a class="export-btn" href="/?lang=ja" data-locale="ja">日本語</a>
+        <a class="export-btn" href="/?lang=en" data-locale="en">English</a>
+      </span>
       <a class="export-btn" href="/cv.json">JSON</a>
       <a class="export-btn export-btn-primary" href="/cv-ja.pdf">PDF (JA)</a>
       <a class="export-btn" href="/cv-en.pdf">PDF (EN)</a>
@@ -44,14 +48,14 @@ import Layout from '../layouts/Layout.astro';
     <div class="section-divider"></div>
 
     <section id="education">
-      <h2>学歴</h2>
+      <h2 data-heading="education">学歴</h2>
       <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
     <section class="presentations" id="presentations">
-      <h2>学会発表</h2>
+      <h2 data-heading="presentations">学会発表</h2>
 
       <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
@@ -59,14 +63,14 @@ import Layout from '../layouts/Layout.astro';
     <div class="section-divider"></div>
 
     <section id="positions">
-      <h2>職歴</h2>
+      <h2 data-heading="positions">職歴</h2>
       <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
     <section id="open-source">
-      <h2>オープンソース活動</h2>
+      <h2 data-heading="openSource">オープンソース活動</h2>
       <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
@@ -76,6 +80,39 @@ import Layout from '../layouts/Layout.astro';
   <script is:inline>
     const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
     const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
+    const locale = new URLSearchParams(window.location.search).get('lang') === 'en' ? 'en' : 'ja';
+    const copy = {
+      ja: {
+        title: '福島武', loading: '読み込み中…', present: '現在', soon: '準備中です。',
+        education: '学歴', presentations: '学会発表', positions: '職歴', openSource: 'オープンソース活動',
+        unavailable: 'プロフィールを取得できませんでした', cvUnavailable: 'CVを取得できませんでした。',
+        organization: '組織', nav: ['ホーム', '論文', '連絡先', 'ブログ'], navLabel: 'メインナビゲーション',
+        extras: ['著作・論文', '受賞', '研究資金', '所属学会・団体', '委員・査読歴', '教育',
+          '研究指導', '特許', 'アウトリーチ', '職歴・プロジェクト', '証明・推薦', 'Dossier']
+      },
+      en: {
+        title: 'Takeru Fukushima', loading: 'Loading…', present: 'Present', soon: 'Coming soon.',
+        education: 'Education', presentations: 'Presentations', positions: 'Experience', openSource: 'Open Source',
+        unavailable: 'Could not load profile', cvUnavailable: 'Could not load CV.', organization: 'Organization',
+        nav: ['Home', 'Publications', 'Contact', 'Blog'], navLabel: 'Main navigation',
+        extras: ['Authorship', 'Awards', 'Grants', 'Memberships', 'Service', 'Teaching',
+          'Supervision', 'Patents', 'Outreach', 'Work and projects', 'Attestations', 'Dossier']
+      }
+    };
+    const ui = copy[locale];
+
+    document.documentElement.lang = locale;
+    document.title = ui.title;
+    document.querySelector(`[data-locale="${locale}"]`)?.setAttribute('aria-current', 'page');
+    document.querySelectorAll('[data-heading]').forEach((heading) => {
+      heading.textContent = ui[heading.dataset.heading];
+    });
+    document.querySelectorAll('.atproto-list > p, #profile-bio > p').forEach((item) => {
+      item.textContent = ui.loading;
+    });
+    const navigation = document.querySelector('.nav-menu');
+    navigation?.setAttribute('aria-label', ui.navLabel);
+    navigation?.querySelectorAll('a').forEach((link, index) => { link.textContent = ui.nav[index]; });
 
     async function resolvePds() {
       try {
@@ -124,8 +161,8 @@ import Layout from '../layouts/Layout.astro';
       return records.map((record) => record.value);
     }
 
-    const formatPeriod = (start, end) => [start, end || 'present'].filter(Boolean).join(' – ');
-    const localizedText = (value, locale = 'ja') => {
+    const formatPeriod = (start, end) => [start, end || ui.present].filter(Boolean).join(' – ');
+    const localizedText = (value, selectedLocale = locale) => {
       if (value == null || value === '') return '';
       if (typeof value === 'string' || typeof value === 'number') return String(value);
       if (!Array.isArray(value)) return '';
@@ -135,12 +172,12 @@ import Layout from '../layouts/Layout.astro';
         typeof item.language === 'string' && typeof item.value === 'string'
       );
       if (localizedValues.length) {
-        return localizedValues.find((item) => item.language === locale)?.value
+        return localizedValues.find((item) => item.language === selectedLocale)?.value
           || localizedValues.find((item) => item.language === 'en')?.value
           || localizedValues[0].value;
       }
 
-      return value.map((item) => localizedText(item, locale)).filter(Boolean).join(', ');
+      return value.map((item) => localizedText(item, selectedLocale)).filter(Boolean).join(', ');
     };
     const showList = (id, values, render) => {
       const host = document.querySelector(`#${id} .atproto-list`);
@@ -148,7 +185,7 @@ import Layout from '../layouts/Layout.astro';
       if (!values.length) {
         const empty = document.createElement('p');
         empty.className = 'no-publications';
-        empty.textContent = 'Coming soon.';
+        empty.textContent = ui.soon;
         host.append(empty);
         return;
       }
@@ -175,19 +212,10 @@ import Layout from '../layouts/Layout.astro';
     };
 
     const extraCareerCollections = [
-      ['id.career.authorship', '著作・論文 / Authorship'],
-      ['id.career.award', '受賞 / Awards'],
-      ['id.career.grant', '研究資金 / Grants'],
-      ['id.career.membership', '所属学会・団体 / Memberships'],
-      ['id.career.service', '委員・査読歴 / Service'],
-      ['id.career.teaching', '教育 / Teaching'],
-      ['id.career.supervision', '研究指導 / Supervision'],
-      ['id.career.patent', '特許 / Patents'],
-      ['id.career.outreach', 'アウトリーチ / Outreach'],
-      ['id.career.work', '職歴・プロジェクト / Work'],
-      ['id.career.attestation', '証明・推薦 / Attestations'],
-      ['id.career.dossier', 'Dossier']
-    ];
+      'id.career.authorship', 'id.career.award', 'id.career.grant', 'id.career.membership',
+      'id.career.service', 'id.career.teaching', 'id.career.supervision', 'id.career.patent',
+      'id.career.outreach', 'id.career.work', 'id.career.attestation', 'id.career.dossier'
+    ].map((collection, index) => [collection, ui.extras[index]]);
 
     const valueText = (value) => {
       if (value == null || value === '') return '';
@@ -237,7 +265,7 @@ import Layout from '../layouts/Layout.astro';
         } else {
           const empty = document.createElement('p');
           empty.className = 'no-publications';
-          empty.textContent = 'Coming soon.';
+          empty.textContent = ui.soon;
           section.append(empty);
         }
         container.append(divider, section);
@@ -286,7 +314,7 @@ import Layout from '../layouts/Layout.astro';
             websites.append(link);
           });
         } else {
-          document.getElementById('profile-name').textContent = '準備中です。';
+          document.getElementById('profile-name').textContent = ui.soon;
         }
 
         showList('education', education, (entry) => item(
@@ -302,7 +330,7 @@ import Layout from '../layouts/Layout.astro';
           entry.date ? `, ${entry.date}` : ''
         ));
         showList('positions', positions, (entry) => item(
-          entry.entityRef ? externalLink(entry.company || 'Organization', entry.entityRef) : entry.company,
+          entry.entityRef ? externalLink(entry.company || ui.organization, entry.entityRef) : entry.company,
           ` — ${entry.title || ''}`,
           entry.description ? `. ${entry.description}` : '',
           ` (${formatPeriod(entry.startedAt, entry.endedAt)})`
@@ -315,11 +343,11 @@ import Layout from '../layouts/Layout.astro';
         ));
         renderExtraSections(extraResults);
       } catch (error) {
-        document.getElementById('profile-name').textContent = 'プロフィールを取得できませんでした';
+        document.getElementById('profile-name').textContent = ui.unavailable;
         document.querySelectorAll('.atproto-list').forEach((host) => {
           const message = document.createElement('p');
           message.className = 'no-publications';
-          message.textContent = 'CVを取得できませんでした。';
+          message.textContent = ui.cvUnavailable;
           host.replaceChildren(message);
         });
         console.error(error);
@@ -343,6 +371,31 @@ import Layout from '../layouts/Layout.astro';
     right: 0;
     display: flex;
     gap: 7px;
+  }
+
+  .language-switch {
+    display: inline-flex;
+  }
+
+  .language-switch .export-btn {
+    border-radius: 0;
+  }
+
+  .language-switch .export-btn:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .language-switch .export-btn:last-child {
+    margin-left: -1px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .language-switch .export-btn[aria-current="page"] {
+    position: relative;
+    border-color: #326b9f;
+    background: #e5f0f8;
+    color: #234f75;
+    font-weight: 700;
   }
 
   .export-btn {
