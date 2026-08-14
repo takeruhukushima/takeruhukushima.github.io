@@ -54,25 +54,36 @@ const { title = "" } = Astro.props;
   </head>
   <body>
     <div class="layout-wrapper">
-      
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-controls="site-navigation"
+        aria-expanded="false"
+        aria-label="メニューを開く"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+
       <!-- ▼ 左側の固定サイドバー -->
-      <aside class="sidebar">
-        <nav class="nav-menu">
-          <a href="/"><span class="lang-ja">ホーム</span><span class="lang-en">Home</span></a>
-          <a href="/#publications"><span class="lang-ja">論文</span><span class="lang-en">Publications</span></a>
-          <!-- <a href="/cv"><span class="lang-ja">経歴</span><span class="lang-en">CV</span></a> -->
-          <a href="/#contact"><span class="lang-ja">連絡先</span><span class="lang-en">Contact</span></a>
-          <a href="/blog"><span class="lang-ja">ブログ</span><span class="lang-en">Blog</span></a>
+      <aside class="sidebar" id="site-navigation">
+        <nav class="nav-menu" aria-label="メインナビゲーション">
+          <a href="/">ホーム</a>
+          <a href="/#publications">論文</a>
+          <a href="/#contact">連絡先</a>
+          <a href="/blog">ブログ</a>
         </nav>
       </aside>
+      <button class="menu-backdrop" type="button" aria-label="メニューを閉じる" tabindex="-1"></button>
 
       <!-- ▼ 右側のメインコンテンツ + フッター -->
-      <div class="main-container" id="contact">
+      <div class="main-container">
         <main class="content">
           <slot />
         </main>
 
-        <footer class="footer">
+        <footer class="footer" id="contact">
           <div class="footer-content">
             <p class="footer-title">Contact</p>
             <p class="footer-email">
@@ -84,6 +95,41 @@ const { title = "" } = Astro.props;
 
     </div>
     <script is:inline>
+      const menuToggle = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const menuBackdrop = document.querySelector('.menu-backdrop');
+      const mainContainer = document.querySelector('.main-container');
+      const mobileMenu = window.matchMedia('(max-width: 768px)');
+
+      function setMenu(open, restoreFocus = false) {
+        const shouldOpen = mobileMenu.matches && open;
+        document.body.classList.toggle('menu-open', shouldOpen);
+        menuToggle.setAttribute('aria-expanded', String(shouldOpen));
+        menuToggle.setAttribute('aria-label', shouldOpen ? 'メニューを閉じる' : 'メニューを開く');
+        sidebar.inert = mobileMenu.matches && !shouldOpen;
+        mainContainer.inert = shouldOpen;
+        menuBackdrop.tabIndex = shouldOpen ? 0 : -1;
+
+        if (shouldOpen) sidebar.querySelector('a')?.focus();
+        if (!shouldOpen && restoreFocus) menuToggle.focus();
+      }
+
+      menuToggle.addEventListener('click', () => {
+        const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+        setMenu(!isOpen, isOpen);
+      });
+      menuBackdrop.addEventListener('click', () => setMenu(false, true));
+      sidebar.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setMenu(false));
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+          setMenu(false, true);
+        }
+      });
+      mobileMenu.addEventListener('change', () => setMenu(false));
+      setMenu(false);
+
       (async function syncProfileMetadata() {
         const did = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
         const fallbackPds = 'https://chaga.us-west.host.bsky.network';
@@ -136,10 +182,6 @@ const { title = "" } = Astro.props;
   html {
     scroll-behavior: smooth;
   }
-
-  /* 言語切り替えの制御 */
-  html[lang="ja"] .lang-en { display: none; }
-  html[lang="en"] .lang-ja { display: none; }
 
   body {
     margin: 0;
@@ -196,6 +238,11 @@ const { title = "" } = Astro.props;
   .layout-wrapper {
     display: flex;
     min-height: 100vh;
+  }
+
+  .menu-toggle,
+  .menu-backdrop {
+    display: none;
   }
 
   /* 左メニュー（薄いベージュ背景で固定） */
@@ -303,24 +350,116 @@ const { title = "" } = Astro.props;
   }
 
   @media (max-width: 768px) {
+    :global(body.menu-open) {
+      overflow: hidden;
+    }
+
     .layout-wrapper {
       flex-direction: column;
     }
-    .sidebar {
-      width: 100%;
-      position: relative;
-      height: auto;
-      padding: 60px 20px;
+
+    .menu-toggle {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 300;
+      display: flex;
+      width: 44px;
+      height: 44px;
+      padding: 0 11px;
+      border: 1px solid rgba(26, 26, 26, 0.12);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 4px 18px rgba(26, 26, 26, 0.1);
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
     }
+
+    .menu-toggle span {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: #1a1a1a;
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+
+    .menu-toggle[aria-expanded="true"] span:first-child {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle[aria-expanded="true"] span:last-child {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .menu-toggle:focus-visible,
+    .nav-menu a:focus-visible {
+      outline: 2px solid #326b9f;
+      outline-offset: 4px;
+    }
+
+    .sidebar {
+      z-index: 250;
+      width: min(280px, 82vw);
+      height: 100dvh;
+      padding: 96px 48px 48px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    :global(body.menu-open) .sidebar {
+      transform: translateX(0);
+    }
+
+    .nav-menu {
+      gap: 26px;
+      text-align: left;
+    }
+
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: block;
+      border: 0;
+      background: rgba(20, 20, 18, 0.38);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    :global(body.menu-open) .menu-backdrop {
+      opacity: 1;
+      visibility: visible;
+    }
+
     .main-container {
       margin-left: 0;
       width: 100%;
     }
+
     .content {
-      padding: 60px 20px;
+      padding: 84px 20px 60px;
     }
+
     .footer {
       padding: 60px 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-toggle span,
+    .sidebar,
+    .menu-backdrop {
+      transition: none;
     }
   }
 </style>

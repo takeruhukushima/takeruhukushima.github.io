@@ -4,9 +4,6 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="">
   <div class="profile-section">
-    <div class="lang-nav">
-      <button id="lang-en" class="lang-btn">En</button> / <button id="lang-ja" class="lang-btn">Ja</button>
-    </div>
     <div class="export-actions" aria-label="CV export">
       <button id="export-cv-json" class="export-btn" type="button" disabled>JSON</button>
       <button id="export-cv-pdf" class="export-btn" type="button" disabled>PDF</button>
@@ -25,14 +22,11 @@ import Layout from '../layouts/Layout.astro';
           <img id="profile-avatar" alt="" hidden />
         </a>
       </div>
-      
+
       <div class="profile-details">
-        <h1 class="name-title">
-          <span class="lang-ja" id="profile-name-ja">読み込み中…</span>
-          <span class="lang-en" id="profile-name-en">Loading…</span>
-        </h1>
+        <h1 class="name-title" id="profile-name">読み込み中…</h1>
         
-        <p class="affiliation" id="profile-affiliation">読み込み中… / Loading…</p>
+        <p class="affiliation" id="profile-affiliation">読み込み中…</p>
         
         <p class="email-text">
           fukushima.takeru.u8 [at] s.mail.nagoya-u.ac.jp
@@ -43,40 +37,36 @@ import Layout from '../layouts/Layout.astro';
     </div>
     
     <div class="bio-text" id="profile-bio">
-      <p>読み込み中… / Loading…</p>
+      <p>読み込み中…</p>
     </div>
 
     <div class="section-divider"></div>
 
     <section id="education">
-      <h2 class="lang-ja">学歴 / Education</h2>
-      <h2 class="lang-en">Education</h2>
-      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
+      <h2>学歴</h2>
+      <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
     <section class="presentations" id="presentations">
-      <h2 class="lang-ja">学会発表 / Presentations</h2>
-      <h2 class="lang-en">Presentations</h2>
+      <h2>学会発表</h2>
 
-      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
+      <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
     <section id="positions">
-      <h2 class="lang-ja">職歴 / Positions</h2>
-      <h2 class="lang-en">Positions</h2>
-      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
+      <h2>職歴</h2>
+      <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div class="section-divider"></div>
 
     <section id="open-source">
-      <h2 class="lang-ja">オープンソース活動 / Open Source</h2>
-      <h2 class="lang-en">Open Source</h2>
-      <div class="atproto-list"><p>読み込み中… / Loading…</p></div>
+      <h2>オープンソース活動</h2>
+      <div class="atproto-list"><p>読み込み中…</p></div>
     </section>
 
     <div id="career-extra"></div>
@@ -95,32 +85,6 @@ import Layout from '../layouts/Layout.astro';
   </dialog>
 
   <script is:inline>
-    // 言語切り替えのロジック
-    const html = document.documentElement;
-    const jaBtn = document.getElementById('lang-ja');
-    const enBtn = document.getElementById('lang-en');
-
-    function setLang(lang) {
-      html.setAttribute('lang', lang);
-      localStorage.setItem('preferred-lang', lang);
-      
-      // ボタンのアクティブ状態を更新
-      if (lang === 'ja') {
-        jaBtn.classList.add('active');
-        enBtn.classList.remove('active');
-      } else {
-        enBtn.classList.add('active');
-        jaBtn.classList.remove('active');
-      }
-    }
-
-    jaBtn.addEventListener('click', () => setLang('ja'));
-    enBtn.addEventListener('click', () => setLang('en'));
-
-    // 初期言語の設定（保存された設定があればそれを使う、なければja）
-    const savedLang = localStorage.getItem('preferred-lang') || 'ja';
-    setLang(savedLang);
-
     const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
     const FALLBACK_PDS = 'https://chaga.us-west.host.bsky.network';
     const jsonButton = document.getElementById('export-cv-json');
@@ -257,10 +221,11 @@ import Layout from '../layouts/Layout.astro';
     function renderExtraSections(results) {
       const container = document.getElementById('career-extra');
       container.replaceChildren();
-      results.forEach(({ label, records }) => {
+      results.forEach(({ collection, label, records }) => {
         const divider = document.createElement('div');
         divider.className = 'section-divider';
         const section = document.createElement('section');
+        if (collection === 'id.career.authorship') section.id = 'publications';
         const heading = document.createElement('h2');
         heading.textContent = label;
         section.append(heading);
@@ -277,6 +242,10 @@ import Layout from '../layouts/Layout.astro';
         }
         container.append(divider, section);
       });
+
+      if (window.location.hash === '#publications') {
+        requestAnimationFrame(() => document.getElementById('publications')?.scrollIntoView());
+      }
     }
 
     async function loadCareer() {
@@ -311,9 +280,8 @@ import Layout from '../layouts/Layout.astro';
 
         const profile = profiles[0];
         if (profile) {
-          document.getElementById('profile-name-ja').textContent =
+          document.getElementById('profile-name').textContent =
             [profile.nativeName, profile.displayName].filter(Boolean).join(' / ');
-          document.getElementById('profile-name-en').textContent = profile.displayName || profile.nativeName;
           const affiliation = profile.primaryAffiliation;
           document.getElementById('profile-affiliation').textContent =
             [profile.headline, affiliation?.department, affiliation?.name].filter(Boolean).join(' · ');
@@ -330,8 +298,7 @@ import Layout from '../layouts/Layout.astro';
             websites.append(link);
           });
         } else {
-          document.getElementById('profile-name-ja').textContent = 'Coming soon.';
-          document.getElementById('profile-name-en').textContent = 'Coming soon.';
+          document.getElementById('profile-name').textContent = '準備中です。';
         }
 
         showList('education', education, (entry) => item(
@@ -362,12 +329,11 @@ import Layout from '../layouts/Layout.astro';
         jsonButton.disabled = false;
         pdfButton.disabled = false;
       } catch (error) {
-        document.getElementById('profile-name-ja').textContent = 'プロフィールを取得できませんでした';
-        document.getElementById('profile-name-en').textContent = 'Could not load profile';
+        document.getElementById('profile-name').textContent = 'プロフィールを取得できませんでした';
         document.querySelectorAll('.atproto-list').forEach((host) => {
           const message = document.createElement('p');
           message.className = 'no-publications';
-          message.textContent = 'CVを取得できませんでした。 / Could not load CV.';
+          message.textContent = 'CVを取得できませんでした。';
           host.replaceChildren(message);
         });
         console.error(error);
@@ -430,15 +396,6 @@ import Layout from '../layouts/Layout.astro';
     margin-bottom: 60px;
   }
 
-  .lang-nav {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 13px;
-    color: #666;
-    letter-spacing: 0.05em;
-  }
-
   .export-actions {
     position: absolute;
     top: 28px;
@@ -489,26 +446,6 @@ import Layout from '../layouts/Layout.astro';
   .export-preview { padding: 24px; overflow: auto; background: #f5f6f7; }
   .export-preview pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
   .export-preview :global(.profile-section) { margin: 0; padding: 28px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
-
-  .lang-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font-size: inherit;
-    font-family: inherit;
-    color: #888;
-    transition: color 0.2s;
-  }
-
-  .lang-btn.active {
-    color: #333;
-    font-weight: bold;
-  }
-
-  .lang-btn:hover {
-    color: #000;
-  }
 
   .profile-main {
     display: flex;
@@ -635,11 +572,6 @@ import Layout from '../layouts/Layout.astro';
     .social-icons {
       justify-content: center;
     }
-    .lang-nav {
-      position: static;
-      margin-bottom: 20px;
-      text-align: right;
-    }
     .export-actions {
       position: static;
       justify-content: flex-end;
@@ -648,7 +580,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   @media print {
-    .lang-nav, .export-actions, .social-icons, .export-dialog { display: none !important; }
+    .export-actions, .social-icons, .export-dialog { display: none !important; }
     .profile-section { margin: 0; }
     .profile-main { margin-top: 0; }
     .section-divider { margin: 22px 0; }
