@@ -1,5 +1,20 @@
 # Astro Starter Kit: Minimal
 
+## CV exports
+
+AT Protocolの公開レコードから、デプロイ時に日本語CVを生成する。
+
+- Web: `https://takeruhukushima.github.io/cv`
+- PDF: `https://takeruhukushima.github.io/cv.pdf`
+- JSON: `https://takeruhukushima.github.io/cv.json`
+
+ローカルでPDFを含めてビルドする前に、Chromiumをインストールする。
+
+```sh
+pnpm exec playwright install chromium
+pnpm build
+```
+
 ```sh
 pnpm create astro@latest -- --template minimal
 ```
