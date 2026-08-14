@@ -58,11 +58,10 @@ const { title = "" } = Astro.props;
       <!-- ▼ 左側の固定サイドバー -->
       <aside class="sidebar">
         <nav class="nav-menu">
-          <a href="/"><span class="lang-ja">ホーム</span><span class="lang-en">Home</span></a>
-          <a href="/#publications"><span class="lang-ja">論文</span><span class="lang-en">Publications</span></a>
-          <!-- <a href="/cv"><span class="lang-ja">経歴</span><span class="lang-en">CV</span></a> -->
-          <a href="/#contact"><span class="lang-ja">連絡先</span><span class="lang-en">Contact</span></a>
-          <a href="/blog"><span class="lang-ja">ブログ</span><span class="lang-en">Blog</span></a>
+          <a href="/">ホーム</a>
+          <a href="/blog/research/paper-list/">論文</a>
+          <a href="/#contact">連絡先</a>
+          <a href="/blog">ブログ</a>
         </nav>
       </aside>
 
@@ -136,10 +135,6 @@ const { title = "" } = Astro.props;
   html {
     scroll-behavior: smooth;
   }
-
-  /* 言語切り替えの制御 */
-  html[lang="ja"] .lang-en { display: none; }
-  html[lang="en"] .lang-ja { display: none; }
 
   body {
     margin: 0;
