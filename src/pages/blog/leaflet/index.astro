@@ -13,7 +13,10 @@ import Layout from '../../../layouts/Layout.astro';
       <a href="/blog" class="back-link">← Blog</a>
       <h1 class="leaflet-title">Leaflet</h1>
       <p class="leaflet-sub">
-        AT Protocol 上の <a id="pub-link" href="https://takeruf.leaflet.pub" target="_blank" rel="noopener">leaflet.pub</a> から直接取得（ライブ同期）
+        AT Protocol 上の
+        <a href="https://takeruf.leaflet.pub" target="_blank" rel="noopener">通常記事</a> と
+        <a href="https://takeruf-backslash.leaflet.pub" target="_blank" rel="noopener">小説</a>
+        から直接取得（ライブ同期）
       </p>
     </div>
     <div id="leaflet-content" aria-live="polite">
@@ -27,10 +30,20 @@ import Layout from '../../../layouts/Layout.astro';
       const DID = "did:plc:nmhfq335cddnwt4ovrq4gzsm";
       const FALLBACK_PDS = "https://chaga.us-west.host.bsky.network";
       const DOC_NSID = "site.standard.document";
-      const PUB_NSID = "site.standard.publication";
+      const PUBLICATIONS = [
+        {
+          label: "通常記事",
+          site: "at://" + DID + "/site.standard.publication/3mslhqpegbk2n",
+          url: "https://takeruf.leaflet.pub",
+        },
+        {
+          label: "小説",
+          site: "at://" + DID + "/site.standard.publication/3mt74tltghk2v",
+          url: "https://takeruf-backslash.leaflet.pub",
+        },
+      ];
 
       const elContent = document.getElementById("leaflet-content");
-      const elPubLink = document.getElementById("pub-link");
 
       const esc = (s) =>
         String(s == null ? "" : s)
@@ -156,13 +169,20 @@ import Layout from '../../../layouts/Layout.astro';
 
       let DOCS = []; // publishedAt 降順
 
-      function renderList() {
-        if (!DOCS.length) {
-          elContent.innerHTML = '<p class="leaflet-status">記事がまだありません。</p>';
-          return;
+      function renderPublication(publication) {
+        const docs = DOCS.filter((r) => r.value.site === publication.site);
+        let html =
+          '<section class="leaflet-section">' +
+          '<div class="leaflet-section-head">' +
+          "<h2>" + esc(publication.label) + "</h2>" +
+          '<a href="' + esc(publication.url) + '" target="_blank" rel="noopener">' +
+          esc(publication.url.replace(/^https?:\/\//, "")) + " ↗</a>" +
+          "</div>";
+        if (!docs.length) {
+          return html + '<p class="leaflet-status">記事がまだありません。</p></section>';
         }
-        let html = '<ul class="leaflet-list">';
-        for (const r of DOCS) {
+        html += '<ul class="leaflet-list">';
+        for (const r of docs) {
           const v = r.value;
           const rkey = rkeyOf(r.uri);
           html +=
@@ -177,7 +197,14 @@ import Layout from '../../../layouts/Layout.astro';
             (v.publishedAt ? '<span class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</span>" : "") +
             "</div></li>";
         }
-        html += "</ul>";
+        return html + "</ul></section>";
+      }
+
+      function renderList() {
+        let html = "";
+        for (const publication of PUBLICATIONS) {
+          html += renderPublication(publication);
+        }
         elContent.innerHTML = html;
       }
 
@@ -189,7 +216,8 @@ import Layout from '../../../layouts/Layout.astro';
           return;
         }
         const v = rec.value;
-        const pubUrl = "https://takeruf.leaflet.pub" + (v.path || "");
+        const publication = PUBLICATIONS.find((pub) => pub.site === v.site);
+        const pubUrl = publication ? publication.url + (v.path || "") : "";
         elContent.innerHTML =
           '<article class="leaflet-doc">' +
           '<a class="back-link" href="#/">← 一覧 / Index</a>' +
@@ -197,7 +225,10 @@ import Layout from '../../../layouts/Layout.astro';
           (v.description ? '<p class="leaflet-subtitle">' + esc(v.description) + "</p>" : "") +
           (v.publishedAt ? '<p class="leaflet-date">' + esc(fmtDate(v.publishedAt)) + "</p>" : "") +
           renderDocument(v) +
-          '<p class="leaflet-source"><a href="' + esc(pubUrl) + '" target="_blank" rel="noopener">leaflet.pub で開く ↗</a></p>' +
+          (pubUrl
+            ? '<p class="leaflet-source"><a href="' + esc(pubUrl) + '" target="_blank" rel="noopener">' +
+              esc(publication.label) + 'を leaflet.pub で開く ↗</a></p>'
+            : "") +
           "</article>";
         window.scrollTo(0, 0);
       }
@@ -211,17 +242,10 @@ import Layout from '../../../layouts/Layout.astro';
       async function init() {
         try {
           const pds = await resolvePds();
-          const [docs, pubs] = await Promise.all([
-            listRecords(pds, DOC_NSID),
-            listRecords(pds, PUB_NSID).catch(() => []),
-          ]);
+          const docs = await listRecords(pds, DOC_NSID);
           DOCS = docs.sort((a, b) =>
             String(b.value.publishedAt || "").localeCompare(String(a.value.publishedAt || ""))
           );
-          if (pubs[0] && pubs[0].value && pubs[0].value.url) {
-            elPubLink.href = pubs[0].value.url;
-            elPubLink.textContent = pubs[0].value.url.replace(/^https?:\/\//, "");
-          }
           window.addEventListener("hashchange", route);
           route();
         } catch (e) {
@@ -246,6 +270,11 @@ import Layout from '../../../layouts/Layout.astro';
     .leaflet-sub a { color: #3b82f6; }
     .leaflet-status { color: #888; font-style: italic; }
 
+    .leaflet-section + .leaflet-section { margin-top: 40px; }
+    .leaflet-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; border-bottom: 1px solid #ddd; }
+    .leaflet-section-head h2 { font-size: 21px; margin: 0 0 8px; }
+    .leaflet-section-head a { color: #3b82f6; font-size: 13px; text-decoration: none; }
+    .leaflet-section-head a:hover { text-decoration: underline; }
     .leaflet-list { list-style: none; padding: 0; margin: 0; }
     .leaflet-list li {
       display: flex; flex-direction: column; gap: 4px;
@@ -270,6 +299,10 @@ import Layout from '../../../layouts/Layout.astro';
     .leaflet-doc hr { border: none; border-top: 1px solid #eee; margin: 32px 0; }
     .leaflet-doc .back-link { display: inline-block; margin-bottom: 16px; }
     .leaflet-source { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 14px; }
+    @media (max-width: 520px) {
+      .leaflet-section-head { align-items: flex-start; flex-direction: column; gap: 0; padding-bottom: 8px; }
+      .leaflet-section-head h2 { margin-bottom: 2px; }
+    }
     /* /MAGI */
   </style>
   <!-- /MAGI -->
