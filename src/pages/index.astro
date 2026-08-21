@@ -161,6 +161,16 @@ import Layout from '../layouts/Layout.astro';
       return records.map((record) => record.value);
     }
 
+    async function getReferencedRecord(pds, uri) {
+      const match = uri?.match(/^at:\/\/([^/]+)\/([^/]+)\/([^/]+)$/);
+      if (!match) return null;
+      const [, repo, collection, rkey] = match;
+      const query = new URLSearchParams({ repo, collection, rkey });
+      const response = await fetch(`${pds}/xrpc/com.atproto.repo.getRecord?${query}`);
+      if (!response.ok) throw new Error(`${uri}: ${response.status}`);
+      return (await response.json()).value;
+    }
+
     const formatPeriod = (start, end) => [start, end || ui.present].filter(Boolean).join(' – ');
     const localizedText = (value, selectedLocale = locale) => {
       if (value == null || value === '') return '';
@@ -246,6 +256,32 @@ import Layout from '../layouts/Layout.astro';
       return li;
     }
 
+    function renderAuthorshipRecord(record) {
+      const publication = record.resolvedReference;
+      if (!publication) return item(ui.extras[0]);
+
+      const li = document.createElement('li');
+      const title = localizedText(publication.title) || ui.soon;
+      const publicationUrl = publication.doi ? `https://doi.org/${publication.doi}` : publication.url;
+      li.append(publicationUrl ? externalLink(title, publicationUrl) : document.createTextNode(title));
+
+      const authors = (publication.contributors || [])
+        .filter((contributor) => !contributor.role || contributor.role === 'author')
+        .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+        .map((contributor) => localizedText(contributor.literal) || localizedText(contributor.name))
+        .filter(Boolean);
+      const citation = [
+        authors.join(', '),
+        localizedText(publication.containerTitle),
+        publication.issued?.year
+      ].filter(Boolean).join('. ');
+      if (citation) li.append(document.createTextNode(` — ${citation}.`));
+      if (publication.doi) {
+        li.append(document.createTextNode(' '), externalLink(`DOI: ${publication.doi}`, `https://doi.org/${publication.doi}`));
+      }
+      return li;
+    }
+
     function renderExtraSections(results) {
       const container = document.getElementById('career-extra');
       container.replaceChildren();
@@ -260,7 +296,11 @@ import Layout from '../layouts/Layout.astro';
         if (records.length) {
           const list = document.createElement('ul');
           list.className = 'presentation-list';
-          records.forEach((record) => list.append(renderGenericRecord(record)));
+          records.forEach((record) => list.append(
+            collection === 'id.career.authorship'
+              ? renderAuthorshipRecord(record)
+              : renderGenericRecord(record)
+          ));
           section.append(list);
         } else {
           const empty = document.createElement('p');
@@ -286,11 +326,16 @@ import Layout from '../layouts/Layout.astro';
           listRecords(pds, 'id.sifa.profile.position'),
           listRecords(pds, 'id.career.openSourceContribution')
         ]);
-        const extraResults = await Promise.all(extraCareerCollections.map(async ([collection, label]) => ({
-          collection,
-          label,
-          records: await listRecords(pds, collection)
-        })));
+        const extraResults = await Promise.all(extraCareerCollections.map(async ([collection, label]) => {
+          let records = await listRecords(pds, collection);
+          if (collection === 'id.career.authorship') {
+            records = await Promise.all(records.map(async (record) => ({
+              ...record,
+              resolvedReference: await getReferencedRecord(pds, record.reference?.uri).catch(() => null)
+            })));
+          }
+          return { collection, label, records };
+        }));
 
         const profile = profiles[0];
         if (profile) {
