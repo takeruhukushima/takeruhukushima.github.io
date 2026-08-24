@@ -15,7 +15,8 @@ import Layout from '../../../layouts/Layout.astro';
       <p class="leaflet-sub">
         AT Protocol 上の
         <a href="https://takeruf.leaflet.pub" target="_blank" rel="noopener">通常記事</a> と
-        <a href="https://takeruf-backslash.leaflet.pub" target="_blank" rel="noopener">小説</a>
+        <a href="https://takeruf-backslash.leaflet.pub" target="_blank" rel="noopener">小説</a>、
+        <a href="https://takeruf-diary.leaflet.pub" target="_blank" rel="noopener">日記</a>
         から直接取得（ライブ同期）
       </p>
     </div>
@@ -40,6 +41,11 @@ import Layout from '../../../layouts/Layout.astro';
           label: "小説",
           site: "at://" + DID + "/site.standard.publication/3mt74tltghk2v",
           url: "https://takeruf-backslash.leaflet.pub",
+        },
+        {
+          label: "日記",
+          site: "at://" + DID + "/site.standard.publication/3mttkdudqds2m",
+          url: "https://takeruf-diary.leaflet.pub",
         },
       ];
 
