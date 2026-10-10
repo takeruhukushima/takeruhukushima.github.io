@@ -356,7 +356,7 @@ import Layout from '../../../layouts/Layout.astro';
 
       // Activity chart with a year switcher. "全期間" shows every month from the
       // first to the last; a single year shows that calendar year's 12 months.
-      function renderChart(monthlyCounts) {
+      function renderChart(monthlyCounts, onMonthClick) {
         const section = makeElement('section', 'chart-section');
         const heading = makeElement('div', 'section-heading');
         const headingText = makeElement('div', 'section-heading-text');
@@ -393,6 +393,11 @@ import Layout from '../../../layouts/Layout.astro';
             track.append(bar);
             const label = makeElement('span', 'month-label', monthLabel(key));
             column.append(value, track, label);
+            if (count > 0 && onMonthClick) {
+              column.classList.add('clickable');
+              column.title = `${monthLabel(key)}の投稿へジャンプ`;
+              column.addEventListener('click', () => onMonthClick(key));
+            }
             chart.append(column);
           });
           chartScroll.replaceChildren(chart);
@@ -452,7 +457,13 @@ import Layout from '../../../layouts/Layout.astro';
           .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
           .forEach(([tag, count]) => chips.append(makeChip(tag, count, tag)));
         section.append(chips);
-        return section;
+
+        // Reset the filter to "すべて" without re-running onSelect (the caller
+        // redraws the archive itself when it needs the unfiltered view).
+        const selectAll = () => {
+          [...chips.children].forEach((c) => c.classList.toggle('active', c === allChip));
+        };
+        return { section, selectAll };
       }
 
       function renderArchive(items) {
@@ -488,6 +499,7 @@ import Layout from '../../../layouts/Layout.astro';
           const container = document.createDocumentFragment();
           groups.forEach(([key, group]) => {
             const monthGroup = makeElement('section', 'month-group');
+            monthGroup.id = `month-${key}`;
             const groupHeading = makeElement('h3', 'month-heading');
             groupHeading.append(
               makeElement('span', 'month-caret', '▾'),
@@ -501,7 +513,16 @@ import Layout from '../../../layouts/Layout.astro';
           listHost.replaceChildren(container);
         }
 
-        return { section, draw };
+        function scrollToMonth(key) {
+          const target = document.getElementById(`month-${key}`);
+          if (!target) return;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          target.classList.remove('flash');
+          void target.offsetWidth; // restart the animation if the same month is re-clicked
+          target.classList.add('flash');
+        }
+
+        return { section, draw, scrollToMonth };
       }
 
       // --- bootstrap ---------------------------------------------------------
@@ -525,8 +546,17 @@ import Layout from '../../../layouts/Layout.astro';
 
           const archive = renderArchive(items);
           const tags = renderTags(items, archive.draw);
-          const children = [renderSummary(items, monthlyCounts), renderChart(monthlyCounts)];
-          if (tags) children.push(tags);
+
+          // Clicking a chart bar clears any tag filter, redraws the full
+          // archive, then scrolls to that month — no manual scrolling needed.
+          const onMonthClick = (key) => {
+            if (tags) tags.selectAll();
+            archive.draw('__all__');
+            archive.scrollToMonth(key);
+          };
+
+          const children = [renderSummary(items, monthlyCounts), renderChart(monthlyCounts, onMonthClick)];
+          if (tags) children.push(tags.section);
           children.push(archive.section);
           host.replaceChildren(...children);
           archive.draw('__all__');
@@ -569,6 +599,9 @@ import Layout from '../../../layouts/Layout.astro';
   .bar-track { display: flex; height: 190px; align-items: flex-end; justify-content: center; }
   .bar { width: 17px; min-height: 0; border-radius: 3px 3px 0 0; background: #c69645; transition: background .2s; }
   .bar:hover { background: #9e7029; }
+  .chart-column.clickable { cursor: pointer; }
+  .chart-column.clickable:hover .bar { background: #9e7029; }
+  .chart-column.clickable:hover .bar-value { color: #9a6e28; }
   .month-label { align-self: start; margin-top: 10px; color: #6e6961; font: 10px/1.2 ui-sans-serif, sans-serif; white-space: nowrap; transform: rotate(-48deg); transform-origin: top center; }
 
   .tag-section { margin-bottom: 48px; }
@@ -578,7 +611,9 @@ import Layout from '../../../layouts/Layout.astro';
   .tag-chip.active { border-color: #9a6e28; background: #f3e9d4; color: #7a5410; }
 
   .posts-section { margin-top: 16px; }
-  .month-group { margin: 0 0 30px; }
+  .month-group { margin: 0 0 30px; scroll-margin-top: 16px; border-radius: 6px; }
+  .month-group.flash { animation: month-flash 1.4s ease-out; }
+  @keyframes month-flash { from { background: #f3e9d4; } to { background: transparent; } }
   .month-heading { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 8px 2px; border-bottom: 1px solid #ece8e1; font-size: 18px; }
   .month-caret { color: #8d877e; font: 12px ui-sans-serif, sans-serif; }
   .month-count { color: #989188; font: 400 12px ui-sans-serif, sans-serif; }
