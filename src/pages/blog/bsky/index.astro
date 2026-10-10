@@ -1,0 +1,634 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="Bluesky の投稿">
+  <main class="bsky-page">
+    <header class="page-header">
+      <p class="eyebrow">BLUESKY</p>
+      <h1>Bluesky の投稿</h1>
+      <p class="subtitle">Bluesky の投稿を AT Protocol からライブ取得し、月別アクティビティ・タグ・アーカイブとしてまとめています。</p>
+    </header>
+
+    <div id="bsky-feed" aria-live="polite">
+      <p class="status">読み込み中… / Loading…</p>
+    </div>
+  </main>
+
+  <script is:inline>
+    (function () {
+      const DID = 'did:plc:nmhfq335cddnwt4ovrq4gzsm';
+      const APPVIEW = 'https://public.api.bsky.app';
+      const TIME_ZONE = 'Asia/Tokyo';
+      const host = document.getElementById('bsky-feed');
+
+      // --- data fetch --------------------------------------------------------
+
+      async function getAuthorFeed() {
+        const items = [];
+        let cursor = '';
+        do {
+          const query = new URLSearchParams({
+            actor: DID,
+            limit: '100',
+            filter: 'posts_with_replies'
+          });
+          if (cursor) query.set('cursor', cursor);
+          const response = await fetch(`${APPVIEW}/xrpc/app.bsky.feed.getAuthorFeed?${query}`);
+          if (!response.ok) throw new Error(`getAuthorFeed: ${response.status}`);
+          const page = await response.json();
+          items.push(...(page.feed || []));
+          cursor = page.cursor || '';
+        } while (cursor);
+        return items;
+      }
+
+      // Grouping/sort key. Reposts use reason.indexedAt (= when *I* reposted),
+      // not the original author's createdAt, so activity reflects my own timeline.
+      function effectiveDate(item) {
+        if (item.reason && item.reason.$type === 'app.bsky.feed.defs#reasonRepost') {
+          return item.reason.indexedAt || item.post?.indexedAt || item.post?.record?.createdAt;
+        }
+        return item.post?.record?.createdAt || item.post?.indexedAt;
+      }
+
+      // --- date helpers (shared with the reading page) -----------------------
+
+      function dateParts(value) {
+        if (!value || Number.isNaN(Date.parse(value))) return null;
+        const parts = new Intl.DateTimeFormat('ja-JP', {
+          timeZone: TIME_ZONE,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(new Date(value));
+        return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+      }
+
+      function monthKey(value) {
+        const parts = dateParts(value);
+        return parts ? `${parts.year}-${parts.month}` : '';
+      }
+
+      function formatDate(value) {
+        if (!value || Number.isNaN(Date.parse(value))) return '';
+        return new Intl.DateTimeFormat('ja-JP', {
+          timeZone: TIME_ZONE,
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).format(new Date(value));
+      }
+
+      const monthLabel = (key) => {
+        const [year, month] = key.split('-').map(Number);
+        return `${year}年${month}月`;
+      };
+
+      function allMonths(first, last) {
+        const result = [];
+        const [firstYear, firstMonth] = first.split('-').map(Number);
+        const [lastYear, lastMonth] = last.split('-').map(Number);
+        const current = new Date(Date.UTC(firstYear, firstMonth - 1, 1));
+        const end = new Date(Date.UTC(lastYear, lastMonth - 1, 1));
+        while (current <= end) {
+          result.push(`${current.getUTCFullYear()}-${String(current.getUTCMonth() + 1).padStart(2, '0')}`);
+          current.setUTCMonth(current.getUTCMonth() + 1);
+        }
+        return result;
+      }
+
+      function makeElement(tag, className, text) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (text != null) element.textContent = text;
+        return element;
+      }
+
+      // --- rich text (facets are byte-indexed over UTF-8) --------------------
+
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      function renderRichText(record) {
+        const fragment = document.createDocumentFragment();
+        const text = record.text || '';
+        const bytes = encoder.encode(text);
+        const facets = (record.facets || [])
+          .filter((facet) => facet.index && facet.features && facet.features.length)
+          .sort((a, b) => a.index.byteStart - b.index.byteStart);
+
+        const sliceText = (start, end) => decoder.decode(bytes.slice(start, end));
+        let cursor = 0;
+
+        for (const facet of facets) {
+          const { byteStart, byteEnd } = facet.index;
+          if (byteStart < cursor || byteEnd > bytes.length) continue;
+          if (byteStart > cursor) fragment.append(sliceText(cursor, byteStart));
+
+          const label = sliceText(byteStart, byteEnd);
+          const feature = facet.features[0];
+          const link = makeElement('a', 'rt-link', label);
+          link.target = '_blank';
+          link.rel = 'noopener';
+          if (feature.$type === 'app.bsky.richtext.facet#link') {
+            link.href = feature.uri;
+          } else if (feature.$type === 'app.bsky.richtext.facet#mention') {
+            link.href = `https://bsky.app/profile/${feature.did}`;
+          } else if (feature.$type === 'app.bsky.richtext.facet#tag') {
+            link.href = `https://bsky.app/hashtag/${encodeURIComponent(feature.tag)}`;
+          } else {
+            fragment.append(label);
+            cursor = byteEnd;
+            continue;
+          }
+          fragment.append(link);
+          cursor = byteEnd;
+        }
+        if (cursor < bytes.length) fragment.append(sliceText(cursor, bytes.length));
+        return fragment;
+      }
+
+      function collectTags(record) {
+        const tags = new Set();
+        (record.facets || []).forEach((facet) => {
+          (facet.features || []).forEach((feature) => {
+            if (feature.$type === 'app.bsky.richtext.facet#tag' && feature.tag) tags.add(feature.tag);
+          });
+        });
+        (record.tags || []).forEach((tag) => tag && tags.add(tag));
+        return [...tags];
+      }
+
+      function rkeyFromUri(uri) {
+        return (uri || '').split('/').pop() || '';
+      }
+
+      function postUrl(post) {
+        const handle = post.author?.handle;
+        const rkey = rkeyFromUri(post.uri);
+        if (!handle || !rkey) return '';
+        return `https://bsky.app/profile/${handle}/post/${rkey}`;
+      }
+
+      // --- embeds ------------------------------------------------------------
+
+      function renderEmbed(embed) {
+        if (!embed) return null;
+        const type = embed.$type;
+
+        if (type === 'app.bsky.embed.images#view') {
+          const grid = makeElement('div', 'embed-images');
+          (embed.images || []).forEach((img) => {
+            const image = document.createElement('img');
+            image.src = img.thumb || img.fullsize;
+            image.alt = img.alt || '';
+            image.loading = 'lazy';
+            grid.append(image);
+          });
+          return grid;
+        }
+
+        if (type === 'app.bsky.embed.external#view') {
+          const ext = embed.external || {};
+          const card = makeElement('a', 'embed-external');
+          card.href = ext.uri;
+          card.target = '_blank';
+          card.rel = 'noopener';
+          if (ext.thumb) {
+            const thumb = document.createElement('img');
+            thumb.src = ext.thumb;
+            thumb.alt = '';
+            thumb.loading = 'lazy';
+            thumb.className = 'embed-external-thumb';
+            card.append(thumb);
+          }
+          const body = makeElement('div', 'embed-external-body');
+          body.append(makeElement('span', 'embed-external-title', ext.title || ext.uri));
+          if (ext.description) body.append(makeElement('span', 'embed-external-desc', ext.description));
+          try {
+            body.append(makeElement('span', 'embed-external-host', new URL(ext.uri).hostname));
+          } catch { /* ignore malformed uri */ }
+          card.append(body);
+          return card;
+        }
+
+        if (type === 'app.bsky.embed.video#view') {
+          const wrap = makeElement('a', 'embed-video');
+          const parentUri = embed.uri;
+          if (parentUri) {
+            wrap.href = parentUri;
+            wrap.target = '_blank';
+            wrap.rel = 'noopener';
+          }
+          if (embed.thumbnail) {
+            const thumb = document.createElement('img');
+            thumb.src = embed.thumbnail;
+            thumb.alt = '';
+            thumb.loading = 'lazy';
+            wrap.append(thumb);
+          }
+          wrap.append(makeElement('span', 'embed-video-badge', '▶ 動画'));
+          return wrap;
+        }
+
+        if (type === 'app.bsky.embed.record#view') {
+          return renderQuote(embed.record);
+        }
+
+        if (type === 'app.bsky.embed.recordWithMedia#view') {
+          const wrap = makeElement('div', 'embed-stack');
+          const media = renderEmbed(embed.media);
+          if (media) wrap.append(media);
+          const quote = renderQuote(embed.record?.record);
+          if (quote) wrap.append(quote);
+          return wrap;
+        }
+
+        return null;
+      }
+
+      function renderQuote(record) {
+        if (!record) return null;
+        if (record.$type === 'app.bsky.embed.record#viewNotFound' ||
+            record.$type === 'app.bsky.embed.record#viewBlocked' ||
+            record.$type === 'app.bsky.embed.record#viewDetached') {
+          return makeElement('div', 'embed-quote embed-quote-missing', '引用元を表示できません');
+        }
+        const author = record.author || {};
+        const quote = makeElement('div', 'embed-quote');
+        const head = makeElement('div', 'quote-head');
+        head.append(makeElement('span', 'quote-name', author.displayName || author.handle || ''));
+        if (author.handle) head.append(makeElement('span', 'quote-handle', `@${author.handle}`));
+        quote.append(head);
+        const value = record.value || record.record;
+        if (value && value.text) {
+          const body = makeElement('div', 'quote-text');
+          body.append(renderRichText(value));
+          quote.append(body);
+        }
+        const uri = record.uri;
+        const handle = author.handle;
+        const rkey = rkeyFromUri(uri);
+        if (handle && rkey) {
+          const link = makeElement('a', 'quote-link', '引用元を開く ↗');
+          link.href = `https://bsky.app/profile/${handle}/post/${rkey}`;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          quote.append(link);
+        }
+        return quote;
+      }
+
+      // --- post card ---------------------------------------------------------
+
+      function renderPost(item) {
+        const post = item.post;
+        const record = post.record || {};
+        const card = makeElement('article', 'post-item');
+
+        const isRepost = item.reason && item.reason.$type === 'app.bsky.feed.defs#reasonRepost';
+        const isReply = !!record.reply;
+
+        if (isRepost || isReply) {
+          const labels = makeElement('div', 'post-labels');
+          if (isRepost) {
+            const author = post.author || {};
+            labels.append(makeElement('span', 'post-label repost',
+              `🔁 リポスト — ${author.displayName || author.handle || ''}`));
+          }
+          if (isReply) {
+            const to = item.reply?.parent?.author?.handle;
+            labels.append(makeElement('span', 'post-label reply', to ? `↩ 返信 → @${to}` : '↩ 返信'));
+          }
+          card.append(labels);
+        }
+
+        if (record.text) {
+          const body = makeElement('div', 'post-text');
+          body.append(renderRichText(record));
+          card.append(body);
+        }
+
+        const embed = renderEmbed(post.embed);
+        if (embed) card.append(embed);
+
+        const meta = makeElement('div', 'post-meta');
+        meta.append(makeElement('time', 'post-date', formatDate(effectiveDate(item))));
+        const stats = makeElement('span', 'post-stats',
+          `♥ ${post.likeCount || 0}　🔁 ${post.repostCount || 0}　💬 ${post.replyCount || 0}`);
+        meta.append(stats);
+        const url = postUrl(post);
+        if (url) {
+          const link = makeElement('a', 'post-link', '↗');
+          link.href = url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.title = 'Bluesky で開く';
+          meta.append(link);
+        }
+        card.append(meta);
+        return card;
+      }
+
+      // --- sections ----------------------------------------------------------
+
+      function renderSummary(items, monthlyCounts) {
+        const currentYear = monthKey(new Date().toISOString()).slice(0, 4);
+        const thisYear = items.filter((item) => monthKey(effectiveDate(item)).startsWith(currentYear)).length;
+        const activeMonths = [...monthlyCounts.values()].filter(Boolean).length;
+        const summary = makeElement('section', 'summary-grid');
+        [
+          ['投稿', `${items.length}件`, '全期間'],
+          ['今年', `${thisYear}件`, `${currentYear}年`],
+          ['記録期間', `${activeMonths}か月`, '投稿のある月']
+        ].forEach(([label, value, note]) => {
+          const card = makeElement('div', 'summary-card');
+          card.append(
+            makeElement('span', 'summary-label', label),
+            makeElement('strong', 'summary-value', value),
+            makeElement('span', 'summary-note', note)
+          );
+          summary.append(card);
+        });
+        return summary;
+      }
+
+      // Activity chart with a year switcher. "全期間" shows every month from the
+      // first to the last; a single year shows that calendar year's 12 months.
+      function renderChart(monthlyCounts) {
+        const section = makeElement('section', 'chart-section');
+        const heading = makeElement('div', 'section-heading');
+        const headingText = makeElement('div', 'section-heading-text');
+        headingText.append(makeElement('h2', '', '月別の投稿数'));
+        headingText.append(makeElement('p', '', 'Monthly posting activity'));
+        heading.append(headingText);
+
+        const years = [...new Set([...monthlyCounts.keys()].map((key) => key.slice(0, 4)))].sort();
+        const switcher = makeElement('div', 'year-switch');
+        section.append(heading);
+
+        const chartScroll = makeElement('div', 'chart-scroll');
+        section.append(chartScroll);
+
+        function draw(scope) {
+          let months;
+          if (scope === 'all') {
+            const keys = [...monthlyCounts.keys()].sort();
+            months = allMonths(keys[0], keys[keys.length - 1]);
+          } else {
+            months = Array.from({ length: 12 }, (_, i) => `${scope}-${String(i + 1).padStart(2, '0')}`);
+          }
+          const maximum = Math.max(...months.map((key) => monthlyCounts.get(key) || 0), 1);
+          const chart = makeElement('div', 'chart');
+          chart.style.setProperty('--months', String(months.length));
+          months.forEach((key) => {
+            const count = monthlyCounts.get(key) || 0;
+            const column = makeElement('div', 'chart-column');
+            const value = makeElement('span', 'bar-value', count || '');
+            const track = makeElement('div', 'bar-track');
+            const bar = makeElement('div', 'bar');
+            bar.style.height = `${(count / maximum) * 100}%`;
+            bar.title = `${monthLabel(key)}: ${count}件`;
+            track.append(bar);
+            const label = makeElement('span', 'month-label', monthLabel(key));
+            column.append(value, track, label);
+            chart.append(column);
+          });
+          chartScroll.replaceChildren(chart);
+        }
+
+        function selectScope(scope) {
+          [...switcher.children].forEach((button) =>
+            button.classList.toggle('active', button.dataset.scope === scope));
+          draw(scope);
+        }
+
+        [['all', '全期間'], ...years.map((year) => [year, `${year}年`])].forEach(([scope, label]) => {
+          const button = makeElement('button', 'year-button', label);
+          button.type = 'button';
+          button.dataset.scope = scope;
+          button.addEventListener('click', () => selectScope(scope));
+          switcher.append(button);
+        });
+        heading.append(switcher);
+        selectScope('all');
+        return section;
+      }
+
+      function renderTags(items, onSelect) {
+        const tagCounts = new Map();
+        items.forEach((item) => {
+          collectTags(item.post?.record || {}).forEach((tag) => {
+            tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+          });
+        });
+        if (!tagCounts.size) return null;
+
+        const section = makeElement('section', 'tag-section');
+        const heading = makeElement('div', 'section-heading');
+        const headingText = makeElement('div', 'section-heading-text');
+        headingText.append(makeElement('h2', '', 'タグ別まとめ'));
+        headingText.append(makeElement('p', '', 'Posts by hashtag'));
+        heading.append(headingText);
+        section.append(heading);
+
+        const chips = makeElement('div', 'tag-chips');
+        const makeChip = (tag, count, scope) => {
+          const chip = makeElement('button', 'tag-chip', count == null ? tag : `#${tag} ${count}`);
+          chip.type = 'button';
+          chip.dataset.scope = scope;
+          chip.addEventListener('click', () => {
+            [...chips.children].forEach((c) => c.classList.toggle('active', c === chip));
+            onSelect(scope);
+          });
+          return chip;
+        };
+
+        const allChip = makeChip('すべて', null, '__all__');
+        allChip.classList.add('active');
+        chips.append(allChip);
+        [...tagCounts.entries()]
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .forEach(([tag, count]) => chips.append(makeChip(tag, count, tag)));
+        section.append(chips);
+        return section;
+      }
+
+      function renderArchive(items) {
+        const section = makeElement('section', 'posts-section');
+        const heading = makeElement('div', 'section-heading');
+        const headingText = makeElement('div', 'section-heading-text');
+        headingText.append(makeElement('h2', '', '投稿アーカイブ'));
+        headingText.append(makeElement('p', '', '新しい投稿から表示'));
+        heading.append(headingText);
+        section.append(heading);
+
+        const listHost = makeElement('div', 'archive-host');
+        section.append(listHost);
+
+        function draw(scope) {
+          const filtered = scope === '__all__'
+            ? items
+            : items.filter((item) => collectTags(item.post?.record || {}).includes(scope));
+
+          const grouped = new Map();
+          filtered.forEach((item) => {
+            const key = monthKey(effectiveDate(item));
+            if (!grouped.has(key)) grouped.set(key, []);
+            grouped.get(key).push(item);
+          });
+
+          const groups = [...grouped.entries()].sort(([a], [b]) => b.localeCompare(a));
+          if (!groups.length) {
+            listHost.replaceChildren(makeElement('p', 'status', '該当する投稿はありません。'));
+            return;
+          }
+
+          const container = document.createDocumentFragment();
+          groups.forEach(([key, group]) => {
+            const monthGroup = makeElement('section', 'month-group');
+            const groupHeading = makeElement('h3', 'month-heading');
+            groupHeading.append(
+              makeElement('span', 'month-caret', '▾'),
+              makeElement('span', '', monthLabel(key)),
+              makeElement('span', 'month-count', `${group.length}件`)
+            );
+            monthGroup.append(groupHeading);
+            group.forEach((item) => monthGroup.append(renderPost(item)));
+            container.append(monthGroup);
+          });
+          listHost.replaceChildren(container);
+        }
+
+        return { section, draw };
+      }
+
+      // --- bootstrap ---------------------------------------------------------
+
+      async function loadFeed() {
+        try {
+          const items = (await getAuthorFeed())
+            .filter((item) => item.post && effectiveDate(item))
+            .sort((a, b) => Date.parse(effectiveDate(b)) - Date.parse(effectiveDate(a)));
+
+          if (!items.length) {
+            host.replaceChildren(makeElement('p', 'status', '投稿はまだありません。'));
+            return;
+          }
+
+          const monthlyCounts = new Map();
+          items.forEach((item) => {
+            const key = monthKey(effectiveDate(item));
+            monthlyCounts.set(key, (monthlyCounts.get(key) || 0) + 1);
+          });
+
+          const archive = renderArchive(items);
+          const tags = renderTags(items, archive.draw);
+          const children = [renderSummary(items, monthlyCounts), renderChart(monthlyCounts)];
+          if (tags) children.push(tags);
+          children.push(archive.section);
+          host.replaceChildren(...children);
+          archive.draw('__all__');
+        } catch (error) {
+          host.replaceChildren(makeElement('p', 'status error', 'Bluesky の投稿を取得できませんでした。 / Could not load posts.'));
+          console.error(error);
+        }
+      }
+
+      loadFeed();
+    })();
+  </script>
+</Layout>
+
+<style is:global>
+  .bsky-page { max-width: 980px; margin: 0 auto; padding: 32px 0 72px; color: #292722; }
+  .page-header { margin-bottom: 34px; }
+  .eyebrow { margin: 0 0 7px; color: #9a6e28; font: 700 11px/1.2 ui-sans-serif, sans-serif; letter-spacing: .18em; }
+  .bsky-page h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 44px); letter-spacing: -.03em; }
+  .subtitle, .status { margin: 0; color: #777168; font-size: 14px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+  .summary-card { display: flex; flex-direction: column; min-width: 0; padding: 18px 20px; border: 1px solid #e7e1d8; border-radius: 5px; background: #fbfaf7; }
+  .summary-label, .summary-note { color: #7a746b; font: 12px/1.4 ui-sans-serif, sans-serif; }
+  .summary-value { margin: 4px 0 2px; font-size: 25px; line-height: 1.2; }
+  .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-bottom: 1px solid #ded8cf; }
+  .section-heading-text { min-width: 0; }
+  .section-heading h2 { margin: 0 0 9px; font-size: 21px; }
+  .section-heading p { margin: 0 0 9px; color: #8a847b; font: 11px/1.4 ui-sans-serif, sans-serif; letter-spacing: .06em; }
+
+  .year-switch { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+  .year-button { padding: 4px 11px; border: 1px solid #ded8cf; border-radius: 999px; background: #fbfaf7; color: #645f57; font: 12px ui-sans-serif, sans-serif; cursor: pointer; transition: all .15s; }
+  .year-button:hover { border-color: #c69645; color: #9a6e28; }
+  .year-button.active { border-color: #c69645; background: #c69645; color: #fff; }
+
+  .chart-section { margin-bottom: 48px; }
+  .chart-scroll { overflow-x: auto; padding: 8px 0 10px; scrollbar-color: #cabfAE transparent; }
+  .chart { --months: 1; display: grid; grid-template-columns: repeat(var(--months), 34px); gap: 9px; min-width: max-content; height: 280px; padding: 0 12px 0 4px; border-bottom: 1px solid #aaa298; background: repeating-linear-gradient(to bottom, transparent 0, transparent 59px, #ebe7e0 60px); }
+  .chart-column { display: grid; grid-template-rows: 20px 200px 60px; align-items: end; text-align: center; }
+  .bar-value { color: #645f57; font: 11px/1 ui-sans-serif, sans-serif; }
+  .bar-track { display: flex; height: 190px; align-items: flex-end; justify-content: center; }
+  .bar { width: 17px; min-height: 0; border-radius: 3px 3px 0 0; background: #c69645; transition: background .2s; }
+  .bar:hover { background: #9e7029; }
+  .month-label { align-self: start; margin-top: 10px; color: #6e6961; font: 10px/1.2 ui-sans-serif, sans-serif; white-space: nowrap; transform: rotate(-48deg); transform-origin: top center; }
+
+  .tag-section { margin-bottom: 48px; }
+  .tag-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag-chip { padding: 5px 12px; border: 1px solid #e0d8cc; border-radius: 999px; background: #fbfaf7; color: #645f57; font: 12px ui-sans-serif, sans-serif; cursor: pointer; transition: all .15s; }
+  .tag-chip:hover { border-color: #c69645; color: #9a6e28; }
+  .tag-chip.active { border-color: #9a6e28; background: #f3e9d4; color: #7a5410; }
+
+  .posts-section { margin-top: 16px; }
+  .month-group { margin: 0 0 30px; }
+  .month-heading { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 8px 2px; border-bottom: 1px solid #ece8e1; font-size: 18px; }
+  .month-caret { color: #8d877e; font: 12px ui-sans-serif, sans-serif; }
+  .month-count { color: #989188; font: 400 12px ui-sans-serif, sans-serif; }
+
+  .post-item { padding: 14px 4px 16px; border-bottom: 1px solid #f0ede8; }
+  .post-labels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 7px; }
+  .post-label { color: #7e786f; font: 11px/1.4 ui-sans-serif, sans-serif; }
+  .post-label.repost { color: #5a8a5a; }
+  .post-label.reply { color: #6e7a9a; }
+  .post-text { font-size: 15px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .rt-link { color: #1f6fd6 !important; text-decoration: none; border-bottom: 1px solid rgba(31,111,214,.35); }
+  .rt-link:hover { border-bottom-color: #1f6fd6; }
+
+  .embed-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 10px; }
+  .embed-images img { width: 100%; max-height: 360px; object-fit: cover; border-radius: 6px; border: 1px solid #e7e1d8; }
+  .embed-external { display: flex; gap: 12px; margin-top: 10px; padding: 10px; border: 1px solid #e0d8cc; border-radius: 7px; background: #fbfaf7; text-decoration: none; color: inherit; }
+  .embed-external:hover { border-color: #c69645; }
+  .embed-external-thumb { width: 96px; height: 96px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+  .embed-external-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .embed-external-title { font-weight: 600; font-size: 14px; }
+  .embed-external-desc { color: #7a746b; font-size: 12px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .embed-external-host { color: #989188; font: 11px ui-sans-serif, sans-serif; }
+
+  .embed-video { position: relative; display: inline-block; margin-top: 10px; border-radius: 7px; overflow: hidden; }
+  .embed-video img { max-width: 100%; max-height: 360px; display: block; }
+  .embed-video-badge { position: absolute; bottom: 8px; left: 8px; padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.6); color: #fff; font: 11px ui-sans-serif, sans-serif; }
+
+  .embed-stack { display: flex; flex-direction: column; gap: 10px; }
+  .embed-quote { margin-top: 10px; padding: 10px 12px; border: 1px solid #e0d8cc; border-radius: 7px; background: #fbfaf7; }
+  .embed-quote-missing { color: #989188; font-size: 13px; }
+  .quote-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-bottom: 4px; }
+  .quote-name { font-weight: 600; font-size: 13px; }
+  .quote-handle { color: #989188; font: 12px ui-sans-serif, sans-serif; }
+  .quote-text { font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+  .quote-link { display: inline-block; margin-top: 6px; color: #9a6e28 !important; font: 12px ui-sans-serif, sans-serif; text-decoration: none; }
+
+  .post-meta { display: flex; align-items: center; gap: 14px; margin-top: 10px; color: #7e786f; font: 12px/1.4 ui-sans-serif, sans-serif; }
+  .post-date { white-space: nowrap; }
+  .post-stats { color: #989188; }
+  .post-link { margin-left: auto; color: #9a6e28 !important; text-decoration: none; font-size: 14px; }
+  .post-link:hover { color: #7a5410 !important; }
+  .error { color: #9b3e32; }
+
+  @media (max-width: 680px) {
+    .bsky-page { padding-top: 8px; }
+    .summary-grid { grid-template-columns: 1fr; gap: 8px; }
+    .summary-card { display: grid; grid-template-columns: 70px 1fr; align-items: baseline; padding: 13px 16px; }
+    .summary-value { margin: 0; font-size: 21px; }
+    .summary-note { grid-column: 2; }
+    .section-heading { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .embed-external-thumb { width: 72px; height: 72px; }
+  }
+</style>
